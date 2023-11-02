@@ -1,0 +1,16 @@
+__test__
+android
+config
+constants
+ios
+node_modules
+package.json
+package-lock.json
+sample.env
+store.js
+yarn.lock
+metro.config.js
+index.js
+babel.config.js
+app.json
+App.js

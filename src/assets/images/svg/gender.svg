@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15.152" height="17.825" viewBox="0 0 15.152 17.825">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff802c"/>
+      <stop offset="1" stop-color="#ffb02c"/>
+    </linearGradient>
+  </defs>
+  <g id="gender" transform="translate(-35.987)">
+    <g id="Group_437" data-name="Group 437" transform="translate(35.987)">
+      <path id="Path_284" data-name="Path 284" d="M49.059,0V.594h1.065L48.5,2.216A5.184,5.184,0,0,0,39.993,4.9a5.194,5.194,0,0,0,.747,10.232v.914H39.553v.594h1.188v1.188h.594V16.636h1.188v-.594H41.335v-.9a5.2,5.2,0,0,0,4.907-4,5.184,5.184,0,0,0,2.681-8.51l1.622-1.621V2.08h.594V0ZM41.187,14.557a4.6,4.6,0,0,1-1.307-9.018,5.193,5.193,0,0,0,5.72,5.72A4.611,4.611,0,0,1,41.187,14.557Zm4.548-3.919A4.571,4.571,0,0,1,40.5,5.4a4.571,4.571,0,0,1,5.234,5.234Zm3.733-3.247A4.6,4.6,0,0,1,46.356,10.5h0a5.193,5.193,0,0,0-5.72-5.72,4.6,4.6,0,0,1,8.832,2.608Z" transform="translate(-35.987)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

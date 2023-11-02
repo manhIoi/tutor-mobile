@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15.671" height="15.672" viewBox="0 0 15.671 15.672">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff802c"/>
+      <stop offset="1" stop-color="#ffb02c"/>
+    </linearGradient>
+  </defs>
+  <g id="chat" transform="translate(-0.019)">
+    <g id="Group_31" data-name="Group 31" transform="translate(0.019)">
+      <path id="Path_22" data-name="Path 22" d="M13.39,2.3A7.834,7.834,0,0,0,1.817,12.832,3,3,0,0,1,.561,14.224a.735.735,0,0,0,.212,1.385,4.05,4.05,0,0,0,.62.046,4.678,4.678,0,0,0,2.757-.914A7.833,7.833,0,0,0,13.39,2.3Zm-.633,10.447a6.94,6.94,0,0,1-8.422,1.08.445.445,0,0,0-.543.07.147.147,0,0,0-.036.027,3.825,3.825,0,0,1-2.362.842h0a4.387,4.387,0,0,0,1.345-1.786.458.458,0,0,0,.023-.288.465.465,0,0,0-.109-.252,6.94,6.94,0,1,1,10.109.308Z" transform="translate(-0.019 0)" fill="url(#linear-gradient)"/>
+      <circle id="Ellipse_53" data-name="Ellipse 53" cx="0.55" cy="0.55" r="0.55" transform="translate(7.281 7.286)" fill="url(#linear-gradient)"/>
+      <circle id="Ellipse_54" data-name="Ellipse 54" cx="0.55" cy="0.55" r="0.55" transform="translate(10.118 7.286)" fill="url(#linear-gradient)"/>
+      <circle id="Ellipse_55" data-name="Ellipse 55" cx="0.55" cy="0.55" r="0.55" transform="translate(4.445 7.286)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+import { configureStore } from '@reduxjs/toolkit';
+
+import authReducer from './src/lib/slices/authSlice';
+import messageReducer from './src/lib/slices/messageSlice';
+import settingReducer from './src/lib/slices/settingSlice';
+import directoryReducer from './src/lib/slices/directorySlice';
+import familyReducer from "./src/lib/slices/familySlice";
+import classManagerReducer from "./src/lib/slices/classManagementSlice";
+import socketReducer from './src/lib/slices/socketSlice';
+import notificationReducer from './src/lib/slices/notificationSlice';
+import callingSlice from './src/lib/slices/callSlice';
+
+export default configureStore({
+  reducer: {
+    auth: authReducer,
+    message: messageReducer,
+    setting: settingReducer,
+    directory: directoryReducer,
+    family : familyReducer,
+    classManager: classManagerReducer,
+    socket: socketReducer,
+    notification: notificationReducer,
+    calling: callingSlice,
+  },
+});

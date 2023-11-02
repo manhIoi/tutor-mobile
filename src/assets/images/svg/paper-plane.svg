@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="33.04" height="33.04" viewBox="0 0 33.04 33.04">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff802c"/>
+      <stop offset="1" stop-color="#ffb02c"/>
+    </linearGradient>
+  </defs>
+  <g id="paper-plane" transform="matrix(0.766, 0.643, -0.643, 0.766, 15.082, -0.009)">
+    <g id="Group_212" data-name="Group 212" transform="translate(0 0.012)">
+      <path id="Path_132" data-name="Path 132" d="M22.8.668A2.182,2.182,0,0,0,20.383.185L1.377,8.005a2.22,2.22,0,0,0,.116,4.152l6.5,2.221a.867.867,0,0,0,.845-.159l8.212-6.966a.87.87,0,1,0-1.125-1.328L8.087,12.572l-6.03-2.061a.47.47,0,0,1-.328-.439.455.455,0,0,1,.3-.459L21.035,1.788a.485.485,0,0,1,.632.632L13.847,21.426a.469.469,0,0,1-.459.3.459.459,0,0,1-.439-.328l-1.772-5.19a.87.87,0,1,0-1.646.565l1.772,5.19a2.206,2.206,0,0,0,2.032,1.5h.072a2.209,2.209,0,0,0,2.052-1.376L23.28,3.081A2.182,2.182,0,0,0,22.8.668Z" transform="translate(0 -0.012)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

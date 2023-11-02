@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16.488" height="14.906" viewBox="0 0 16.488 14.906">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff802c"/>
+      <stop offset="1" stop-color="#ffb02c"/>
+    </linearGradient>
+  </defs>
+  <g id="simple-house-thin" transform="translate(0 -19.391)">
+    <path id="Path_130" data-name="Path 130" d="M39.106,202.639a.332.332,0,0,0,.332.332h5a.332.332,0,0,0,.332-.332v-6.544a.332.332,0,0,0-.663,0v6.213H39.769v-3.461a.332.332,0,0,0-.332-.332H36.184a.332.332,0,0,0-.332.332v3.536H31.458v-6.734a.332.332,0,1,0-.663,0v7.066a.332.332,0,0,0,.332.332h5.057a.332.332,0,0,0,.332-.332v-3.536h2.591Z" transform="translate(-29.539 -168.748)" fill="url(#linear-gradient)"/>
+    <path id="Path_131" data-name="Path 131" d="M16.365,25.9,8.424,19.465a.33.33,0,0,0-.414,0L.126,25.673a.331.331,0,1,0,.41.521l7.675-6.046,7.736,6.266a.332.332,0,0,0,.418-.515Z" transform="translate(0)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>

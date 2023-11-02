@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17.37" height="17.372" viewBox="0 0 17.37 17.372">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ff802c"/>
+      <stop offset="1" stop-color="#ffb02c"/>
+    </linearGradient>
+  </defs>
+  <g id="link_1_" data-name="link (1)" transform="translate(-0.039 0)">
+    <g id="Group_215" data-name="Group 215" transform="translate(0.039 5.585)">
+      <g id="Group_214" data-name="Group 214" transform="translate(0)">
+        <path id="Path_137" data-name="Path 137" d="M10.637,165.8a3.941,3.941,0,0,0-.68-.547,4.053,4.053,0,0,0-5.052.547l-3.682,3.685a4.053,4.053,0,0,0,5.729,5.735l3.04-3.04a.289.289,0,0,0-.206-.5H9.671a4.873,4.873,0,0,1-1.853-.359.289.289,0,0,0-.316.064l-2.186,2.189a1.738,1.738,0,0,1-2.458-2.458l3.7-3.694a1.737,1.737,0,0,1,2.455,0,1.187,1.187,0,0,0,1.627,0,1.147,1.147,0,0,0,0-1.627Z" transform="translate(-0.039 -164.614)" fill="url(#linear-gradient)"/>
+      </g>
+    </g>
+    <g id="Group_217" data-name="Group 217" transform="translate(6.466 0)">
+      <g id="Group_216" data-name="Group 216" transform="translate(0 0)">
+        <path id="Path_138" data-name="Path 138" d="M199.257,1.187a4.053,4.053,0,0,0-5.732,0l-3.037,3.034a.291.291,0,0,0,.211.5h.107a4.863,4.863,0,0,1,1.85.362.289.289,0,0,0,.316-.064l2.18-2.177A1.738,1.738,0,0,1,197.61,5.3l-2.715,2.712-.023.026-.95.944a1.737,1.737,0,0,1-2.455,0,1.187,1.187,0,0,0-1.627,0,1.154,1.154,0,0,0,0,1.633,4.018,4.018,0,0,0,1.158.811c.061.029.122.052.182.078s.124.046.185.069.124.043.185.061l.171.046c.116.029.232.052.35.072a4.03,4.03,0,0,0,.431.041h.22l.174-.02c.064,0,.13-.017.206-.017h.1l.2-.029.093-.017.168-.035h.032a4.052,4.052,0,0,0,1.879-1.065l3.685-3.685A4.053,4.053,0,0,0,199.257,1.187Z" transform="translate(-189.502 0)" fill="url(#linear-gradient)"/>
+      </g>
+    </g>
+  </g>
+</svg>
