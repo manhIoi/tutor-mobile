@@ -139,7 +139,6 @@ const UserCreateRequest = (props) => {
   const [classData, setClassData] = useState([]);
   const [typeTeacher, setTypeTeacher] = useState([]);
   const [isBusy, setBusy] = useState(false);
-  const [disabled, setDisabled] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
   const [showPickImage, setShowPickerImage] = useState(false);
   const [teachers, setTeacher] = useState([]);
@@ -186,8 +185,7 @@ const UserCreateRequest = (props) => {
     data?.topic?.value ? getSubject(data?.topic?.value) : null;
   }, [data?.topic?.value]);
   async function componentWillMount() {
-    setDisabled(true);
-    setLoading(true);
+    // setLoading(true);
     const promise = [
       getProvince(),
       getTopics(),
@@ -196,12 +194,11 @@ const UserCreateRequest = (props) => {
       getTeacher(),
       props.route?.params?._id ? initDataClass(props.route.params._id) : null,
     ];
-    await Promise.all(promise);
+    await Promise.all(promise)
     // if (props.route?.params?._id) {
     //   await initDataClass(props.route.params._id);
     // }
     setLoading(false);
-    setDisabled(false);
   }
   async function initDataClass(id) {
     try {
@@ -753,14 +750,15 @@ const UserCreateRequest = (props) => {
   }
 
   async function handleSubmitRequest() {
-    if (!validateForm()) {
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Vui lòng điền đầy đủ thông tin',
-      });
-      return;
-    }
+    // TODO: implement
+    // if (!validateForm()) {
+    //   Toast.show({
+    //     ...ConfigStyle.toastDefault,
+    //     type: 'error',
+    //     text1: 'Vui lòng điền đầy đủ thông tin',
+    //   });
+    //   return;
+    // }
     const day = data.dateStart?.value?.getDate();
     const month = data.dateStart?.value?.getMonth();
     const year = data.dateStart?.value?.getFullYear();
@@ -769,16 +767,11 @@ const UserCreateRequest = (props) => {
       title: data.title?.value,
       description: data.description?.value,
       content: 'string',
-      address: data.address?.value?.desc,
-      lng: parseFloat(data.address?.value?.lng?.toFixed(6)),
-      lat: parseFloat(data.address?.value?.lat?.toFixed(6)),
+      address: data.address?.value,
       startAt: new Date(year, month, day).toISOString(),
       totalLesson: parseInt(data.totalLesson?.value || 0),
       timeline: data.time?.value * 45,
-      city: data.province?.value,
-      quantity: data.maxStudent?.value,
       weekDays: data.dayStudy?.value,
-      topic: data.topic?.value,
       price: data.price?.value,
       timeStartAt: {
         hour: data.timeStart?.value?.getHours(),
@@ -811,6 +804,7 @@ const UserCreateRequest = (props) => {
         await handleCreateClass(formRequest);
       }
     }
+    console.info("LOGGER:: formRequest", formRequest);
     if (type === 0) {
       formRequest.type_teacher = data.tutorType?.value;
       formRequest.contact = data.phoneNumber?.value;
@@ -837,7 +831,7 @@ const UserCreateRequest = (props) => {
       </Text>
       <ButtonCustom
         isBusy={isBusy}
-        disabled={disabled}
+        //TODO: disabled={disabled}
         text={
           props.route?.params?._id
             ? 'Chỉnh sửa'
@@ -1077,65 +1071,7 @@ height={31} /> : null}
           </View>
         )}
       </View>
-      {type === 0 ? (
-        <View
-          style={{
-            ...styles.container,
-            marginHorizontal: 10,
-            paddingTop: 0,
-          }}
-        >
-          <TouchableWithoutFeedback
-            onPress={() => {
-              if (!showSuggest) {
-                setScrollEnd(new Date().getTime());
-              }
-              setShowSuggest(!showSuggest);
-            }}
-            disabled={isBusy}
-          >
-            <View style={Styles.flexRowCenterVertical}>
-              <Text
-                style={[
-                  Styles.title2RS,
-                  styles.title,
-                  {
-                    paddingBottom: 5,
-                    paddingTop: 0,
-                    marginTop: 15,
-                    marginRight: 15,
-                  },
-                ]}
-              >
-                Chọn gia sư
-              </Text>
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      rotate: RotateData,
-                    },
-                  ],
-                }}
-              >
-                <ArrowGrey />
-              </Animated.View>
-            </View>
-          </TouchableWithoutFeedback>
-          {showSuggest ? (
-            <ListTeacherSuggest
-              data={teachers}
-              selected={[...suggestTeacher]}
-              disabled={isBusy}
-              isBusy={loadTeacher}
-              navigation={props.navigation}
-              handleChange={(value) => {
-                setSuggestTeacher(value);
-              }}
-            />
-          ) : null}
-        </View>
-      ) : null}
+
       <CustomActionSheet
         title={'Chọn hình ảnh từ ?'}
         arrayActions={['Máy ảnh', 'Thư viện hình ảnh', 'Hủy']}

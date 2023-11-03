@@ -18,14 +18,15 @@ import config from '../../../config/config';
 import FastImage from '../common/FastImage';
 import IconLogout from '../../assets/images/svg/logout.svg';
 import {removeDeviceToken} from '../../api/notification';
+import {checkIsTeacher} from "../../utils/profile.util";
 
 const Avatar = (props) => {
-  // React.useEffect(() => {}, [props.src]);
   const dispatch = useDispatch();
   const balance = useSelector((state) => state.auth.balance);
   const user = useSelector((state) => state.auth.user);
-  async function HandleLogout() {
-    await removeDeviceToken();
+  async function handleLogout() {
+    //TODO: imeplemnt removeDeviceToken
+    // await removeDeviceToken();
     await dispatch(logoutAsync());
   }
   return (
@@ -36,12 +37,8 @@ const Avatar = (props) => {
             <FastImage
               zoomView={true}
               style={styles.image}
-              source={{uri: `${props.src}`}}
-              arraySource={[{uri: `${props?.srcLg}`}]}
+              source={{uri: user.avatar}}
             />
-            {/* <TouchableOpacity style={styles.viewcamera}> */}
-            {/*  <IconFeather style={styles.camera} name="camera" size={15} /> */}
-            {/* </TouchableOpacity> */}
           </View>
           <View
             style={
@@ -57,16 +54,16 @@ const Avatar = (props) => {
             }
           >
             <Text style={styles.textNormal}>Xin chào!!</Text>
-            <Text style={styles.name}>{props.fullName}</Text>
+            <Text style={styles.name}>{user.fullName}</Text>
           </View>
         </View>
         <View style={styles.phoneNumberView}>
           <Text style={styles.phoneNumber}>
             Số điện thoại :{' '}
-            <Text style={styles.phoneNumberText}>{props.phone}</Text>
+            <Text style={styles.phoneNumberText}>{user.phone}</Text>
           </Text>
         </View>
-        {user?.access === 'teacher' ? (
+        {checkIsTeacher(user) ? (
           <View style={styles.phoneNumberView}>
             <Text style={styles.phoneNumber}>
               Số dư tài khoản :{' '}
@@ -80,7 +77,7 @@ const Avatar = (props) => {
           </View>
         ) : null}
       </View>
-      <TouchableOpacity onPress={HandleLogout}
+      <TouchableOpacity onPress={handleLogout}
 style={styles.btnLogout}>
         <Text>Đăng xuất</Text>
         <IconLogout style={{marginLeft: 8}}

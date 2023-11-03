@@ -49,15 +49,6 @@ const BoxRequesting = (props) => {
   const [time, setTime] = useState(new Date());
   return (
     <BoxShadow style={styles.container}>
-      <SelectBox
-        placeholder={'Tỉnh thành'}
-        disabled={props.isBusy}
-        data={props.dataSelect?.provinces}
-        svg={<IconLocation width={16.27}
-height={16} />}
-        value={props.data?.province?.value}
-        handleChange={(value) => props.handleChangeData('province', value)}
-      />
       {props.data?.province?.msgError ? (
         <Text style={Styles.textError}>{props.data.province.msgError}</Text>
       ) : null}
@@ -65,15 +56,14 @@ height={16} />}
         label={'Địa chỉ'}
         placeholder={'Địa chỉ cụ thể'}
         disabled={props.isBusy}
-        useGGPlaces={true}
         noPicker={true}
         svg={<IconHome width={16.5}
 height={14.9} />}
         value={props.data?.address?.value?.desc}
-        handleChange={(value) => props.handleChangeData('address', value)}
-        noInput={true}
-        isInput={true}
-        isView={false}
+        handleChange={(value) => {
+            props.handleChangeData('address', value)
+        }}
+
       />
       {props.data?.address?.msgError ? (
         <Text style={Styles.textError}>{props.data.address.msgError}</Text>
@@ -96,20 +86,6 @@ height={14.1} />}
       ) : null}
       {props.type === 0 ? (
         <View>
-          <SelectBox
-            placeholder={'Loại gia sư'}
-            svg={<IconEmployee width={11.3}
-height={16.75} />}
-            disabled={props.isBusy}
-            value={props.data?.tutorType?.value}
-            data={props.dataSelect?.typeTeacher}
-            handleChange={(value) => props.handleChangeData('tutorType', value)}
-          />
-          {props.data?.tutorType?.msgError ? (
-            <Text style={Styles.textError}>
-              {props.data.tutorType.msgError}
-            </Text>
-          ) : null}
           <SelectBox
             label={'Liên hệ'}
             placeholder={'Số điện thoại'}
@@ -144,18 +120,6 @@ height={18.27} />}
         <Text style={Styles.textError}>{props.data.teachingType.msgError}</Text>
       ) : null}
       <SelectBox
-        placeholder={'Chủ đề'}
-        svg={<IconNotes width={18.1}
-height={18.1} />}
-        disabled={props.isBusy}
-        value={props.data?.topic?.value}
-        data={props.dataSelect?.topics}
-        handleChange={(value) => props.handleChangeData('topic', value)}
-      />
-      {props.data?.topic?.msgError ? (
-        <Text style={Styles.textError}>{props.data.topic.msgError}</Text>
-      ) : null}
-      <SelectBox
         placeholder={'Môn học'}
         svg={<IconBook width={18.45}
 height={15.1} />}
@@ -168,19 +132,7 @@ height={15.1} />}
         <Text style={Styles.textError}>{props.data.subject.msgError}</Text>
       ) : null}
       <SelectBox
-        placeholder={'Lớp'}
-        svg={<IconBoard width={16}
-height={16.31} />}
-        disabled={props.isBusy}
-        value={props.data?.class?.value}
-        data={props.dataSelect?.classData}
-        handleChange={(value) => props.handleChangeData('class', value)}
-      />
-      {props.data?.class?.msgError ? (
-        <Text style={Styles.textError}>{props.data.class.msgError}</Text>
-      ) : null}
-      <SelectBox
-        placeholder={'Thời gian buổi học'}
+        placeholder={'Thời gian mỗi buổi học'}
         svg={<IconClock width={16.8}
 height={16.8} />}
         disabled={props.isBusy}
@@ -193,61 +145,7 @@ height={16.8} />}
         <Text style={Styles.textError}>{props.data.time.msgError}</Text>
       ) : null}
       <SelectBox
-        placeholder={'Thời gian'}
-        noPicker={true}
-        mode={'time'}
-        time={props.data?.time?.value}
-        disabled={props.isBusy}
-        svg={<IconMortar width={20.5}
-height={12.3} />}
-        date={time}
-        value={props.data?.timeStart?.value}
-        handleChange={(value) => props.handleChangeData('timeStart', value)}
-      />
-      {props.data?.timeStart?.msgError ? (
-        <Text style={Styles.textError}>{props.data?.timeStart?.msgError}</Text>
-      ) : null}
-      <SelectBox
-        placeholder={'Tổng số buổi học'}
-        noPicker={true}
-        isInput={true}
-        keyboardType={'numeric'}
-        disabled={props.isBusy}
-        svg={<IconUniversity width={16.2}
-height={16.2} />}
-        value={props.data?.totalLesson?.value}
-        handleChange={(value) => props.handleChangeData('totalLesson', value)}
-      />
-      {props.data?.totalLesson?.msgError ? (
-        <Text style={Styles.textError}>
-          {props.data?.totalLesson?.msgError}
-        </Text>
-      ) : null}
-      {props.type === 1 ? (
-        <View>
-          <SelectBox
-            placeholder={'Số học viên tối đa'}
-            noPicker={true}
-            isInput={true}
-            keyboardType={'numeric'}
-            disabled={props.isBusy}
-            svg={<IconEmployee width={11.3}
-height={16.75} />}
-            date={time}
-            value={props.data?.maxStudent?.value}
-            handleChange={(value) =>
-              props.handleChangeData('maxStudent', value)
-            }
-          />
-          {props.data?.maxStudent?.msgError ? (
-            <Text style={Styles.textError}>
-              {props.data?.maxStudent?.msgError}
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
-      <SelectBox
-        placeholder={'Học phí'}
+        placeholder={'Học phí mỗi buổi học'}
         noPicker={true}
         isInput={true}
         keyboardType={'numeric'}

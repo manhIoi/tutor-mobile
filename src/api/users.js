@@ -11,8 +11,7 @@ export const register = async (data) => {
 };
 
 export const login = async (data) => {
-  // return axios.post(`https://tutor-api.onrender.com/user/login/${data.type}`);
-  return callApi(`/user/login/${data.type}`, 'post', data);
+  return callApi(`/user/login`, 'post', data);
 };
 
 export const active = async (data) => {
@@ -198,7 +197,7 @@ export async function getTeacherByRequestId(
   );
 }
 export async function getTeacherSuggest() {
-  return callApiList(`/teacherInfo/suggest`);
+  return callApiList(`/user/teacher`);
 }
 export async function getSubjectWithTopic(id, page = 1, limit = 50) {
   return callApiList(`/subjects/topic/${id}?page=${page}&limit=${limit}`);

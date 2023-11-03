@@ -25,6 +25,7 @@ const width = Dimensions.get('window').width;
 
 const RecommendCard = (props) => {
   const [favorite, setFavorite] = useState(false);
+  console.info("LOGGER:: ", props.data);
 
   async function handleFollow(id) {
     try {

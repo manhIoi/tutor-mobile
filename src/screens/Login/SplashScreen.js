@@ -48,31 +48,13 @@ style={styles.logo} />
               })
             }
           />
-          {/* <BtnIconText */}
-          {/*  title={'University'} */}
-          {/*  imgWidth={25} */}
-          {/*  imgHeight={27} */}
-          {/*  fntSize={ConfigStyle.title3} */}
-          {/*  imgSource={imagesUtil.icoUniversity} */}
-          {/*  handlePress={() => */}
-          {/*    navigation.navigate('Login', { */}
-          {/*      type: 'university', */}
-          {/*    }) */}
-          {/*  } */}
-          {/* /> */}
         </View>
         <View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
+          style={styles.overlay}
         >
           <BottomImgCustomize
             imgSource={imagesUtil.bgBottom}
             imgHeight={0.25 * height}
-            title={'Sản phẩm của tập đoàn K group'}
           />
         </View>
       </View>
@@ -85,6 +67,12 @@ const styles = StyleSheet.create({
     marginTop: 15,
     width: 0.4 * width,
     height: 0.6 * width,
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   splashWrap: {
     flex: 1,

@@ -143,26 +143,22 @@ onPress={() => handleResendCode()}>
 
   async function handleLogin() {
     Keyboard.dismiss();
-    //TODO: cheat code
-    props.navigation.replace('Home');
-    dispatch(getUser({
-      _id: new Date().getTime(),
-      fullName: 'hello world',
-      avatar: {
-        large: 'test',
-      }
-    }));
     if (validateForm()) {
       const data = {
         phone: form.phoneNumber.value,
         password: form.password.value,
-        type: props.route?.params?.type || 'student',
+        type: props.route?.params?.type,
       };
       try {
         setBusy(true);
+        console.info("LOGGER:: call handle login");
         const response = await login(data);
-        if (response) {
-          await USER_TOKEN.set(response.token);
+        console.info("LOGGER:: call handle login response",response);
+        const { token, user } = response || {}
+
+        console.info("LOGGER:: ", token,user);
+        if (user) {
+          await USER_TOKEN.set(token);
           setBusy(false);
           props.navigation.replace('Home');
           Toast.show({
@@ -172,7 +168,7 @@ onPress={() => handleResendCode()}>
             visibilityTime: 1000,
           });
           const propmise = [
-            dispatch(getUser(response)),
+            dispatch(getUser(user)),
             //TODO: checkNotificationStatus(),
           ];
           await Promise.all(propmise);
@@ -184,6 +180,7 @@ onPress={() => handleResendCode()}>
           });
         }
       } catch (error) {
+        console.info("LOGGER:: call handle login error",error);
         setBusy(false);
         if (
           error?.response?.data?.errors[0]?.param ===
@@ -217,21 +214,6 @@ onPress={() => handleResendCode()}>
   const footer =
     showBottom && showBottom1 && showKeyboard ? (
       <View style={styles.footer}>
-        {/* <Button */}
-        {/*  type="outline" */}
-        {/*  disabled={isBusy} */}
-        {/*  buttonStyle={MainStyles.btnGuest} */}
-        {/*  titleStyle={MainStyles.btnGuestTitleStyle} */}
-        {/*  title="Guest view" */}
-        {/*  iconRight */}
-        {/*  icon={ */}
-        {/*    <Icon */}
-        {/*      name="arrow-right" */}
-        {/*      size={ConfigStyle.title4} */}
-        {/*      color={Colors.orange} */}
-        {/*    /> */}
-        {/*  } */}
-        {/* /> */}
         {props.route?.params?.type === 'student' ? (
           <View style={{...styles.viTextBox, marginBottom: 30}}>
             <Text style={[MainStyles.textBlue, styles.txNotAccount]}>
@@ -242,14 +224,7 @@ onPress={() => handleResendCode()}>
               disabled={isBusy}
               style={[styles.toRegister]}
             >
-              <Text
-                // style={[
-                //   MainStyles.textBlue,
-                //   MainStyles.textBold,
-                //   styles.txRegister,
-                // ]}
-                style={[styles.textLogin, styles.txNotAccount]}
-              >
+              <Text style={[styles.textLogin, styles.txNotAccount]}>
                 {' '}
                 Đăng ký!
               </Text>
