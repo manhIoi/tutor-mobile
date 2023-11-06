@@ -30,7 +30,7 @@ const ProfileHorizontal = (props) => {
   const [showPick, setShowPick] = useState(false);
   const [isBusy, setBusy] = useState(false);
   function handleCLickItem() {
-    props.navigation.navigate('DetailTutor', {_id: props?.data?._id});
+    props.navigation.navigate('DetailTutor', {teacher: props.data });
     if (typeof props.hideModalSearch === 'function') {
       props.hideModalSearch();
     }

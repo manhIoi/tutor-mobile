@@ -151,12 +151,8 @@ onPress={() => handleResendCode()}>
       };
       try {
         setBusy(true);
-        console.info("LOGGER:: call handle login");
         const response = await login(data);
-        console.info("LOGGER:: call handle login response",response);
         const { token, user } = response || {}
-
-        console.info("LOGGER:: ", token,user);
         if (user) {
           await USER_TOKEN.set(token);
           setBusy(false);

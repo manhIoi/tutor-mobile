@@ -32,10 +32,10 @@ export default function AddProfileScreen(props) {
       keyboardShouldPersistTaps={true}
     >
       <Avatar
-        src={config.IMAGE_MD_URL + image?.medium}
+        src={image?.avatar}
         action={handleChangeAvatar}
         srcLg={
-          config.IMAGE_LG_URL + (image?.avatar?.large || imgDefault?.large)
+          image?.avatar
         }
         role={2}
       />

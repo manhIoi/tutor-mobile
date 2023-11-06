@@ -66,7 +66,7 @@ const DetailInfo = (props) => {
         <BoxShadow style={styles.wrapAvatar}>
           <Avatar
             size={90}
-            source={{uri: config.IMAGE_LG_URL + props.data?.avatar?.large}}
+            source={{uri: props.data?.avatar}}
             zoomView={true}
           />
         </BoxShadow>
@@ -273,32 +273,13 @@ height={16} />
             ]}
           >
             <View style={[Styles.flexRowCenter, {width: 30}]}>
-              <IconPerson width={10.6}
-height={15.7} />
-            </View>
-            <Text numberOfLines={2}
-style={styles.textDetail}>
-              {Constants.TYPE_OF_TEACHER[props?.data?.typeOfTeacher]}
-            </Text>
-          </View>
-          <View
-            style={[
-              Styles.flexRow,
-              Styles.marginVertical2,
-              Styles.flexRowCenterVertical,
-              {
-                marginRight: 20,
-              },
-            ]}
-          >
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
               <IconMortarboard width={20.5}
 height={13.5} />
             </View>
 
             <Text numberOfLines={2}
 style={styles.textDetail}>
-              {props?.data?.university}
+              {props?.data?.position}
             </Text>
           </View>
         </View>
@@ -453,7 +434,7 @@ height={13.5} />
           marginBottom: 10,
         }}
       >
-        {props?.data?.about || props.data?.description}
+        {props.data?.metaData?.description}
       </Text>
     </View>
   );

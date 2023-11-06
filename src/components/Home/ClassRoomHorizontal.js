@@ -231,7 +231,7 @@ const ClassRoomHorizontal = (props) => {
               <View style={styles.boxImage}>
                 <FastImage
                   source={{
-                    uri: `${config.IMAGE_LG_URL}${props.data?.avatar?.large}`,
+                    uri: props.data?.avatar,
                   }}
                   style={styles.image}
                 />

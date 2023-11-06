@@ -17,7 +17,7 @@ export function requestCreateClass(data) {
 }
 
 export function userRequestClass(data) {
-  return callApiClass('/classes/user-request', 'post', data);
+  return callApi('/tutor-request/add', 'post', data);
 }
 
 export function getListClass(page, limit, keyword = '') {

@@ -132,7 +132,6 @@ const UserCreateRequest = (props) => {
   const inputDesc = React.useRef();
   const animationRotate = new Animated.Value(-90);
   const [data, setData] = useState(INITIAL_FORM);
-  const [type, setType] = useState(0); // 0: user create request , 1: teacher create class
   const [provinces, setProvinces] = useState([]);
   const [topics, setTopics] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -173,26 +172,20 @@ const UserCreateRequest = (props) => {
     }
   }
   const user = useSelector((state) => state.auth.user);
+  const type = user.role === 'teacher' ? 1: 0; // 0: user create request , 1: teacher create class
   useEffect(() => {
-    if (user.access === 'teacher') {
-      setType(1);
-    } else if (user.access === 'student') {
-      setType(0);
-    }
     componentWillMount();
   }, []);
-  useEffect(() => {
-    data?.topic?.value ? getSubject(data?.topic?.value) : null;
-  }, [data?.topic?.value]);
   async function componentWillMount() {
     // setLoading(true);
     const promise = [
-      getProvince(),
-      getTopics(),
-      getTypeClass(),
-      getTypeTeacher(),
-      getTeacher(),
-      props.route?.params?._id ? initDataClass(props.route.params._id) : null,
+      // getProvince(),
+      // getTopics(),
+      // getTypeClass(),
+      // getTypeTeacher(),
+      // getTeacher(),
+      // props.route?.params?._id ? initDataClass(props.route.params._id) : null,
+      getSubject(),
     ];
     await Promise.all(promise)
     // if (props.route?.params?._id) {
@@ -347,22 +340,22 @@ const UserCreateRequest = (props) => {
   }, [data.numberLesson?.value]);
 
   useEffect(() => {
-    setData({
-      ...data,
-      numberLesson: {
-        ...data.numberLesson,
-        msgError: '',
-      },
-    });
-    if (data.numberLesson?.value > data.totalLesson?.value) {
-      setData({
-        ...data,
-        numberLesson: {
-          value: 0,
-          msgError: '',
-        },
-      });
-    }
+    // setData({
+    //   ...data,
+    //   numberLesson: {
+    //     ...data.numberLesson,
+    //     msgError: '',
+    //   },
+    // });
+    // if (data.numberLesson?.value > data.totalLesson?.value) {
+    //   setData({
+    //     ...data,
+    //     numberLesson: {
+    //       value: 0,
+    //       msgError: '',
+    //     },
+    //   });
+    // }
   }, [data.numberLesson?.value]);
 
   async function getProvince() {
@@ -374,10 +367,10 @@ const UserCreateRequest = (props) => {
       throw error;
     }
   }
-  async function getSubject(id, page = 1, limit = 50) {
+  async function getSubject() {
     try {
-      const response = await getSubjectWithTopic(id, 1, 20);
-      setSubjects(response?.payload);
+      const subjects = await getSubjects();
+      setSubjects(subjects);
     } catch (error) {
       console.log('getSubject ==>', error);
       throw error;
@@ -441,6 +434,7 @@ const UserCreateRequest = (props) => {
     }
   }
   function handleChangeData(name, value) {
+    console.info("LOGGER:: name,value", name,value);
     setData({
       ...data,
       [name]: {
@@ -650,6 +644,7 @@ const UserCreateRequest = (props) => {
     try {
       setBusy(true);
       const response = await userRequestClass(data);
+      console.info("LOGGER:: response", response);
       setBusy(false);
       if (response) {
         Toast.show({
@@ -768,16 +763,18 @@ const UserCreateRequest = (props) => {
       description: data.description?.value,
       content: 'string',
       address: data.address?.value,
-      startAt: new Date(year, month, day).toISOString(),
-      totalLesson: parseInt(data.totalLesson?.value || 0),
+      startAt: new Date(year, month, day),
+      endAt: new Date(data.timeStart?.value?.getTime() + data.time?.value * 45 * 60 * 1000),
       timeline: data.time?.value * 45,
+      numOfStudents: Number(data.maxStudent?.value),
       weekDays: data.dayStudy?.value,
-      price: data.price?.value,
+      numberLesson: data.numberLesson.value,
+      price: Number(data.price?.value),
       timeStartAt: {
         hour: data.timeStart?.value?.getHours(),
         minute: data.timeStart?.value?.getMinutes(),
       },
-      subject: data.subject?.value,
+      subjects: [{_id: data.subject?.value}],
       typeClass: data.class?.value,
       trainingForm: [data.teachingType?.value],
       isOnline: !data.teachingType?.value,
@@ -789,6 +786,7 @@ const UserCreateRequest = (props) => {
           data.timeStart?.value?.getTime() + data.time?.value * 45 * 60 * 1000,
         ).getMinutes(),
       },
+      user: { _id: user._id }
     };
     if (data?.avatar?.value?.path) {
       formRequest.avatar = await handleUploadImage(data?.avatar?.value);
@@ -804,15 +802,16 @@ const UserCreateRequest = (props) => {
         await handleCreateClass(formRequest);
       }
     }
-    console.info("LOGGER:: formRequest", formRequest);
     if (type === 0) {
       formRequest.type_teacher = data.tutorType?.value;
       formRequest.contact = data.phoneNumber?.value;
       formRequest.quantity = 1;
       formRequest.teacherListReceive = suggestTeacher || [];
       if (props.route?.params?._id) {
-        await handleUserEditRequest(formRequest);
+        alert('??')
+
       } else {
+        console.info("LOGGER:: ", JSON.stringify(formRequest) );
         await handleUserRequestClass(formRequest);
       }
     }

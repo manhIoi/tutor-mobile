@@ -16,10 +16,6 @@ const SplashScreen = (props) => {
   return (
     <View style={styles.splashWrap}>
       <View style={styles.top}>
-        <View>
-          <Image source={imagesUtil.logo}
-style={styles.logo} />
-        </View>
       </View>
       <View style={styles.middle}>
         <View style={styles.wrapContent}>

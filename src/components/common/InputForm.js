@@ -67,10 +67,10 @@ const InputForm = ({
           secureTextEntry={!icon ? false : !show}
           onChangeText={(value) => actions(value, name)}
           onFocus={(val) => {
-            isFocus ? onFocus(false) : console.log(1);
+            isFocus && onFocus(false);
           }}
           onBlur={(val) => {
-            isFocus ? onFocus(true) : console.log(1);
+            isFocus && onFocus(true);
           }}
         />
         {!icon ? null : !show ? (

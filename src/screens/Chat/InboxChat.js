@@ -60,57 +60,57 @@ const InboxChat = (props) => {
   const [showReport, setShowReport] = useState(false);
   const newNotification = useSelector((state) => state.socket.newNotification);
   useEffect(() => {
-    if (props.route?.params?.to) {
-      createChat(props.route.params.to);
-    } else {
-      props.navigation.goBack();
-    }
-    if (props.route?.params?.groupChat) {
-      dispatch(updateCurrentChatGroup(props.route?.params?.groupChat));
-    }
-    if (props.route.params?.userReceive) {
-      setUserReceive(props.route.params.userReceive);
-    }
+    // if (props.route?.params?.to) {
+    //   createChat(props.route.params.to);
+    // } else {
+    //   props.navigation.goBack();
+    // }
+    // if (props.route?.params?.groupChat) {
+    //   dispatch(updateCurrentChatGroup(props.route?.params?.groupChat));
+    // }
+    // if (props.route.params?.userReceive) {
+    //   setUserReceive(props.route.params.userReceive);
+    // }
   }, []);
-  useFocusEffect(
-    React.useCallback(() => {
-      return async () => await dispatch(updateCurrentChatGroup(''));
-    }, []),
-  );
+  // useFocusEffect(
+    // React.useCallback(() => {
+    //   return async () => await dispatch(updateCurrentChatGroup(''));
+    // }, []),
+  // );
 
   function checkIsReceive(message) {
-    if (message?.from?._id !== user?._id) {
-      return true;
-    }
-    return false;
+    // if (message?.from?._id !== user?._id) {
+    //   return true;
+    // }
+    // return false;
   }
   useEffect(() => {
-    if (
-      (!messages?.data?.[messages.length - 1]?._id ||
-        messages.data?.[messages.length - 1]?._id !== newNotification?._id) &&
-      groupChat?._id === newNotification?.group &&
-      newNotification?._id
-    ) {
-      setMessages({
-        data: [
-          {
-            _id: newNotification?._id,
-            content: newNotification?.content,
-            createdAt: newNotification?.createdAt,
-            from: newNotification?.from,
-            images: newNotification?.images,
-            files: newNotification?.files,
-            receive: checkIsReceive(newNotification),
-            newMessage: true,
-          },
-          ...messages.data,
-        ],
-        totalItems: messages.totalItems + 1,
-        totalPages: messages.totalPages,
-        item: messages.item + 1,
-      });
-      setShouldScroll(new Date().getTime());
-    }
+    // if (
+    //   (!messages?.data?.[messages.length - 1]?._id ||
+    //     messages.data?.[messages.length - 1]?._id !== newNotification?._id) &&
+    //   groupChat?._id === newNotification?.group &&
+    //   newNotification?._id
+    // ) {
+    //   setMessages({
+    //     data: [
+    //       {
+    //         _id: newNotification?._id,
+    //         content: newNotification?.content,
+    //         createdAt: newNotification?.createdAt,
+    //         from: newNotification?.from,
+    //         images: newNotification?.images,
+    //         files: newNotification?.files,
+    //         receive: checkIsReceive(newNotification),
+    //         newMessage: true,
+    //       },
+    //       ...messages.data,
+    //     ],
+    //     totalItems: messages.totalItems + 1,
+    //     totalPages: messages.totalPages,
+    //     item: messages.item + 1,
+    //   });
+    //   setShouldScroll(new Date().getTime());
+    // }
   }, [newNotification]);
 
   async function createChat(id, loadMessage = true) {
@@ -452,10 +452,7 @@ const InboxChat = (props) => {
           <View style={Styles.flexRowCenterVertical}>
             <Avatar
               source={{
-                uri:
-                  userReceive.avatar?.medium.indexOf('https://') !== -1
-                    ? userReceive.avatar?.medium
-                    : `${config.IMAGE_MD_URL}${userReceive.avatar?.medium}`,
+                uri: userReceive.avatar
               }}
               size={35}
             />

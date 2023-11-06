@@ -197,7 +197,7 @@ export async function getTeacherByRequestId(
   );
 }
 export async function getTeacherSuggest() {
-  return callApiList(`/user/teacher`);
+  return callApi(`/user/teacher`);
 }
 export async function getSubjectWithTopic(id, page = 1, limit = 50) {
   return callApiList(`/subjects/topic/${id}?page=${page}&limit=${limit}`);

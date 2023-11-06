@@ -63,7 +63,7 @@ export default function FamilyAccountScreen(props) {
         data={params}
         role={2}
         action={handleChangeAvatar}
-        srcLg={`${config.IMAGE_LG_URL}${params?.item?.avatar?.large}`}
+        srcLg={params?.item?.avatar}
       />
       <CardUpdate
         {...props}

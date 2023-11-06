@@ -144,6 +144,25 @@ height={16.8} />}
       {props.data?.time?.msgError ? (
         <Text style={Styles.textError}>{props.data.time.msgError}</Text>
       ) : null}
+        <SelectBox
+            placeholder={'Số học viên tối đa'}
+            noPicker={true}
+            isInput={true}
+            keyboardType={'numeric'}
+            disabled={props.isBusy}
+            svg={<IconEmployee width={11.3}
+                               height={16.75} />}
+            date={time}
+            value={props.data?.maxStudent?.value}
+            handleChange={(value) =>
+                props.handleChangeData('maxStudent', value)
+            }
+        />
+        {props.data?.maxStudent?.msgError ? (
+            <Text style={Styles.textError}>
+                {props.data?.maxStudent?.msgError}
+            </Text>
+        ) : null}
       <SelectBox
         placeholder={'Học phí mỗi buổi học'}
         noPicker={true}

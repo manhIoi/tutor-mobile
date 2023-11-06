@@ -38,24 +38,14 @@ const INIT_REVIEWS = {
   currentPage: 1,
 };
 const DetailTutor = (props) => {
-  const [teacher, setTeacher] = useState({});
-  const [isBusy, setBusy] = useState(true);
+  const {teacher} = props.route.params
   const [classBusy, setClassBusy] = useState(false);
   const [classes, setClasses] = useState([]);
   const [loadReview, setLoadReview] = useState(true);
   const [reviews, setReviews] = useState(INIT_REVIEWS);
   const [favorite, setFavorite] = useState(false);
   const [refreshing, setRefresh] = useState(false);
-  useFocusEffect(
-    React.useCallback(() => {
-      onRefresh(false);
-    }, []),
-  );
-  useEffect(() => {
-    if (props?.route?.params?._id) {
-      fetchData(props.route.params._id);
-    }
-  }, []);
+
   useEffect(() => {
     setFavorite(teacher?.statusIsFollow);
   }, [teacher]);
@@ -86,59 +76,11 @@ const DetailTutor = (props) => {
       console.log('getListReview ==>', error);
     }
   }
-
-  async function getTeacherData(id) {
-    try {
-      setBusy(true);
-      const response = await getTeacherById(id);
-      console.log('getTeacherById');
-      console.log(response);
-      if (response) {
-        setTeacher(response);
-        setBusy(false);
-      }
-    } catch (error) {
-      setBusy(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
-  }
-  async function getClasses(id, page = 1, limit = 4, refresh = false) {
-    try {
-      if (!refresh) {
-        setClassBusy(true);
-      }
-      const response = await getClassByTeacher(id, page, limit);
-      console.log(response);
-      setClassBusy(false);
-      if (response?.payload) {
-        setClasses(response?.payload || []);
-      }
-      setClassBusy(false);
-      // setRefresh(false);
-    } catch (error) {
-      setClassBusy(false);
-      console.log('get getClasses ==>', error);
-    }
-  }
   async function onRefresh(showLoading = true) {
-    if (showLoading) {
-      setRefresh(true);
-    }
-    getClasses(props.route.params._id, 1, 4, true);
+    // if (showLoading) {
+    //   setRefresh(true);
+    // }
+    // getClasses(props.route.params._id, 1, 4, true);
   }
   async function handleFollow() {
     try {
@@ -246,75 +188,71 @@ const DetailTutor = (props) => {
       imageSource={ImageUtils.bgNotDot}
     >
       <View style={styles.container}>
-        {isBusy ? (
-          <Loading />
-        ) : (
-          <View>
-            <DetailInfo
+        <View>
+          <DetailInfo
               favorite={favorite}
               activeFollow={favorite ? handleDisFollow : handleFollow}
               data={teacher}
-            />
-            <View style={styles.containerList}>
-              <View style={styles.wrapTitle}>
-                <Text
+          />
+          <View style={styles.containerList}>
+            <View style={styles.wrapTitle}>
+              <Text
                   style={{
                     ...Styles.title2RS,
                     ...Styles.textNormal,
                     marginLeft: 5,
                   }}
-                >
-                  Danh sách lớp đang mở
-                </Text>
-                <TouchableOpacity
-                // onPress={props.viewMoreAction ? props.viewMoreAction : null}
-                >
-                  {classes?.length > 4 ? (
+              >
+                Danh sách lớp đang mở
+              </Text>
+              <TouchableOpacity
+                  // onPress={props.viewMoreAction ? props.viewMoreAction : null}
+              >
+                {classes?.length > 4 ? (
                     <Text style={styles.viewAll}>Xem tất cả</Text>
-                  ) : null}
-                </TouchableOpacity>
-              </View>
-              <View>
-                {!classBusy ? (
+                ) : null}
+              </TouchableOpacity>
+            </View>
+            <View>
+              {!classBusy ? (
                   classes?.length ? (
-                    <SafeAreaView style={styles.wrapList}>
-                      <FlatList
-                        data={classes}
-                        renderItem={({item, index}) => (
-                          <ClassRoomHorizontal
-                            onRefresh={onRefresh}
-                            data={item}
-                            containerStyle={{flex: 1, marginBottom: 10}}
-                            navigation={props.navigation}
-                            isFollow={classes?.isFollow}
-                          />
-                        )}
-                        keyExtractor={(item) => item._id}
-                      />
-                    </SafeAreaView>
+                      <SafeAreaView style={styles.wrapList}>
+                        <FlatList
+                            data={classes}
+                            renderItem={({item, index}) => (
+                                <ClassRoomHorizontal
+                                    onRefresh={onRefresh}
+                                    data={item}
+                                    containerStyle={{flex: 1, marginBottom: 10}}
+                                    navigation={props.navigation}
+                                    isFollow={classes?.isFollow}
+                                />
+                            )}
+                            keyExtractor={(item) => item._id}
+                        />
+                      </SafeAreaView>
                   ) : (
-                    <View
-                      style={{
-                        ...Styles.flexRowCenter,
-                        marginVertical: 10,
-                        marginBottom: 0,
-                      }}
-                    >
-                      <Text style={{fontStyle: 'italic'}}>
-                        Không có dữ liệu
-                      </Text>
-                    </View>
+                      <View
+                          style={{
+                            ...Styles.flexRowCenter,
+                            marginVertical: 10,
+                            marginBottom: 0,
+                          }}
+                      >
+                        <Text style={{fontStyle: 'italic'}}>
+                          Không có dữ liệu
+                        </Text>
+                      </View>
                   )
-                ) : (
+              ) : (
                   <View style={{...Styles.flexRowCenter, marginTop: 15}}>
                     <ActivityIndicator color={Colors.orange} />
                   </View>
-                )}
-              </View>
+              )}
             </View>
-            <ListTopics data={teacher?.topic} />
           </View>
-        )}
+          {/*<ListTopics data={teacher?.topic} />*/}
+        </View>
       </View>
     </Container>
   );

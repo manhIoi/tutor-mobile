@@ -108,7 +108,6 @@ export default function HomeScreen(props) {
   async function getTeachers() {
     try {
       const data = await getTeacherSuggest();
-      console.info("LOGGER:: getTeacher", data);
       if (data) {
         setState({ teachers: data });
       }

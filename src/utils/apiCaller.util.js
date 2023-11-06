@@ -15,13 +15,15 @@ export async function callApi(endpoint, method = 'get', body) {
       },
       baseURL: config.API_BASE_URL,
     }
+    console.info("LOGGER:: [req]", params);
     const res = await axios(params);
+    console.info("LOGGER:: [res]", res);
     if (res && res.status === 200) {
       return res.data;
     }
     return Promise.reject(Error('Call api failed'));
   } catch (error) {
-    console.log(error);
+    console.info("LOGGER:: [callApi-error]", error);
     throw error;
   }
 }
