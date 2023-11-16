@@ -25,6 +25,7 @@ import BoxShadow from '../common/BoxShadow';
 const width = Dimensions.get('window').width;
 const CardInfo = (props) => {
   const role = useSelector((state) => state.auth.user);
+  console.info("LOGGER:: role", role);
   return (
     <View style={{flex:1}}>
       <BoxShadow style={{marginHorizontal: 14, paddingVertical: 15, flex: 1}}>
@@ -37,26 +38,6 @@ height={19} />}
           {...props}
           title="Tài khoản"
         />
-        {role?.access === 'student' ? (
-          <InputForm
-            src={<IconRelationship width={17}
-height={17} />}
-            rightIcon={true}
-            navigate={'FamilyProfile'}
-            title="Hồ sơ gia đình"
-            {...props}
-          />
-        ) : (
-          <InputForm
-            src={<IconRelationship width={17}
-height={17} />}
-            rightIcon={true}
-            navigate={'BecomeExpertStepOne'}
-            params={{_id: role?._id}}
-            title="Hồ sơ gia sư"
-            {...props}
-          />
-        )}
         <InputForm
           src={<IconPassword width={17}
 height={21} />}
@@ -74,7 +55,7 @@ height={20} />}
           notification={props?.notification}
           {...props}
         />
-        {role?.access === 'student' && !role?.teacherId ? (
+        {role?.role === 'student' ? (
           <View style={{marginTop: 30, marginBottom: 15}}>
             <TouchableOpacity
               style={{

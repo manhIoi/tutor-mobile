@@ -19,7 +19,7 @@ const Auth = createStackNavigator();
 const AuthStack = () => {
   return (
     <Auth.Navigator
-      initialRouteName="SplashScreen"
+      initialRouteName="Login"
       screenOptions={{
         gestureEnabled: Platform.OS === 'ios',
         gestureDirection: 'horizontal',

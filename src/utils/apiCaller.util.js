@@ -23,7 +23,7 @@ export async function callApi(endpoint, method = 'get', body) {
     }
     return Promise.reject(Error('Call api failed'));
   } catch (error) {
-    console.info("LOGGER:: [callApi-error]", error);
+    console.info("LOGGER:: [call-api-error]", error);
     throw error;
   }
 }

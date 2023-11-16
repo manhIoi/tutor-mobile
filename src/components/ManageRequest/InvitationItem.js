@@ -255,13 +255,13 @@ height={16.18} />
                     {
                       fontSize: 14,
                       color:
-                        Constants.STATUS_CLASS_COLOR[data?.status || 'pending'],
+                        Constants.STATUS_CLASS_COLOR[data?.status],
                     },
                     Styles.textNormal,
                   ]}
                 >
                   {' '}
-                  {Constants.STATUS_CLASS[data?.status || 'pending']}
+                  {Constants.STATUS_CLASS[data?.status]}
                 </Text>
               </Text>
             </View>

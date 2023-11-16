@@ -16,8 +16,12 @@ export function requestCreateClass(data) {
   return callApiClass('/classes', 'post', data);
 }
 
-export function userRequestClass(data) {
-  return callApi('/tutor-request/add', 'post', data);
+export function userRequestClass(data, idTeacher) {
+  return callApi(`/tutor-request/add${idTeacher ? `/${idTeacher}` : ''}`, 'post', data);
+}
+
+export function getDetailRequestCreated(idClass) {
+  return callApi(`/tutor-request/detail/${idClass}`)
 }
 
 export function getListClass(page, limit, keyword = '') {
@@ -153,9 +157,9 @@ export function removeClassOfTeacher(id) {
 }
 
 //
-export function userGetListRequest(page, limit, keyword = '', status) {
-  return callApiClassList(
-    `/user/managementrequest/list?page=${page}&limit=${limit}&text=${keyword}&status=${status}`,
+export function userGetListRequest(id) {
+  return callApi(
+    `/tutor-request/${id}`,
   );
 }
 
@@ -313,6 +317,11 @@ export async function teacherGetManageClass(
     'get',
   );
 }
+
+export async function getOtherDataClass() {
+  return callApi(`/tutor-request/all`)
+}
+
 export async function getClassSuggestService(
   page = 1,
   limit = 10,

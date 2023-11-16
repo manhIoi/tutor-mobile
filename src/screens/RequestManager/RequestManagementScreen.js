@@ -22,13 +22,8 @@ import IconEmpty from '../../assets/images/svg/empty-list.svg';
 import IconFill from '../../assets/images/svg/icon-fill.svg';
 import IconFillActive from '../../assets/images/svg/icon-fill-active.svg';
 import ModalFilter from '../../components/RequestManagement/ModalFilter';
+import {useDispatch, useSelector} from 'react-redux';
 
-const INIT_VALUE = {
-  data: [],
-  currentPage: 1,
-  totalItems: 0,
-  limit: 10,
-};
 const dataFilter = [
   {
     id: 0,
@@ -58,7 +53,7 @@ const dataFilter = [
 
 export default function RequestManagementScreen(props) {
   const [textSearch, setTextSearch] = useState('');
-  const [listRequest, setListRequest] = useState(INIT_VALUE);
+  const [listRequest, setListRequest] = useState(null);
   const [isBusy, setBusy] = useState(false);
   const [refreshing, setRefresh] = useState(false);
   const [timeLoad, setTimeLoad] = useState(0);
@@ -67,6 +62,7 @@ export default function RequestManagementScreen(props) {
   const [status, setStatus] = useState('pending');
   const [text, setText] = useState('');
   const [data, setData] = useState(dataFilter);
+  const user = useSelector(state => state.auth.user);
 
   const isFocused = useIsFocused();
   function actionSearch(event) {
@@ -87,16 +83,9 @@ export default function RequestManagementScreen(props) {
     }
     setFilter(true);
   }
-  useFocusEffect(
-    React.useCallback(() => {
-      if (timeLoad !== 0) {
-        getListRequesting(1, Constants.LIMIT, '', status, false, false);
-      }
-    }, [isFocused]),
-  );
 
   useEffect(() => {
-    getListRequesting(1, Constants.LIMIT, textSearch, status);
+    getListRequesting()
   }, []);
   function onSearch(event) {
     const {text} = event.nativeEvent;
@@ -118,41 +107,12 @@ export default function RequestManagementScreen(props) {
     setBusy(false);
   }
 
-  async function getListRequesting(
-    page = 1,
-    limit = Constants.LIMIT,
-    text = '',
-    status = 'pending',
-    loadMore = false,
-    refresh = false,
-  ) {
-    try {
-      if (!loadMore && !refresh) {
-        setBusy(true);
-      }
-      const response = await userGetListRequest(page, limit, text, status);
-      setTimeLoad(timeLoad + 1);
-      if (loadMore) {
-        if (response?.payload) {
-          setListRequest({
-            data: [...listRequest.data, ...(response?.payload || [])],
-            currentPage: response?.page,
-            totalItems: response.total_item,
-          });
-        }
-      } else {
-        if (response?.payload) {
-          setListRequest({
-            data: response?.payload || [],
-            currentPage: response?.page,
-            totalItems: response.total_item,
-          });
-        }
-        setBusy(false);
-      }
-      setRefresh(false);
-    } catch (error) {
-      console.log('get getListRequesting ==>', error);
+  async function getListRequesting() {
+    try{
+      const response = await userGetListRequest(user?._id)
+      setListRequest(response)
+    } catch (e) {
+
     }
   }
 
@@ -194,12 +154,6 @@ height={18} />
     </TouchableOpacity>
   );
 
-  const renderFooter =
-    listRequest.data?.length >= listRequest.totalItems ? (
-      <Text style={Styles.countResult}>{listRequest.totalItems} kết quả</Text>
-    ) : (
-      <ActivityIndicator color={Colors.orange} />
-    );
   return (
     <Container
       header={
@@ -220,10 +174,10 @@ height={18} />
       headerHeight={ConfigStyle.statusBarHomeHeightTutor}
     >
       {!isBusy ? (
-        listRequest.data?.length ? (
+        listRequest?.length ? (
           <FlatList
             style={styles.wrapList}
-            data={listRequest?.data || []}
+            data={listRequest || []}
             renderItem={({item, index}) => (
               <ItemCourseRequest
                 data={item}
@@ -240,7 +194,6 @@ height={18} />
               />
             )}
             keyExtractor={(item) => item._id}
-            ListFooterComponent={renderFooter}
             onEndReachedThreshold={0.4}
             onEndReached={handleLoadMore}
             refreshControl={

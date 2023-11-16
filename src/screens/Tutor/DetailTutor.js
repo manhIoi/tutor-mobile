@@ -138,17 +138,13 @@ const DetailTutor = (props) => {
     <BoxShadow style={styles.wrapFooter}>
       <TouchableOpacity
         onPress={() => {
-          props.navigation.navigate('Calendar', {
-            screen: 'RequestManagement',
-            params: {
-              teacherId: teacher?._id,
-              fullName: teacher?.fullName,
-            },
+          props.navigation.navigate('UserCreateRequest', {
+            teacher
           });
         }}
         style={[styles.wrapBtn, styles.wrapBtnInvited]}
       >
-        <Text style={[styles.textBtn, styles.textInvited]}>MỜI DẠY</Text>
+        <Text style={[styles.textBtn, styles.textInvited]}>TẠO YÊU CẦU</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

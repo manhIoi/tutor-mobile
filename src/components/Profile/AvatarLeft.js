@@ -66,6 +66,10 @@ const Avatar = (props) => {
         {checkIsTeacher(user) ? (
           <View style={styles.phoneNumberView}>
             <Text style={styles.phoneNumber}>
+              Vai trò :{' '}
+              <Text style={styles.phoneNumberText}>{"Giáo viên"}</Text>
+            </Text>
+            <Text style={styles.phoneNumber}>
               Số dư tài khoản :{' '}
               <Text style={{...styles.phoneNumberText, ...styles.textBalance}}>
                 {balance?.toLocaleString('it-IT', {

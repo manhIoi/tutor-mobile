@@ -49,7 +49,7 @@ containerStyle={{paddingRight: 9}} />
             isHomepage={props?.isHomepage}
           />
         );
-      } 
+      }
         return (
           <ClassRoomHorizontal
             navigation={props.navigation}

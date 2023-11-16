@@ -12,35 +12,26 @@ import {
 import {Text} from 'react-native-elements';
 import {useEffect, useReducer, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import Container from '../../components/common/Container';
 import StatusBarHome from '../../components/common/StatusBarHome';
-import RecommendCard from '../../components/Home/RecommendCard';
 import ProfileHorizontal from '../../components/Home/ProfileHorizontal';
 import AddButton from '../../components/common/AddButton';
-import RecentActive from '../../components/Home/RecentActive';
 import ClassListCard from '../../components/Home/ClassListCard';
-import RecommendPlaceholder from '../../components/Home/RecommendCardPlaceholder';
 import ProfilePlaceholder from '../../components/Home/ProfilePlacceholder';
-import MessageUpdateInfo from '../../components/Home/MessageUpdateInfo';
 import ActionNotification from '../../components/Home/ActionNotification';
 import ConfigStyle from '../../theme/ConfigStyle';
 import Styles from '../../theme/MainStyles';
-import ImageUtils from '../../utils/images.util';
 import {
   getTeacherSuggest,
 } from '../../api/users';
-import {setCurrentUser} from '../../lib/slices/socketSlice';
-import {checkUser} from '../../lib/slices/authSlice';
 import IconEmpty from '../../assets/images/svg/empty-list.svg';
 import {
-  getListClassRecommend,
-  getListClassByDistance,
-  getListClassByRate,
-  getClassSuggestService,
+  getOtherDataClass,
 } from '../../api/class';
-import { checkIsTeacher } from "../../utils/profile.util";
-import teacher from "../../components/Hobby/Teacher";
+import ItemCourseRequest from "../../components/RequestManagement/ItemCourseRequest";
+import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
+import Calendar from "../../routes/CalendarStack";
 
 
 const width = Dimensions.get('window').width;
@@ -64,35 +55,29 @@ export default function HomeScreen(props) {
     ...prev, ...next
   }), {
     teachers: [],
+    classes: [],
     loading: true,
   })
   const { loading, teachers} = state
   useEffect(() => {
-    if (tab === 0) {
-      syncDataTeacher();
-    } else if (tab === 1) {
-      getDataClass();
+    getTeachers();
+    getClasses();
+  }, []);
+
+  const getClasses = async () => {
+    try {
+      const data = await getOtherDataClass();
+      if (data) {
+        setState({ classes: data });
+      }
+    } catch (error) {
+    } finally {
+      setState({ loading: false });
     }
-  }, [tab]);
-
-  const getDataClass = async () => {
-    const promise = [
-      // getClasses()
-    ];
-    await Promise.all(promise);
   }
-
-  const syncDataTeacher = async () => {
-    const promises = [
-      getTeachers()
-    ]
-    await Promise.all(promises)
-  }
-
 
   function createRequest() {
     props.navigation.navigate('UserCreateRequest');
-    // props.navigation.navigate('TeacherCreateClass');
   }
   function changeTab(value) {
     setScrollTop(new Date().getTime());
@@ -116,6 +101,21 @@ export default function HomeScreen(props) {
     } finally {
       setState({ loading: false });
     }
+  }
+
+  const renderClassItem = ({item, index}) => {
+    return (
+        <TutorRequestItem
+            data={item}
+            onPress={() => {
+              props.navigation.navigate('Calendar', {
+                screen: 'DetailRequest',
+                tutorRequest: item,
+              })
+            }}
+        />
+        )
+
   }
 
   return (
@@ -189,45 +189,7 @@ height={'50%'} />
       ) : null}
       {tab === 1 ? (
         <View style={styles.marginContent}>
-          <ClassListCard
-            data={classRecommend}
-            title={'ĐỀ XUẤT'}
-            viewMore={true}
-            type={'horizontal'}
-            isBusy={classBusy}
-            onRefresh={onRefresh}
-            navigation={props.navigation}
-            viewMoreAction={() =>
-              viewMoreAction('class', 'ĐỀ XUẤT', 'recommend')
-            }
-          />
-          <ClassListCard
-            data={classDistance}
-            title={'GẦN ĐÂY'}
-            viewMore={true}
-            onRefresh={onRefresh}
-            type={'vertical'}
-            isBusy={classBusy}
-            navigation={props.navigation}
-            distance={true}
-            viewMoreAction={() =>
-              viewMoreAction('class', 'GẦN ĐÂY', 'distance')
-            }
-          />
-          {!classBusy ? (
-            <ClassListCard
-              data={classRate}
-              title={'XẾP HẠNG CAO'}
-              viewMore={true}
-              type={'horizontal'}
-              onRefresh={onRefresh}
-              isBusy={classBusy}
-              navigation={props.navigation}
-              viewMoreAction={() =>
-                viewMoreAction('class', 'XẾP HẠNG CAO', 'rate')
-              }
-            />
-          ) : null}
+          <FlatList data={state.classes} renderItem={renderClassItem} />
         </View>
       ) : null}
       {/*TODO: */}

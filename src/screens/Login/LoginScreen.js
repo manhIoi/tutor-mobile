@@ -208,27 +208,23 @@ onPress={() => handleResendCode()}>
   }
 
   const footer =
-    showBottom && showBottom1 && showKeyboard ? (
       <View style={styles.footer}>
-        {props.route?.params?.type === 'student' ? (
-          <View style={{...styles.viTextBox, marginBottom: 30}}>
-            <Text style={[MainStyles.textBlue, styles.txNotAccount]}>
-              Tôi chưa có tài khoản?
-            </Text>
-            <TouchableOpacity
+        <View style={{...styles.viTextBox, marginBottom: 30}}>
+          <Text style={[MainStyles.textBlue, styles.txNotAccount]}>
+            Tôi chưa có tài khoản?
+          </Text>
+          <TouchableOpacity
               onPress={goToRegister}
               disabled={isBusy}
               style={[styles.toRegister]}
-            >
-              <Text style={[styles.textLogin, styles.txNotAccount]}>
-                {' '}
-                Đăng ký!
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-      </View>
-    ) : null;
+          >
+            <Text style={[styles.textLogin, styles.txNotAccount]}>
+              {' '}
+              Đăng ký!
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>;
   return (
     <Container keyboardShouldPersistTaps={true}
 footer={footer}>
@@ -242,10 +238,6 @@ footer={footer}>
         <View style={[styles.content]}>
           <View style={styles.subContent}>
             <View style={{flexDirection: 'row'}}>
-              <TouchableOpacity onPress={() => goBack()}>
-                <Icon name="arrowleft"
-style={styles.titleViewText} />
-              </TouchableOpacity>
               <Text style={[MainStyles.title1, styles.title]}>Đăng nhập</Text>
             </View>
             <InputForm

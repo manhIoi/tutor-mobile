@@ -272,15 +272,15 @@ const ShowAllList = (props) => {
       let response = null;
       if (fill === 'recommend') {
         // response = await getListClassRecommend(page, limit);
-        response = await getTeacherSuggest(page, limit, 'info', true);
+        // response = await getTeacherSuggest(page, limit, 'info', true);
       } else if (fill === 'distance') {
         // response = await getListClassByDistance(page, limit);
-        response = await getTeacherSuggest(page, limit, 'distance', true);
+        // response = await getTeacherSuggest(page, limit, 'distance', true);
       } else if (fill === 'rate') {
         // response = await getListClassByRate(page, limit);
-        response = await getTeacherSuggest(page, limit, 'rating', false);
+        // response = await getTeacherSuggest(page, limit, 'rating', false);
       } else {
-        response = await getListTeacher(page, limit);
+        // response = await getListTeacher(page, limit);
       }
       if (loadMore) {
         if (response) {

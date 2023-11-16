@@ -137,9 +137,7 @@ const ItemCourseRequest = (props) => {
       <TouchableWithoutFeedback
         onPress={() =>
           props.navigation.navigate('DetailRequest', {
-            title: props.data?.title,
-            _id: props.data?._id,
-            isRequest: props.data?.isRequest,
+            tutorRequest: props.data,
           })
         }
       >
@@ -163,7 +161,7 @@ const ItemCourseRequest = (props) => {
               >
                 Mã lớp:{' '}
                 <Text style={[{fontSize: 14}, Styles.textNormal]}>
-                  {props.data?.classCode}
+                  {props.data?._id}
                 </Text>
               </Text>
             </View>
@@ -186,24 +184,8 @@ const ItemCourseRequest = (props) => {
             disabled={props.disabled}
           />
           <LabelDuration
-            startTime={
-              new Date(
-                2020,
-                8,
-                2,
-                props.data?.timeStartAt?.hour || 0,
-                props.data?.timeStartAt?.minute || 0,
-              )
-            }
-            finishTime={
-              new Date(
-                2020,
-                8,
-                2,
-                props.data?.timeEndAt?.hour || 0,
-                props.data?.timeEndAt?.minute || 0,
-              )
-            }
+            startTime={props.data?.startAt}
+            finishTime={props.data?.endAt}
             startDate={props.data?.startAt}
             finishDate={props.data?.endAt}
             totalLesson={props.data?.totalLesson}

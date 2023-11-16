@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,7 +15,9 @@ import RateStar from '../common/RateStar';
 import BackgroundGradient from '../common/BackgroudGradient';
 import Colors from '../../theme/Colors';
 import IconCake from '../../assets/images/svg/cake-pop.svg';
-import IconLocation from '../../assets/images/svg/maps-and-flags.svg';
+import IconLocation from '../../assets/images/svg/location.svg';
+import IconBook from '../../assets/images/svg/open-magazine.svg';
+
 import config from '../../../config/config';
 import IconHeart from '../../assets/images/svg/like.svg';
 import IconHeartActive from '../../assets/images/svg/like-active.svg';
@@ -29,6 +31,10 @@ const ProfileHorizontal = (props) => {
   const [favorite, setFavorite] = useState(false);
   const [showPick, setShowPick] = useState(false);
   const [isBusy, setBusy] = useState(false);
+  const subjectName = useMemo(() => {
+    const names = props.data.subjects.map(i => i.name);
+    return names.join(', ')
+  }, [props.data.subjects])
   function handleCLickItem() {
     props.navigation.navigate('DetailTutor', {teacher: props.data });
     if (typeof props.hideModalSearch === 'function') {
@@ -167,15 +173,7 @@ const ProfileHorizontal = (props) => {
                   <IconHeartActive width={20}
 height={20} />
                 </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.wrapIconHeart}
-                  onPress={() => handleFollow(props.data?._id)}
-                >
-                  <IconHeart width={20}
-height={20} />
-                </TouchableOpacity>
-              )}
+              ) : null}
             </View>
             <View style={styles.boxInfo}>
               <View style={{...styles.wrapTitle, flex: 5}}>
@@ -185,19 +183,6 @@ height={20} />
                 >
                   {props.data?.fullName}
                 </Text>
-                <View style={{...styles.wrapLocation, flex: 2}}>
-                  {props.data?.dist?.distance !== undefined ||
-                  (props.data?.distance !== undefined &&
-                    (props.data?.dist?.distance !== null ||
-                      props.data?.distance !== null)) ? (
-                    <IconLocation width={8.5}
-height={12} />
-                  ) : null}
-
-                  <Text style={{...Styles.textGrey, marginLeft: 5}}>
-                    {`${props.data?.distance || 0}km`}
-                  </Text>
-                </View>
               </View>
               <RateStar star={props.data?.rate || 0}
 size={10} />
@@ -208,50 +193,22 @@ height={12} />
                   {props.data?.dob}
                 </Text>
               </View>
-              <View>
-                <Text numberOfLines={1}>
-                  {props.data?.subject?.map((item, index) => {
-                    return (
-                      <Text style={Styles.textGrey2}
-key={index}>
-                        {index < props.data.subject.length - 1
-                          ? `${item.name}, `
-                          : `${item.name}.`}
-                      </Text>
-                    );
-                  })}
-                </Text>
-              </View>
-              <View>
+              <View style={[Styles.flexRow, styles.wrapBirth]} >
+                <IconLocation width={10}
+                              height={14} />
                 <Text
-                  numberOfLines={1}
-                  style={[Styles.textGrey2, styles.textLocation]}
+                    numberOfLines={1}
+                    style={[Styles.textGrey2, styles.textLocation]}
                 >
                   {props.data?.address}
                 </Text>
               </View>
-              <View style={[Styles.flexRow, styles.groupBtn]}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (props.classId) {
-                      inviteTeacherToClass();
-                    } else {
-                      props.navigation.navigate('Calendar', {
-                        screen: 'RequestManagement',
-                        params: {
-                          teacherId: props.data?._id,
-                          fullName: props.data?.fullName,
-                        },
-                      });
-                    }
-                  }}
-                >
-                  <BackgroundGradient style={styles.wrapBtn}>
-                    <Text style={[Styles.textWhite, styles.textBtn]}>
-                      Mời dạy
-                    </Text>
-                  </BackgroundGradient>
-                </TouchableOpacity>
+              <View style={[Styles.flexRow, styles.wrapBirth]}>
+                <IconBook width={10}
+                              height={14} />
+                <Text numberOfLines={1} style={{...Styles.textGrey2, ...styles.textBirth}}>
+                  {subjectName}
+                </Text>
               </View>
             </View>
           </View>

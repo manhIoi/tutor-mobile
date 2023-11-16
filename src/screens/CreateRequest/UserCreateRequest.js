@@ -21,8 +21,6 @@ import BoxRequesting from '../../components/CreateRequest/BoxRequesting';
 import ChoiceNumberDate from '../../components/CreateRequest/ChoiceNumberDay';
 import ChoiceSpecificDay from '../../components/CreateRequest/ChoiceSpecificDay';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
-import ArrowGrey from '../../assets/images/svg/arrow-grey.svg';
-import ListTeacherSuggest from '../../components/CreateRequest/ListTeacherSuggest';
 import Loading from '../../components/common/Loading';
 import {
   getProvinces,
@@ -640,10 +638,10 @@ const UserCreateRequest = (props) => {
     }
   }
 
-  async function handleUserRequestClass(data) {
+  async function handleUserRequestClass(data, idTeacher) {
     try {
       setBusy(true);
-      const response = await userRequestClass(data);
+      const response = await userRequestClass(data, idTeacher);
       console.info("LOGGER:: response", response);
       setBusy(false);
       if (response) {
@@ -757,6 +755,10 @@ const UserCreateRequest = (props) => {
     const day = data.dateStart?.value?.getDate();
     const month = data.dateStart?.value?.getMonth();
     const year = data.dateStart?.value?.getFullYear();
+
+    const dayEnd = data.dateEnd?.value?.getDate();
+    const monthEnd = data.dateEnd?.value?.getMonth();
+    const yearEnd = data.dateEnd?.value?.getFullYear();
     setBusy(true);
     const formRequest = {
       title: data.title?.value,
@@ -764,28 +766,17 @@ const UserCreateRequest = (props) => {
       content: 'string',
       address: data.address?.value,
       startAt: new Date(year, month, day),
-      endAt: new Date(data.timeStart?.value?.getTime() + data.time?.value * 45 * 60 * 1000),
+      endAt: new Date(yearEnd, monthEnd, dayEnd),
+      timeStart: data?.timeStart.value,
       timeline: data.time?.value * 45,
       numOfStudents: Number(data.maxStudent?.value),
       weekDays: data.dayStudy?.value,
       numberLesson: data.numberLesson.value,
       price: Number(data.price?.value),
-      timeStartAt: {
-        hour: data.timeStart?.value?.getHours(),
-        minute: data.timeStart?.value?.getMinutes(),
-      },
       subjects: [{_id: data.subject?.value}],
       typeClass: data.class?.value,
       trainingForm: [data.teachingType?.value],
       isOnline: !data.teachingType?.value,
-      timeEndAt: {
-        hour: new Date(
-          data.timeStart?.value?.getTime() + data.time?.value * 45 * 60 * 1000,
-        ).getHours(),
-        minute: new Date(
-          data.timeStart?.value?.getTime() + data.time?.value * 45 * 60 * 1000,
-        ).getMinutes(),
-      },
       user: { _id: user._id }
     };
     if (data?.avatar?.value?.path) {
@@ -802,19 +793,7 @@ const UserCreateRequest = (props) => {
         await handleCreateClass(formRequest);
       }
     }
-    if (type === 0) {
-      formRequest.type_teacher = data.tutorType?.value;
-      formRequest.contact = data.phoneNumber?.value;
-      formRequest.quantity = 1;
-      formRequest.teacherListReceive = suggestTeacher || [];
-      if (props.route?.params?._id) {
-        alert('??')
-
-      } else {
-        console.info("LOGGER:: ", JSON.stringify(formRequest) );
-        await handleUserRequestClass(formRequest);
-      }
-    }
+    await handleUserRequestClass(formRequest, props.route?.params?.teacher?._id);
   }
   function handleAddImage() {
     setShowPickerImage(true);
@@ -859,15 +838,7 @@ height={31} /> : null}
 
   return (
     <Container
-      title={
-        type === 0
-          ? props.route?.params?._id
-            ? 'Chỉnh sửa yêu cầu'
-            : 'Đăng yêu cầu'
-          : props.route?.params?._id
-          ? 'Chỉnh sửa lớp học'
-          : 'Tạo lớp học'
-      }
+      title={"Tạo yêu cầu"}
       arrowBack={true}
       contentBarStyles={{justifyContent: 'space-between'}}
       navigation={props.navigation}

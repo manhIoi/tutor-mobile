@@ -42,7 +42,7 @@ const HomeStack = ({navigation, route}) => {
     >
       <Home.Screen
         name="Home"
-        component={user.access === 'teacher' ? TeacherHome : HomeScreen}
+        component={HomeScreen}
         options={{
           headerShown: false,
         }}

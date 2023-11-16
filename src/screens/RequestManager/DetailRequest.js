@@ -3,49 +3,31 @@ import Toast from 'react-native-toast-message';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
   Image,
   TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
 } from 'react-native';
 import {Text} from 'react-native-elements';
-import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
-import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import ConfigStyle from '../../theme/ConfigStyle';
 import Container from '../../components/common/ContainerAnimated';
-import DetailInfo from '../../components/Tutor/DetailInfo';
 import Styles from '../../theme/MainStyles';
-import ReviewList from '../../components/Tutor/ReviewList';
-import CreateReview from '../../components/Tutor/CreateReview';
 import BoxShadow from '../../components/common/BoxShadow';
 import Colors from '../../theme/Colors';
-import ChoiceSpecificDay from '../../components/CreateRequest/ChoiceSpecificDay';
-import LabelDuration from '../../components/Tutor/LabelDuration';
-import Loading from '../../components/common/Loading';
 import ImageUtils from '../../utils/images.util';
 
 import {
   cancelRegistryClass,
-  getClassById,
   registerClass,
-  studentGetClassById,
-  getManagementRequestOfUser,
-  teacherGetRequestById,
   teacherRegistryRequest,
   getTeacherByRequestId,
   userRejectRequest,
-  userAcceptRequest,
+  userAcceptRequest, getDetailRequestCreated,
 } from '../../api/class';
-import {getReviewByClass} from '../../api/users';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
-import RecentActive from '../../components/ClassManager/RecentActive';
-import AvatarInfo from '../../components/common/AvatarInfo';
 import config from '../../../config/config';
 import IconChatActive from '../../assets/images/tab/chat1.svg';
-import IconEmpty from '../../assets/images/svg/empty-list.svg';
+import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
 
 const INIT_REVIEWS = {
   data: [],
@@ -53,39 +35,15 @@ const INIT_REVIEWS = {
   currentPage: 1,
 };
 const DetailClass = (props) => {
-  const user = useSelector((state) => state.auth.user);
   const [isBusy, setBusy] = useState(true);
-  const [loadReview, setLoadReview] = useState(true);
-  const [classData, setClassData] = useState({});
+  const [classData, setClassData] = useState(props.route?.params?.tutorRequest);
   const [requesting, setRequesting] = useState(false);
   const [leftRequest, setLeftRequest] = useState(false);
   const [rightRequest, setRightRequest] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [reviews, setReviews] = useState(INIT_REVIEWS);
-  const [teachers, setTeachers] = useState([]);
-  const [teacherRequest, setTeacherRequest] = useState([]);
-  const [isBusyTeacher, setBusyTeacher] = useState(true);
   const [isBusyButon, setBusyButton] = useState(false);
-  const IsFocused = useIsFocused();
-  useEffect(() => {
-    fetchData();
-  }, []);
-  async function fetchData() {
-    const promise = [
-      getManagementRequest(props?.route?.params?._id),
-      getTeacher(props?.route?.params?._id),
-      getTeacherRequest(props?.route?.params?._id),
-    ];
-    await Promise.all(promise);
-  }
-  useFocusEffect(
-    React.useCallback(() => {
-      onRefresh();
-    }, [IsFocused]),
-  );
-  function onRefresh() {
-    fetchData();
-  }
+  const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
+
   async function acceptRequest(id) {
     try {
       setBusyButton(true);
@@ -159,10 +117,9 @@ const DetailClass = (props) => {
   async function getManagementRequest() {
     try {
       setBusy(true);
-      const response = await getManagementRequestOfUser(
-        props?.route?.params?._id,
-      );
-      setClassData(response);
+      const response = await getDetailRequestCreated(props.route.params?.tutorRequest?._id);
+      const _classData = response[0];
+      setClassData(_classData);
       setBusy(false);
     } catch (error) {
       console.log('getClass ==> ', error);
@@ -449,7 +406,7 @@ height={16} />
 
   return (
     <Container
-      title={classData?.title || props.route?.params?.title}
+      title={"Chi tiết đăng ký"}
       arrowBack={true}
       contentBarStyles={{justifyContent: 'space-between'}}
       navigation={props.navigation}
@@ -458,89 +415,20 @@ height={16} />
       keyboardShouldPersistTaps={true}
       imageSource={ImageUtils.bgNotDot}
     >
-      {isBusy ? (
-        <Loading />
-      ) : (
-        <View style={styles.container}>
-          <DetailInfo
-            data={classData}
-            type={'class'}
-            navigation={props.navigation}
-            chat={props.route?.params?.isRequest}
-            classRequest={props.route?.params?.classRequest}
-            details={true}
-            isFollow={props?.route?.params?.isFollow}
-            chat={true}
-            hideTeacher={true}
-            isRequest={classData?.isRequest}
-          />
-          <BoxShadow style={styles.wrapBoxTime}>
-            <Text
-              style={[
-                Styles.textLight,
-                Styles.textBlack3,
-                styles.spaceVertical,
-                {fontSize: 12, marginVertical: 2},
-              ]}
-            >
-              Mã lớp:{' '}
-              <Text style={[{fontSize: 14}, Styles.textNormal]}>
-                {classData?.classCode}
-              </Text>
-            </Text>
-            <ChoiceSpecificDay
-              dayStudy={classData.weekDays}
-              containerStyle={{marginHorizontal: 0}}
-            />
-            <LabelDuration
-              startTime={
-                new Date(
-                  2020,
-                  8,
-                  2,
-                  classData?.timeStartAt?.hour || 0,
-                  classData?.timeStartAt?.minute || 0,
-                )
-              }
-              finishTime={
-                new Date(
-                  2020,
-                  8,
-                  2,
-                  classData?.timeEndAt?.hour || 0,
-                  classData?.timeEndAt?.minute || 0,
-                )
-              }
-              startDate={classData?.startAt}
-              finishDate={classData?.endAt}
-              totalLesson={classData?.totalLesson}
-            />
-            <Text
-              style={[
-                Styles.textLight,
-                Styles.textBlack3,
-                styles.spaceVertical,
-                {fontSize: 12},
-              ]}
-            >
-              Học phí:{'   '}
-              <Text
-                style={[Styles.textNormal, Styles.textOrange, {fontSize: 14}]}
-              >
-                {classData?.price?.toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
-                })}
-              </Text>
-            </Text>
-          </BoxShadow>
-          {/* <RecentActive */}
-          {/*  title={'Danh sách giáo viên'} */}
-          {/*  isRequest={true} */}
-          {/*  navigation={props.navigation} */}
-          {/*  data={classData?.teacher} */}
-          {/* /> */}
-          {classData?.teacher ? (
+      <View style={styles.container}>
+        <Text style={{fontSize: ConfigStyle.font20}}>
+          Giới thiệu
+        </Text>
+        <View>
+          <Text>Tiêu đề: {classData?.title || ''}</Text>
+          <Text>Mô tả: {classData?.description || ''}</Text>
+          <Text>Môn học: {coursesString || ''}</Text>
+        </View>
+        <Text style={{fontSize: ConfigStyle.font20}}>
+          Thông tin lớp
+        </Text>
+        <TutorRequestItem data={classData} />
+        {classData?.teacher ? (
             <View style={{marginTop: 20}}>
               <Text style={{fontSize: ConfigStyle.font20}}>
                 Giáo viên nhận lớp
@@ -549,36 +437,34 @@ height={16} />
                 <View style={{flexDirection: 'row', marginTop: 10}}>
                   <View>
                     <Image
-                      source={{
-                        uri:
-                          // config?.IMAGE_SM_URL +
-                          classData?.teacher?.avatar?.small,
-                      }}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 25,
-                        borderWidth: 1,
-                        borderColor: Colors.borderThin,
-                      }}
+                        source={{
+                          uri: classData?.teacher?.avatar,
+                        }}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 25,
+                          borderWidth: 1,
+                          borderColor: Colors.borderThin,
+                        }}
                     />
                     <View
-                      style={{
-                        ...styles.marker,
-                        ...props.styleMarker,
-                        backgroundColor: classData?.teacher?.isOnline
-                          ? Colors.green
-                          : Colors.grey,
-                      }}
+                        style={{
+                          ...styles.marker,
+                          ...props.styleMarker,
+                          backgroundColor: classData?.teacher?.isOnline
+                              ? Colors.green
+                              : Colors.grey,
+                        }}
                     />
                   </View>
 
                   <View
-                    style={{
-                      flexDirection: 'column',
-                      marginHorizontal: 20,
-                      justifyContent: 'center',
-                    }}
+                      style={{
+                        flexDirection: 'column',
+                        marginHorizontal: 20,
+                        justifyContent: 'center',
+                      }}
                   >
                     <Text style={{fontSize: ConfigStyle.font16}}>
                       {classData?.teacher?.fullName}
@@ -586,131 +472,34 @@ height={16} />
                   </View>
                 </View>
                 <TouchableOpacity
-                  style={{
-                    ...styles.itemChat,
-                    position: 'absolute',
-                    top: 0,
-                    right: 10,
-                  }}
-                  onPress={() => {
-                    props.navigation.push('InboxChat', {
-                      to: classData?.teacher?.id,
-                      userReceive: {
-                        avatar: classData?.teacher?.avatar,
-                        online: false,
-                        fullName: classData?.teacher?.fullName,
-                      },
-                    });
-                  }}
+                    style={{
+                      ...styles.itemChat,
+                      position: 'absolute',
+                      top: 0,
+                      right: 10,
+                    }}
+                    onPress={() => {
+                      props.navigation.push('InboxChat', {
+                        to: classData?.teacher?.id,
+                        userReceive: {
+                          avatar: classData?.teacher?.avatar,
+                          fullName: classData?.teacher?.fullName,
+                        },
+                      });
+                    }}
                 >
                   <IconChatActive width={16}
-height={16} />
+                                  height={16} />
                 </TouchableOpacity>
               </BoxShadow>
             </View>
-          ) : null}
-          {!classData?.teacher ? (
-            <View
-              style={{
-                justifyContent: 'space-between',
-                flexDirection: 'row',
-                marginTop: 10,
-              }}
-            >
-              {teachers?.length > 0 ? (
-                <Text style={{fontSize: ConfigStyle.font20}}>
-                  {' '}
-                  Danh sách mời dạy
-                </Text>
-              ) : null}
-              {teachers?.length >= 2 ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    props?.navigation.navigate('ListTeacher', {
-                      _id: props?.route?.params?._id,
-                      title: classData?.title,
-                      isInvite: true,
-                      requestTitle: 'Danh sách mời dạy',
-                    });
-                  }}
-                  style={{justifyContent: 'center', marginRight: 10}}
-                >
-                  <Text style={{fontSize: ConfigStyle.font12}}>Xem tất cả</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          ) : null}
-          {!isBusyTeacher ? (
-            !classData?.teacher && teachers?.length > 0 ? (
-              <FlatList
-                data={teachers}
-                renderItem={({item, index}) => (
-                  <ItemTeacher isInvite={true}
-item={item} />
-                )}
-              />
-            ) : // <View style={Styles.wrapEmptyImage}>
-            //   <IconEmpty width={'50%'} height={'50%'} />
-            //   <Text style={Styles.textBlack3}>Không có dữ liệu</Text>
-            // </View>
-            null
-          ) : (
-            <View style={{marginTop: 20}}>
-              <ActivityIndicator color={Colors.orange} />
-            </View>
-          )}
-
-          {!classData?.teacher ? (
-            <View
-              style={{
-                justifyContent: 'space-between',
-                flexDirection: 'row',
-                marginTop: 10,
-              }}
-            >
-              {teacherRequest?.length > 0 ? (
-                <Text style={{fontSize: ConfigStyle.font20}}>
-                  {' '}
-                  Danh sách đề nghị
-                </Text>
-              ) : null}
-              {teacherRequest?.length >= 2 ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    props?.navigation.navigate('ListTeacher', {
-                      _id: props?.route?.params?._id,
-                      title: classData?.title,
-                      isInvite: false,
-                      requestTitle: 'Danh sách đề nghị',
-                    });
-                  }}
-                  style={{justifyContent: 'center', marginRight: 10}}
-                >
-                  <Text style={{fontSize: ConfigStyle.font12}}>Xem tất cả</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          ) : null}
-          {!isBusyTeacher ? (
-            !classData?.teacher && teacherRequest?.length > 0 ? (
-              <FlatList
-                data={teacherRequest}
-                renderItem={({item, index}) => (
-                  <ItemTeacher isInvite={false}
-item={item} />
-                )}
-              />
-            ) : // <View style={Styles.wrapEmptyImage}>
-            //   <IconEmpty width={'50%'} height={'50%'} />
-            //   <Text style={Styles.textBlack3}>Không có dữ liệu</Text>
-            // </View>
-            null
-          ) : (
-            <View style={{marginTop: 20}}>
-              <ActivityIndicator color={Colors.orange} />
-            </View>
-          )}
-          <CustomActionSheet
+        ) : null}
+        <ButtonCustom
+            style={{ width: '100%' }}
+            text={'HỦY ĐĂNG KÝ'}
+            onPress={handleClickCancel}
+        />
+        <CustomActionSheet
             title={'Xác nhận hủy đăng ký'}
             arrayActions={['Xác nhận', 'Thoát']}
             message={classData.title ? `Lớp : ${classData.title}` : ''}
@@ -718,9 +507,8 @@ item={item} />
             shouldShow={showActionSheet}
             cancelButtonIndex={1}
             destructiveButtonIndex={0}
-          />
-        </View>
-      )}
+        />
+      </View>
     </Container>
   );
 };

@@ -46,6 +46,7 @@ const TIME_CLASS = [
 ];
 const BoxRequesting = (props) => {
   const [dateStart, setDateState] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
   const [time, setTime] = useState(new Date());
   return (
     <BoxShadow style={styles.container}>
@@ -81,6 +82,30 @@ height={14.1} />}
         value={props.data?.dateStart?.value}
         handleChange={(value) => props.handleChangeData('dateStart', value)}
       />
+        <SelectBox
+            placeholder={'Ngày kết thúc học'}
+            svg={<IconScheduling width={15.85} height={14.1} />}
+            disabled={props.isBusy}
+            noPicker={true}
+            date={dateEnd}
+            setDate={setDateEnd}
+            mode={'date'}
+            notBefore={true}
+            value={props.data?.dateEnd?.value}
+            handleChange={(value) => props.handleChangeData('dateEnd', value)}
+        />
+        <SelectBox
+            placeholder={'Thời gian'}
+            noPicker={true}
+            mode={'time'}
+            time={props.data?.timeStart?.value}
+            disabled={props.isBusy}
+            svg={<IconMortar width={20.5}
+                             height={12.3} />}
+            date={time}
+            value={props.data?.timeStart?.value}
+            handleChange={(value) => props.handleChangeData('timeStart', value)}
+        />
       {props.data?.dateStart?.msgError ? (
         <Text style={Styles.textError}>{props.data.dateStart.msgError}</Text>
       ) : null}

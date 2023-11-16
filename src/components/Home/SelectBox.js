@@ -149,13 +149,8 @@ const SelectBox = (props) => {
           <Text style={Styles.textLight}>{props.placeholder}</Text>
           <Text style={styles.textFormatDate}>
             {props.time && new Date(props.value)
-              ? `${formatHHMM(props.value)} -- ${formatHHMM(
-                  new Date(
-                    new Date(props.value).getTime() +
-                      props.time * 45 * 60 * 1000,
-                  ),
-                )}`
-              : '__:__  --  __:__'}
+              ? `${formatHHMM(props.value)}`
+              : '__:__'}
           </Text>
         </TouchableOpacity>
       ) : null}
