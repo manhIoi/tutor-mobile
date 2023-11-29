@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -18,15 +18,12 @@ import Colors from '../../theme/Colors';
 import BoxMessage from '../../components/Chat/BoxMessage';
 import ConfigStyle from '../../theme/ConfigStyle';
 import CustomInputToolBar from '../../components/Chat/CustomInputToolBar';
-import Loading from '../../components/common/Loading';
-import config from '../../../config/config';
 import {
   blockUser,
   createChatSingle,
-  createMessage,
   deleteGroupChat,
-  getListMessageByGroup,
   unBlockUser,
+  getMessageByRoom
 } from '../../api/chat';
 import {uploadImage, handleUploadFile} from '../../api/uploadImage';
 import {SOCKET_ID, DEVICE_TOKEN} from '../../utils/auth.util';
@@ -35,6 +32,7 @@ import {updateCurrentChatGroup} from '../../lib/slices/socketSlice';
 import IconEllipsis from '../../assets/images/svg/ellipsis-h.svg';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
 import ModalReport from '../../components/Chat/ModalReport';
+import SocketIO from "../../utils/SocketIO";
 
 const INITIAL_MESSAGES = {
   data: [],
@@ -45,6 +43,7 @@ const INITIAL_MESSAGES = {
 const LIMIT = 3 * Constants.LIMIT;
 const InboxChat = (props) => {
   const user = useSelector((state) => state.auth.user);
+  const { userReceive } = props.route?.params;
 
   const dispatch = useDispatch();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -52,38 +51,28 @@ const InboxChat = (props) => {
   const [isBusy, setBusy] = useState(true);
   const [sending, setSending] = useState(false);
   const [groupChat, setGroupChat] = useState({});
-  const [userReceive, setUserReceive] = useState({});
   const [flagMsg, setFlagMsg] = useState('');
   const [notMessageMore, serNotMessageMore] = useState(false);
   const [showAction1, setShowAction1] = useState(false);
   const [showAction2, setShowAction2] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const newNotification = useSelector((state) => state.socket.newNotification);
-  useEffect(() => {
-    // if (props.route?.params?.to) {
-    //   createChat(props.route.params.to);
-    // } else {
-    //   props.navigation.goBack();
-    // }
-    // if (props.route?.params?.groupChat) {
-    //   dispatch(updateCurrentChatGroup(props.route?.params?.groupChat));
-    // }
-    // if (props.route.params?.userReceive) {
-    //   setUserReceive(props.route.params.userReceive);
-    // }
-  }, []);
-  // useFocusEffect(
-    // React.useCallback(() => {
-    //   return async () => await dispatch(updateCurrentChatGroup(''));
-    // }, []),
-  // );
 
-  function checkIsReceive(message) {
-    // if (message?.from?._id !== user?._id) {
-    //   return true;
-    // }
-    // return false;
+  const messagesDataSorted = useMemo(() => {
+      return messages.data.sort((a,b ) => new Date(b.createdAt).getTime()  - new Date(a.createdAt).getTime())
+  }, [messages.data])
+
+  useEffect(() => {
+    executeTaskChat();
+  }, []);
+
+  const executeTaskChat = () => {
+    Promise.all([getListMessage(),joinRoomEvent()]).catch(e => {
+      console.info(`🔥LOGGER::  executeTaskChat error`, e);
+    })
   }
+
+  function checkIsReceive(message) {}
   useEffect(() => {
     // if (
     //   (!messages?.data?.[messages.length - 1]?._id ||
@@ -158,72 +147,68 @@ const InboxChat = (props) => {
     }
   }
 
-  async function getListMessage(
-    id,
-    page = 1,
-    limit = 25,
-    keyword = '',
-    loadMore = false,
-  ) {
+  async function getListMessage () {
     try {
-      if (!loadMore) {
-        setBusy(true);
-      }
-      if (id) {
-        const response = await getListMessageByGroup(
-          id,
-          page,
-          limit,
-          keyword,
-          flagMsg,
-        );
-        setBusy(false);
-        if (response?.payload?.length) {
-          const arrayMessage = response?.payload.reverse();
-          setFlagMsg(arrayMessage?.[0]?._id);
-          const arrMsg = arrayMessage?.map((item) => {
-            item.receive = checkIsReceive(item);
-            return item;
-          });
-          if (loadMore) {
-            setMessages({
-              data: [...messages.data, ...arrMsg],
-              totalPages: response.total_page,
-              totalItems: response.total_item,
-              currentPage: response.page,
-              item: response.item,
-            });
-          } else {
-            setMessages({
-              data: arrMsg,
-              totalPages: response.total_page,
-              totalItems: response.total_item,
-              currentPage: response.page,
-              item: response.item,
-            });
-            setShouldScroll(new Date().getTime());
-          }
-        } else {
-          serNotMessageMore(true);
+      const messages = await getMessageByRoom({
+        idReceive: userReceive._id,
+        idSend: user._id,
+      })
+      const _messagesFormatted = messages?.map?.(m => {
+        const isReceive = user?._id === m.userReceive
+        return {
+          ...m,
+          receive: isReceive,
+          from: isReceive ?  userReceive : user
         }
-      }
-
-      setBusy(false);
-    } catch (error) {
-      console.log('getListMessage ==> ', error);
+      })
+      setMessages({
+        ...messages,
+        data: _messagesFormatted,
+      })
+      console.info(`🔥🔥🔥LOGGER::  messages`, messages);
+    } catch (e) {
+      console.info(`🔥🔥🔥LOGGER::  e`, e);
     }
   }
 
+  const joinRoomEvent = async () => {
+    console.info(`🔥🔥LOGGER::  messageSendTo_${userReceive._id}`);
+    SocketIO.on(`messageResponse_${user._id}`, data => {
+      console.info(`🔥🔥🔥LOGGER messageResponse_`);
+      if (data?.status === true) {
+        setMessages(messages => {
+          const newData = [...messages.data,{
+            ...data,
+            from: user,
+          }]
+          return {
+            ...messages,
+            data: newData
+          }
+        })
+      }
+    })
+    SocketIO.on(`messageSendTo_${user._id}`, data => {
+      const newData = [...messages.data,{
+        ...data,
+        from: userReceive,
+      }]
+      setMessages(messages => {
+        const newData = [...messages.data,{
+          receive: true,
+          createdAt: new Date().getTime(),
+          content: data?.content,
+          from: userReceive,
+        }]
+        return {
+          ...messages,
+          data: newData
+        }
+      })
+    })
+  }
+
   async function handleLoadMore() {
-    if (!notMessageMore) {
-      await getListMessage(
-        groupChat._id,
-        messages.currentPage + 1,
-        LIMIT,
-        '',
-        true,
-      );
-    }
   }
 
   async function uploadArrayImage(arr) {
@@ -272,50 +257,10 @@ const InboxChat = (props) => {
   }
 
   async function handleSend(content = '', images = [], files = []) {
+    console.info(`🔥🔥🔥LOGGER:: id `, userReceive?._id, user?._id);
     try {
-      const socketId = await SOCKET_ID.get();
-      const deviceToken = await DEVICE_TOKEN.get();
-      const data = {
-        content: '',
-        files: [],
-        images: [],
-        socketId: socketId,
-        deviceToken,
-      };
-      setSending(true);
-      if (images?.length) {
-        data.images = await uploadArrayImage(images);
-      }
-      if (files?.length) {
-        data.files = await uploadArrayFiles(files);
-      }
-      if (content) {
-        data.content = content;
-      }
-      const response = await createMessage(data, groupChat?._id);
-      setSending(false);
-      if (response?._id) {
-        setMessages({
-          data: [
-            {
-              _id: response?._id,
-              content: response?.content,
-              createdAt: response?.createdAt,
-              from: response?.from,
-              images: response?.images,
-              files: response?.files,
-              receive: false,
-              newMessage: true,
-            },
-            ...messages.data,
-          ],
-          totalItems: messages.totalItems + 1,
-          totalPages: messages.totalPages,
-          item: messages.item + 1,
-        });
-      }
+      SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id })
     } catch (error) {
-      setSending(false);
       if (error?.response?.data?.errors) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -513,10 +458,10 @@ groupChat={groupChat} />
       }
       showScroll={showScroll}
     >
-      {isBusy ? <Loading /> : null}
+      {/*{isBusy ? <Loading /> : null}*/}
 
       <BoxMessage
-        messages={messages.data}
+        messages={messagesDataSorted}
         showScroll={showScroll}
         sending={sending}
         isBusy={isBusy}

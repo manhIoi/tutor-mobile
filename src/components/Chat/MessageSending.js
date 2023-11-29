@@ -7,11 +7,6 @@ const MessageSending = (props) => {
   return (
     <View style={styles.container}>
       <View>
-        {/* <Typing */}
-        {/*  avatar={props?.avatar} */}
-        {/*  /> */}
-      </View>
-      <View>
         {props.sending ? (
           <View
             style={{

@@ -32,22 +32,17 @@ import {
 import ItemCourseRequest from "../../components/RequestManagement/ItemCourseRequest";
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
 import Calendar from "../../routes/CalendarStack";
+import {getSubjects} from "../../api/subject";
+import {setSubjectsValue} from "../../lib/slices/subjectSlice";
 
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 export default function HomeScreen(props) {
-  const user = useSelector((state) => state.auth.user);
-  const notify = useSelector((state) => state.notification.notiUpdate);
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const [classRecommend, setClassRecommend] = useState([]);
-  const [classDistance, setClassDistance] = useState([]);
-  const [classRate, setClassRate] = useState([]);
   const [tab, setTab] = useState(0);
   const [textSearch, setTextSearch] = useState('');
-  const [classBusy, setClassBusy] = useState(true);
   const [refreshing, setRefresh] = useState(false);
   const [scrollTop, setScrollTop] = useState(new Date().getTime());
 
@@ -62,7 +57,13 @@ export default function HomeScreen(props) {
   useEffect(() => {
     getTeachers();
     getClasses();
+    getListSubject();
   }, []);
+
+  const getListSubject = async () => {
+    const subjects = await getSubjects();
+    dispatch(setSubjectsValue(subjects))
+  }
 
   const getClasses = async () => {
     try {

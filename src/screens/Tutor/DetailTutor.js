@@ -152,13 +152,7 @@ const DetailTutor = (props) => {
           props.navigation.navigate('Chat', {
             screen: 'InboxChat',
             params: {
-              to: teacher?._id,
-              userReceive: {
-                _id: teacher?._id,
-                avatar: teacher.avatar,
-                online: teacher.isOnline,
-                fullName: teacher?.fullName,
-              },
+              userReceive: teacher,
             },
           });
         }}

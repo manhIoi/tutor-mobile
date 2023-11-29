@@ -17,20 +17,6 @@ import MessageSending from './MessageSending';
 
 const BoxMessage = (props) => {
   const scrollBar = React.useRef();
-  const renderFooter =
-    props.item >= props.totalItems || props.notMessageMore ? (
-      props.totalItems === 0 ? (
-        <Text style={{...Styles.countResult, marginTop: 20}}>
-          Chưa có tin nhắn nào
-        </Text>
-      ) : (
-        <Text style={Styles.countResult}>{props.totalItems} tin nhắn</Text>
-      )
-    ) : (
-      <View style={{marginTop: 10}}>
-        <ActivityIndicator color={Colors.orange} />
-      </View>
-    );
   useEffect(() => {
     setTimeout(() => {
       showScrollToEnd();
@@ -60,15 +46,8 @@ const BoxMessage = (props) => {
         inverted={true}
         style={styles.customScroll}
         data={props.messages}
-        ListFooterComponent={renderFooter}
         onEndReachedThreshold={0.4}
         onEndReached={props.handleLoadMore}
-        ListHeaderComponent={
-          <MessageSending
-            sending={props.sending}
-            avatar={props.userReceive?.avatar}
-          />
-        }
         renderItem={({item, index}) => (
           <View>
             {props.messages?.length && !props.messages?.[index + 1]?._id ? (
@@ -105,7 +84,7 @@ const BoxMessage = (props) => {
                     (60 * 1000) >
                     10)) ? (
                 <Avatar
-                  source={{uri: item?.from?.avatar?.small}}
+                  source={{uri: item?.from?.avatar}}
                   size={34}
                   hideLoad={true}
                 />

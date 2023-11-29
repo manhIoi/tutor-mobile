@@ -76,7 +76,9 @@ const SelectBox = (props) => {
           items={props.data}
           value={props.value}
           title={props.placeholder}
-          onChange={(value) => props.handleChange(value)}
+          onChange={(value) => {
+            props.handleChange(value)
+          }}
           wrapStyle={{
             flex: 1,
             marginLeft: 17,

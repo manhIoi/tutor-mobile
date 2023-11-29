@@ -7,7 +7,7 @@ import {
 import axios from "axios";
 
 export const register = async (data) => {
-  return callApi('/users/register', 'post', data);
+  return callApi('/user/register', 'post', data);
 };
 
 export const login = async (data) => {

@@ -9,6 +9,7 @@ import classManagerReducer from "./src/lib/slices/classManagementSlice";
 import socketReducer from './src/lib/slices/socketSlice';
 import notificationReducer from './src/lib/slices/notificationSlice';
 import callingSlice from './src/lib/slices/callSlice';
+import subjectSlice from "./src/lib/slices/subjectSlice";
 
 export default configureStore({
   reducer: {
@@ -21,5 +22,6 @@ export default configureStore({
     socket: socketReducer,
     notification: notificationReducer,
     calling: callingSlice,
+    subject: subjectSlice,
   },
 });

@@ -1,6 +1,6 @@
 import {
   callApiNotification,
-  callApiListNotification,
+  callApiListNotification, callApi,
 } from '../utils/apiCaller.util';
 
 export function createChatSingle(id) {
@@ -54,4 +54,8 @@ export function blockUser(data) {
 
 export function unBlockUser(data) {
   return callApiNotification('/group-chat/unblock-user', 'delete', data);
+}
+
+export function getMessageByRoom(data) {
+  return callApi('/chat/room','post', data);
 }

@@ -9,7 +9,7 @@ import HomeStack from '../routes/HomeStack';
 import ChatStack from '../routes/ChatStack';
 import ProfileStack from '../routes/ProfileStack';
 import CalendarStack from '../routes/CalendarStack';
-import Socket from '../utils/socket';
+import socket from '../utils/SocketIO';
 import config from '../../config/config';
 import {setCurrentUser, updateNewMessage} from '../lib/slices/socketSlice';
 import {updateRequestCall} from '../lib/slices/callSlice';
@@ -30,8 +30,6 @@ const INITIAL_ROUTE_NAME = 'Home';
 
 export default function BottomTabNavigator() {
   const dispatch = useDispatch();
-  const [socket, setSocket] = useState(new Socket(config.SOCKET_HOST));
-  const chatState = useSelector((state) => state.socket);
   const user = useSelector((state) => state.auth.user);
   const notify = useSelector((state) => state.notification.notiUpdate);
 
@@ -202,24 +200,6 @@ export default function BottomTabNavigator() {
   //
   // React.useEffect(() => {
   //   handleEmitTyping();
-  // }, [chatState.typing])
-
-  async function handleEmitJoinChat() {
-    const socketId = await SOCKET_ID.get();
-    if (chatState.currentChatGroup) {
-      const data = {
-        groupId: chatState.currentChatGroup,
-        socketId,
-      };
-      socket.socket.emit('join_group_chat', data);
-    } else if (chatState.preChatGroup) {
-      const data = {
-        groupId: chatState.preChatGroup,
-        socketId,
-      };
-      socket.socket.emit('leave_group_chat', data);
-    }
-  }
 
   async function handleEmitTyping() {
     const socketId = await SOCKET_ID.get();

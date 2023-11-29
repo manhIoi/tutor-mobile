@@ -33,7 +33,6 @@ import {
   userEditRequest,
 } from '../../api/class';
 import {getTeacherInfo} from '../../api/teacherInformation';
-import {getSubjects} from '../../api/subject';
 import {gettopics} from '../../api/topic';
 import ConstantValue from '../../constants';
 import Colors from '../../theme/Colors';
@@ -128,11 +127,13 @@ const INITIAL_FORM = {
 
 const UserCreateRequest = (props) => {
   const inputDesc = React.useRef();
+  const subjects = useSelector(state => state.subject.value);
+
   const animationRotate = new Animated.Value(-90);
   const [data, setData] = useState(INITIAL_FORM);
   const [provinces, setProvinces] = useState([]);
   const [topics, setTopics] = useState([]);
-  const [subjects, setSubjects] = useState([]);
+
   const [classData, setClassData] = useState([]);
   const [typeTeacher, setTypeTeacher] = useState([]);
   const [isBusy, setBusy] = useState(false);
@@ -183,7 +184,6 @@ const UserCreateRequest = (props) => {
       // getTypeTeacher(),
       // getTeacher(),
       // props.route?.params?._id ? initDataClass(props.route.params._id) : null,
-      getSubject(),
     ];
     await Promise.all(promise)
     // if (props.route?.params?._id) {
@@ -362,15 +362,6 @@ const UserCreateRequest = (props) => {
       setProvinces(response);
     } catch (error) {
       console.log('getProvince ==>', error);
-      throw error;
-    }
-  }
-  async function getSubject() {
-    try {
-      const subjects = await getSubjects();
-      setSubjects(subjects);
-    } catch (error) {
-      console.log('getSubject ==>', error);
       throw error;
     }
   }

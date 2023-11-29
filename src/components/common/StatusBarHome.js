@@ -32,6 +32,7 @@ const INIT_FORM = {
   subject: '',
   class: '',
   text: '',
+  dob: '',
 };
 const StatusBarHome = (props) => {
   const dispatch = useDispatch();
@@ -88,8 +89,8 @@ const StatusBarHome = (props) => {
     }
   }
 
-  function handleFilter() {
-    setShouldSearch(new Date().getTime());
+  function handleFilter({ subject } = {}) {
+    console.info(`🔥🔥🔥LOGGER::  subject`, subject, form);
     setAutoFocus(false);
     onFocusSearch(false);
     hideModalFilter();
@@ -213,11 +214,9 @@ height={30} />
             tab={props.tab}
             dataFilter={form}
             changeTab={props.changeTab}
-            textSearch={form.text}
             navigation={props.navigation}
             hideModalSearch={hideModalSearch}
             hideModalFilter={hideModalFilter}
-            onSearch={(value) => handleChangeForm('text', value)}
             handleChangeForm={handleChangeForm}
             handleFilter={handleFilter}
           />
@@ -226,6 +225,9 @@ height={30} />
     </View>
   );
 };
+
+
+
 
 export default StatusBarHome;
 

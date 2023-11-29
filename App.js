@@ -26,6 +26,7 @@ import { navigationRef, isReadyRef } from './RootNavigation';
 import {IP_ADDRESS} from './src/utils/auth.util';
 import ActionNotification from './src/components/Notification/ActionNotification';
 import ModalMatch from './src/components/common/ModalMatch';
+import SocketIO from "./src/utils/SocketIO";
 
 const width = Dimensions.get('window').width;
 
@@ -53,6 +54,11 @@ const App = (props) => {
       (state) => state.notification.newNotifications,
     );
     const [isShow, setShow] = useState(false);
+
+    useEffect(() => {
+        SocketIO.connect();
+    }, [])
+
     const handleShow = ()=>{
       setShow(false);
     }

@@ -19,6 +19,7 @@ import {PHONE_CODE} from '../../utils/phoneCode';
 import {register} from '../../api/users';
 import StatusBar from '../../components/common/StatusBar';
 import MainStyles from '../../theme/MainStyles';
+import {USER_TOKEN} from "../../utils/auth.util";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -130,15 +131,27 @@ const Register = (props) => {
       fullName: form.fullName.value,
       phone: form.phoneNumber.value,
       password: form.password.value,
-      confirmPassword: form.password.value,
     };
     try {
       const response = await register(data);
       setBusy(false);
-      if (response) {
-        props.navigation.navigate('InputVerifyCodeScreen', {
-          phoneNumber: form.phoneNumber.value,
-          smsId: response.SMSID,
+      const { token, user } = response || {}
+      if (user) {
+        await USER_TOKEN.set(token);
+        setBusy(false);
+        props.navigation.replace('Home');
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: 'Đăng ký thành công',
+          visibilityTime: 1000,
+        });
+      } else {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'error',
+          text1: 'Đăng ký thất bại',
+          visibilityTime: 1000,
         });
       }
     } catch (error) {
