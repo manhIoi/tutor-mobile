@@ -23,107 +23,36 @@ import Styles from '../../theme/MainStyles';
 import IconEmpty from '../../assets/images/svg/empty-list.svg';
 import Constants from '../../../constants/Values';
 import useDebouncedEffect from '../../hooks/useDebounce';
-
-const INIT_DATA = {
-  page: 1,
-  totalPage: 0,
-  totalItems: 0,
-  data: [],
-};
+import AddButton from "../../components/common/AddButton";
 const LIMIT = Constants.LIMIT * 2;
 const ChatScreen = (props) => {
-  const [listGroupChat, setListGroupChat] = useState(INIT_DATA);
+  const [listGroupChat, setListGroupChat] = useState([]);
   const [textSearch, setTextSearch] = useState('');
   const [isBusy, setBusy] = useState(true);
   const [refreshing, setRefresh] = useState(false);
   const newNotification = useSelector((state) => state.socket.newNotification);
   const user = useSelector((state) => state.auth.user);
-  useFocusEffect(
-    React.useCallback(() => {
-      getListChat(1, LIMIT, textSearch, false, true);
-    }, []),
-  );
+
   useEffect(() => {
-    if (newNotification?.group?._id) {
-      getListChat(1, LIMIT, textSearch, false, true);
-    }
-  }, [newNotification]);
-  useDebouncedEffect(
-    () => {
-      getListChat(1, LIMIT, textSearch, false, true);
-    },
-    500,
-    [textSearch],
-  );
+    getListChat()
+  }, [])
+
   function selectInbox(id) {
     props.navigation.push('InboxChat', id);
   }
-  async function deleteInbox(id) {
+  async function getListChat() {
     try {
-      await deleteGroupChat(id);
-      await getListChat(1, LIMIT, textSearch, false, true);
+      const response = await getListBoxChat(user?._id);
+      setListGroupChat(response);
     } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: error?.response?.data?.errors[0].message,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
-  }
-  async function getListChat(
-    page = 1,
-    limit = LIMIT,
-    keyword = textSearch,
-    loadMore = false,
-    refresh = false,
-  ) {
-    try {
-      if (!loadMore && !refresh) {
-        setBusy(true);
-      }
-      const response = await getListBoxChat(page, limit, keyword);
-
-      if (loadMore) {
-        setListGroupChat({
-          page: response.page,
-          totalPage: response.total_page,
-          totalItems: response.total_item,
-          data: [...listGroupChat.data, ...response.payload],
-        });
-      } else {
-        setListGroupChat(INIT_DATA);
-        setListGroupChat({
-          page: response.page,
-          totalPage: response.total_page,
-          totalItems: response.total_item,
-          data: response.payload || [],
-        });
-      }
-
-      setBusy(false);
-      setRefresh(false);
-    } catch (error) {
-      setBusy(false);
-      console.log('getListChat ==>', error);
+      console.info(`LOGGER:: error`,error);
     }
   }
   async function onRefresh() {
-    setRefresh(true);
-    await getListChat(1, LIMIT, textSearch, false, true);
+    getListChat();
   }
 
   async function handleLoadMore() {
-    if (listGroupChat.page < listGroupChat.totalPage) {
-      getListChat(listGroupChat.page + 1, LIMIT, textSearch, true);
-    }
   }
 
   function onSearch(event) {
@@ -141,12 +70,6 @@ height={30} />}
       onPress={() => props.navigation.push('Contacts')}
     />
   );
-  const renderFooter =
-    listGroupChat.data?.length >= listGroupChat.totalItems ? (
-      <Text style={Styles.countResult}>{listGroupChat.totalItems} kết quả</Text>
-    ) : (
-      <ActivityIndicator color={Colors.orange} />
-    );
 
   return (
     <Container
@@ -162,45 +85,43 @@ height={30} />}
         />
       }
       headerHeight={ConfigStyle.statusBarHeight}
+      footer={<AddButton style={{ bottom: 100, }} onPress={() => {
+        props.navigation.push('InboxChat', {
+          isChatAssistant: true
+        })
+      }} />}
       hideBackground={true}
     >
-      {!isBusy ? (
-        listGroupChat?.data?.length ? (
-          <FlatList
-            style={{marginTop: 13}}
-            data={listGroupChat.data}
-            refreshControl={
-              <RefreshControl
+      {listGroupChat?.length ? (
+      <FlatList
+          style={{marginTop: 13}}
+          data={listGroupChat}
+          refreshControl={
+            <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 colors={[Colors.orange]}
-              />
-            }
-            renderItem={({item}) => (
-              <ChatItem
+            />
+          }
+          renderItem={({item}) => {
+            return <ChatItem
                 selectInbox={selectInbox}
                 deleteInbox={(id) => {
                   deleteInbox(id);
                 }}
                 data={item}
                 navigation={props.navigation}
-              />
-            )}
-            ListFooterComponent={renderFooter}
-            onEndReachedThreshold={0.4}
-            onEndReached={handleLoadMore}
-          />
-        ) : (
-          <View style={Styles.wrapEmptyImage}>
-            <IconEmpty width={'50%'}
-height={'50%'} />
-            <Text style={Styles.textBlack3}>Không có hộp thoại nào</Text>
-          </View>
-        )
+            />;
+          }}
+          onEndReachedThreshold={0.4}
+          onEndReached={handleLoadMore}
+      />
       ) : (
-        <View style={{marginTop: 20}}>
-          <ActivityIndicator color={Colors.orange} />
-        </View>
+      <View style={Styles.wrapEmptyImage}>
+        <IconEmpty width={'50%'}
+                   height={'50%'} />
+        <Text style={Styles.textBlack3}>Không có hộp thoại nào</Text>
+      </View>
       )}
     </Container>
   );

@@ -39,6 +39,13 @@ const ChatStack = ({navigation, route}) => {
           headerShown: false,
         }}
       />
+        <Chat.Screen
+            name={'AssistantChat'}
+            component={ChatScreen}
+            options={{
+                headerShown: false,
+            }}
+        />
       <Chat.Screen
         name={'InboxChat'}
         component={InboxChat}

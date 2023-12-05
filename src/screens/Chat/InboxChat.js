@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -19,11 +19,8 @@ import BoxMessage from '../../components/Chat/BoxMessage';
 import ConfigStyle from '../../theme/ConfigStyle';
 import CustomInputToolBar from '../../components/Chat/CustomInputToolBar';
 import {
-  blockUser,
   createChatSingle,
-  deleteGroupChat,
-  unBlockUser,
-  getMessageByRoom
+  getMessageByRoom, joinRoomApi,
 } from '../../api/chat';
 import {uploadImage, handleUploadFile} from '../../api/uploadImage';
 import {SOCKET_ID, DEVICE_TOKEN} from '../../utils/auth.util';
@@ -40,10 +37,18 @@ const INITIAL_MESSAGES = {
   totalItems: 0,
   item: 0,
 };
+
 const LIMIT = 3 * Constants.LIMIT;
 const InboxChat = (props) => {
   const user = useSelector((state) => state.auth.user);
-  const { userReceive } = props.route?.params;
+  const chatBot = useSelector(state => state.auth.chatBot)
+  const { userReceive: _userParams, isChatAssistant = false, roomChat = null } = props.route?.params || {};
+  const roomChatRef = useRef(roomChat);
+  const userReceive = isChatAssistant ? {
+    avatar: 'https://media.istockphoto.com/id/1010001882/vector/%C3%B0%C3%B0%C2%B5%C3%B1%C3%B0%C3%B1%C3%B1.jpg?s=612x612&w=0&k=20&c=1jeAr9KSx3sG7SKxUPR_j8WPSZq_NIKL0P-MA4F1xRw=',
+    fullName: chatBot._id,
+    _id: chatBot._id
+  } : _userParams
 
   const dispatch = useDispatch();
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -71,36 +76,6 @@ const InboxChat = (props) => {
       console.info(`🔥LOGGER::  executeTaskChat error`, e);
     })
   }
-
-  function checkIsReceive(message) {}
-  useEffect(() => {
-    // if (
-    //   (!messages?.data?.[messages.length - 1]?._id ||
-    //     messages.data?.[messages.length - 1]?._id !== newNotification?._id) &&
-    //   groupChat?._id === newNotification?.group &&
-    //   newNotification?._id
-    // ) {
-    //   setMessages({
-    //     data: [
-    //       {
-    //         _id: newNotification?._id,
-    //         content: newNotification?.content,
-    //         createdAt: newNotification?.createdAt,
-    //         from: newNotification?.from,
-    //         images: newNotification?.images,
-    //         files: newNotification?.files,
-    //         receive: checkIsReceive(newNotification),
-    //         newMessage: true,
-    //       },
-    //       ...messages.data,
-    //     ],
-    //     totalItems: messages.totalItems + 1,
-    //     totalPages: messages.totalPages,
-    //     item: messages.item + 1,
-    //   });
-    //   setShouldScroll(new Date().getTime());
-    // }
-  }, [newNotification]);
 
   async function createChat(id, loadMessage = true) {
     try {
@@ -152,9 +127,11 @@ const InboxChat = (props) => {
       const messages = await getMessageByRoom({
         idReceive: userReceive._id,
         idSend: user._id,
+        isChatBot: isChatAssistant
       })
+      console.info(`LOGGER:: messages`,messages);
       const _messagesFormatted = messages?.map?.(m => {
-        const isReceive = user?._id === m.userReceive
+        const isReceive = user?._id === m.userReceive || (isChatAssistant&& m?.isBotMessage)
         return {
           ...m,
           receive: isReceive,
@@ -173,6 +150,15 @@ const InboxChat = (props) => {
 
   const joinRoomEvent = async () => {
     console.info(`🔥🔥LOGGER::  messageSendTo_${userReceive._id}`);
+    if (!roomChat) {
+      const response = await joinRoomApi(user._id, { person: {
+          _id: userReceive?._id,
+        }});
+
+      roomChatRef.current = response;
+
+      console.info(`LOGGER:: response`,response);
+    }
     SocketIO.on(`messageResponse_${user._id}`, data => {
       console.info(`🔥🔥🔥LOGGER messageResponse_`);
       if (data?.status === true) {
@@ -259,7 +245,7 @@ const InboxChat = (props) => {
   async function handleSend(content = '', images = [], files = []) {
     console.info(`🔥🔥🔥LOGGER:: id `, userReceive?._id, user?._id);
     try {
-      SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id })
+      SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
     } catch (error) {
       if (error?.response?.data?.errors) {
         Toast.show({
@@ -302,24 +288,6 @@ const InboxChat = (props) => {
   }
 
   async function deleteInbox() {
-    try {
-      await deleteGroupChat(groupChat?._id);
-      props.navigation.goBack();
-    } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: error?.response?.data?.errors[0].message,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
   }
 
   function handlePressRightHeader() {
@@ -338,22 +306,9 @@ const InboxChat = (props) => {
   }
 
   async function handleBlockUser() {
-    try {
-      await blockUser({id: userReceive?._id});
-      await createChat(userReceive?._id, false);
-    } catch (error) {
-      await createChat(userReceive?._id, false);
-    }
   }
 
-  async function handleUnBlockUser() {
-    try {
-      await unBlockUser({id: userReceive?._id});
-      await createChat(userReceive?._id, false);
-    } catch (error) {
-      await createChat(userReceive?._id, false);
-    }
-  }
+  async function handleUnBlockUser() {}
 
   function handleDeleteMessage(id) {
     const listMessage = [...messages.data];
@@ -453,7 +408,7 @@ fill={'#fff'} />
       keyboardAvoidingView={true}
       keyboardShouldPersistTaps={true}
       footer={
-        <CustomInputToolBar sendMessage={sendMessage}
+        <CustomInputToolBar onlyMessage={isChatAssistant} sendMessage={sendMessage}
 groupChat={groupChat} />
       }
       showScroll={showScroll}

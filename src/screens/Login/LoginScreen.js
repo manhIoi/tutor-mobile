@@ -152,7 +152,7 @@ onPress={() => handleResendCode()}>
       try {
         setBusy(true);
         const response = await login(data);
-        const { token, user } = response || {}
+        const { token, user, chatBot } = response || {}
         if (user) {
           await USER_TOKEN.set(token);
           setBusy(false);
@@ -164,7 +164,7 @@ onPress={() => handleResendCode()}>
             visibilityTime: 1000,
           });
           const propmise = [
-            dispatch(getUser(user)),
+            dispatch(getUser({...user, chatBot}))
             //TODO: checkNotificationStatus(),
           ];
           await Promise.all(propmise);

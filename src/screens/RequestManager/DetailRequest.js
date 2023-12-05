@@ -21,13 +21,14 @@ import {
   teacherRegistryRequest,
   getTeacherByRequestId,
   userRejectRequest,
-  userAcceptRequest, getDetailRequestCreated,
+  userAcceptRequest, getDetailRequestCreated, updateDetailRequest,
 } from '../../api/class';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
 import config from '../../../config/config';
 import IconChatActive from '../../assets/images/tab/chat1.svg';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
+import {useSelector} from "react-redux";
 
 const INIT_REVIEWS = {
   data: [],
@@ -35,14 +36,15 @@ const INIT_REVIEWS = {
   currentPage: 1,
 };
 const DetailClass = (props) => {
-  const [isBusy, setBusy] = useState(true);
+
+  const user = useSelector(state => state.auth.user);
   const [classData, setClassData] = useState(props.route?.params?.tutorRequest);
-  const [requesting, setRequesting] = useState(false);
-  const [leftRequest, setLeftRequest] = useState(false);
-  const [rightRequest, setRightRequest] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [isBusyButon, setBusyButton] = useState(false);
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
+  const isMyRequest = classData?.user?._id === user?._id;
+  const isMyClass = classData.teacher?._id === user?._id;
+  const isClassNotApprove = user?.role === 'teacher' && !classData?.isTeacherApproved
 
   async function acceptRequest(id) {
     try {
@@ -114,39 +116,62 @@ const DetailClass = (props) => {
       setShowActionSheet(false);
     }, 200);
   }
-  async function getManagementRequest() {
+
+  const handleClickJoinClass = () => {
+    setShowActionSheet(true);
+  }
+
+  const handleJoinClass = async () => {
     try {
-      setBusy(true);
-      const response = await getDetailRequestCreated(props.route.params?.tutorRequest?._id);
-      const _classData = response[0];
-      setClassData(_classData);
-      setBusy(false);
-    } catch (error) {
-      console.log('getClass ==> ', error);
-      setBusy(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
+      if (user.role === 'teacher') {
+        const response = await updateDetailRequest(classData._id, {
+          teacher: {
+            _id: user._id,
+          },
+          status: 1,
+          isTeacherApproved: true,
+        })
+        if (response) {
+          Toast.show({
+            ...ConfigStyle.toastDefault,
+            text1: 'Nhận lớp thành công!',
+            type: 'success',
+          });
+          props.navigation.goBack()
+        }
       } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
+        const response = await updateDetailRequest(classData._id, {
+          students: [...classData, { _id: user._id }]
+        })
+        if (response) {
+          Toast.show({
+            ...ConfigStyle.toastDefault,
+            text1: 'Tham gia lớp thành công!',
+            type: 'success',
+          });
+          props.navigation.goBack()
+        }
       }
-      // props.navigation.goBack();
+
+    } catch (e) {
+      Toast.show({
+        ...ConfigStyle.toastDefault,
+        text1: 'Nhận lớp không thành công!',
+        type: 'error',
+      });
     }
   }
+
   async function handleActionSheetOnPress(index) {
+    setShowActionSheet(false);
     switch (index) {
-      case 0:
-        await studentCancelRegistry(classData?.statusRegister?.id);
+      case 0: {
+        if (isMyRequest) {
+        } else {
+          await handleJoinClass()
+        }
         break;
+      }
       case 1: {
         break;
       }
@@ -262,47 +287,6 @@ const DetailClass = (props) => {
       }
     }
   }
-  const footer = (
-    <BoxShadow style={styles.wrapFooter}>
-      {props.route?.params?.classRequest ? (
-        <Text style={{...styles.textFooter, ...Styles.textLight}}>
-          Nhận lớp ngay!
-        </Text>
-      ) : (
-        <ButtonCustom
-          style={styles.wrapBtn}
-          isBusy={leftRequest}
-          disabled={
-            requesting ||
-            !classData?.statusRegister?.id ||
-            isBusy ||
-            classData.status === 'ongoing'
-          }
-          text={'HỦY ĐĂNG KÝ'}
-          onPress={handleClickCancel}
-        />
-      )}
-
-      <ButtonCustom
-        style={styles.wrapBtn}
-        isBusy={rightRequest}
-        disabled={
-          requesting ||
-          classData?.statusRegister?.id ||
-          isBusy ||
-          classData.status === 'ongoing'
-        }
-        text={props.route?.params?.classRequest ? 'Đề nghị dạy' : 'ĐĂNG KÝ'}
-        onPress={() => {
-          if (props.route?.params?.classRequest) {
-            teacherRegistryRequestClass();
-          } else {
-            handleRegister(classData?._id);
-          }
-        }}
-      />
-    </BoxShadow>
-  );
   const ItemTeacher = (item) => {
     return (
       <BoxShadow style={styles.container}>
@@ -404,9 +388,25 @@ height={16} />
     );
   };
 
+  const renderButton = () => {
+    if (isMyRequest) return <ButtonCustom
+        style={{ width: '100%' }}
+        text={'HỦY ĐĂNG KÝ'}
+        onPress={handleClickCancel}
+    />
+    if (isMyClass && isClassNotApprove) {
+      return <ButtonCustom
+          style={{ width: '100%' }}
+          text={'NHẬN LỚP NGAY'}
+          onPress={handleClickJoinClass}
+      />
+    }
+    return null;
+  }
+
   return (
     <Container
-      title={"Chi tiết đăng ký"}
+      title={"Chi tiết"}
       arrowBack={true}
       contentBarStyles={{justifyContent: 'space-between'}}
       navigation={props.navigation}
@@ -471,7 +471,7 @@ height={16} />
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity
+                {classData?.teacher?.id !== user._id ? null : <TouchableOpacity
                     style={{
                       ...styles.itemChat,
                       position: 'absolute',
@@ -490,17 +490,14 @@ height={16} />
                 >
                   <IconChatActive width={16}
                                   height={16} />
-                </TouchableOpacity>
+                </TouchableOpacity>}
               </BoxShadow>
             </View>
         ) : null}
-        <ButtonCustom
-            style={{ width: '100%' }}
-            text={'HỦY ĐĂNG KÝ'}
-            onPress={handleClickCancel}
-        />
+
+        {renderButton()}
         <CustomActionSheet
-            title={'Xác nhận hủy đăng ký'}
+            title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}
             arrayActions={['Xác nhận', 'Thoát']}
             message={classData.title ? `Lớp : ${classData.title}` : ''}
             actionSheetOnPress={handleActionSheetOnPress}

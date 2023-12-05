@@ -24,6 +24,10 @@ export function getDetailRequestCreated(idClass) {
   return callApi(`/tutor-request/detail/${idClass}`)
 }
 
+export function updateDetailRequest(idClass, newData) {
+  return callApi(`/tutor-request/detail/update/${idClass}`, 'post', newData)
+}
+
 export function getListClass(page, limit, keyword = '') {
   return callApiClassList(`/classes/all?page=${page}&limit=${limit}`);
 }
@@ -318,8 +322,12 @@ export async function teacherGetManageClass(
   );
 }
 
-export async function getOtherDataClass() {
-  return callApi(`/tutor-request/all`)
+export async function getAvailableClasses(id) {
+  return callApi(`/tutor-request/available/${id}`)
+}
+
+export async function getRequestByTeacherId(id) {
+  return callApi(`/tutor-request/teacher/${id}`)
 }
 
 export async function getClassSuggestService(

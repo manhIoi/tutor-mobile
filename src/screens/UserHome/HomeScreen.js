@@ -27,7 +27,7 @@ import {
 } from '../../api/users';
 import IconEmpty from '../../assets/images/svg/empty-list.svg';
 import {
-  getOtherDataClass,
+  getAvailableClasses,
 } from '../../api/class';
 import ItemCourseRequest from "../../components/RequestManagement/ItemCourseRequest";
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
@@ -41,6 +41,7 @@ const height = Dimensions.get('window').height;
 
 export default function HomeScreen(props) {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user)
   const [tab, setTab] = useState(0);
   const [textSearch, setTextSearch] = useState('');
   const [refreshing, setRefresh] = useState(false);
@@ -55,10 +56,16 @@ export default function HomeScreen(props) {
   })
   const { loading, teachers} = state
   useEffect(() => {
-    getTeachers();
-    getClasses();
-    getListSubject();
+    syncData();
   }, []);
+
+  const syncData = () => {
+    if (user._id) {
+      getTeachers();
+      getClasses();
+      getListSubject();
+    }
+  }
 
   const getListSubject = async () => {
     const subjects = await getSubjects();
@@ -67,7 +74,7 @@ export default function HomeScreen(props) {
 
   const getClasses = async () => {
     try {
-      const data = await getOtherDataClass();
+      const data = await getAvailableClasses(user._id);
       if (data) {
         setState({ classes: data });
       }
@@ -89,7 +96,7 @@ export default function HomeScreen(props) {
     setTextSearch(text);
   }
   async function onRefresh(showLoading = true) {
-    //TODO: implement
+    syncData();
   }
   async function getTeachers() {
     try {
@@ -111,7 +118,9 @@ export default function HomeScreen(props) {
             onPress={() => {
               props.navigation.navigate('Calendar', {
                 screen: 'DetailRequest',
-                tutorRequest: item,
+                params: {
+                  tutorRequest: item,
+                }
               })
             }}
         />

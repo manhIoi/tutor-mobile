@@ -20,12 +20,12 @@ import Colors from '../../theme/Colors';
 
 const width = Dimensions.get('window').width;
 const ChatItem = (props) => {
-  const [userReceive, setUserReceive] = useState({});
+  const [userReceive, setUserReceive] = useState(props.data?.persons?.[0]);
   const user = useSelector((state) => state.auth.user);
   function onClickContent() {
     props.navigation.navigate('InboxChat', {
-      to: userReceive?.id || userReceive?._id || userReceive?.teacherId,
-      userReceive: userReceive,
+      // to: userReceive?.id || userReceive?._id || userReceive?.teacherId,
+      // userReceive: userReceive,
     });
   }
 
@@ -43,19 +43,7 @@ height={30} />
       </TouchableOpacity>
     </View>,
   ];
-  useEffect(() => {
-    if (props.data?.members?.length) {
-      props.data?.members?.map((item) => {
-        if (
-          (user.type === 'student' && item.type === 'teacher') ||
-          (user.type === 'teacher' && item.type === 'student')
-        ) {
-          // userOther = item;
-          setUserReceive(item);
-        }
-      });
-    }
-  }, []);
+
   return (
     <Swipeable rightButtons={rightButtons}
 rightButtonWidth={60}>
@@ -69,7 +57,7 @@ rightButtonWidth={60}>
               <Avatar
                 size={64}
                 source={{
-                  uri: userReceive?.avatar?.small,
+                  uri: userReceive?.avatar,
                 }}
                 icon={
                   props.data?.blockInfo?.user === user?._id ? (

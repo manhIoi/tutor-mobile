@@ -6,6 +6,7 @@ import {login, logoutUser} from '../../api/users';
 const initialState = {
   user: {},
   isUserLogged: false,
+  chatBot: null,
   balance: 0,
 };
 
@@ -16,6 +17,7 @@ const authSlice = createSlice({
     getUser: (state, action) => {
       state.user = action.payload;
       state.isUserLogged = true;
+      state.chatBot = action.payload?.chatBot
     },
     logout: (state) => initialState,
     updateBalance: (state, action) => {

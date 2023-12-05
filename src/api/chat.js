@@ -11,10 +11,8 @@ export function deleteGroupChat(id) {
   return callApiNotification(`/group-chat/${id}`, 'delete');
 }
 
-export function getListBoxChat(page, limit, keyword) {
-  return callApiListNotification(
-    `/group-chat?page=${page}&limit=${limit}&keyword=${keyword}`,
-  );
+export function getListBoxChat(idUser) {
+  return callApi(`/room/${idUser}`,"get");
 }
 
 export function createMessage(data, id) {
@@ -58,4 +56,8 @@ export function unBlockUser(data) {
 
 export function getMessageByRoom(data) {
   return callApi('/chat/room','post', data);
+}
+
+export function joinRoomApi(id, data) {
+  return callApi(`/room/join/${id}`, 'post', data)
 }

@@ -20,6 +20,8 @@ import {register} from '../../api/users';
 import StatusBar from '../../components/common/StatusBar';
 import MainStyles from '../../theme/MainStyles';
 import {USER_TOKEN} from "../../utils/auth.util";
+import {getUser} from "../../lib/slices/authSlice";
+import {useDispatch} from "react-redux";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -45,6 +47,7 @@ const INITIAL_FORM = {
 const Register = (props) => {
   const {navigation, route} = props;
   const {params} = route;
+  const dispatch = useDispatch();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isBusy, setBusy] = useState(false);
   const [phoneCode, setPhoneCode] = useState('+84');
@@ -135,11 +138,12 @@ const Register = (props) => {
     try {
       const response = await register(data);
       setBusy(false);
-      const { token, user } = response || {}
+      const { token, user, chatBot } = response || {}
       if (user) {
         await USER_TOKEN.set(token);
         setBusy(false);
         props.navigation.replace('Home');
+        dispatch(getUser({...user, chatBot}))
         Toast.show({
           ...ConfigStyle.toastDefault,
           type: 'success',

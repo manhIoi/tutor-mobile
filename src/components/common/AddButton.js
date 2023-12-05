@@ -11,7 +11,7 @@ import ImageUtil from '../../utils/images.util';
 const AddButton = (props) => {
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
-      <View style={[styles.btn]}>
+      <View style={[styles.btn, props.style]}>
         <Image source={ImageUtil.btnAdd}
 style={styles.image} />
       </View>

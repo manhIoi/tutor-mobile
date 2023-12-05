@@ -96,22 +96,25 @@ const CustomInputToolBar = (props) => {
     <View style={styles.container}>
       {!props.groupChat?.blockInfo?._id ? (
         <>
-          <View style={styles.wrapMedia}>
-            <TouchableOpacity
-              style={{paddingHorizontal: 2, paddingVertical: 2}}
-              onPress={handleClickCamera}
-            >
-              <IconCamera width={26}
-height={21} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{marginLeft: 15, paddingHorizontal: 2, paddingVertical: 2}}
-              onPress={handleAttachFile}
-            >
-              <IconLink width={17.4}
-height={17.4} />
-            </TouchableOpacity>
-          </View>
+          {!props?.onlyMessage ? (
+              <View style={styles.wrapMedia}>
+                <TouchableOpacity
+                    style={{paddingHorizontal: 2, paddingVertical: 2}}
+                    onPress={handleClickCamera}
+                >
+                  <IconCamera width={26}
+                              height={21} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{marginLeft: 15, paddingHorizontal: 2, paddingVertical: 2}}
+                    onPress={handleAttachFile}
+                >
+                  <IconLink width={17.4}
+                            height={17.4} />
+                </TouchableOpacity>
+              </View>
+          ) : null}
+
           {/* <View style={styles.wrapInput}> */}
           <TextInput
             multiline
@@ -129,6 +132,7 @@ height={17.4} />
             onChangeText={(text) => setText(text)}
           />
           {/* </View> */}
+
 
           <TouchableOpacity
             style={{

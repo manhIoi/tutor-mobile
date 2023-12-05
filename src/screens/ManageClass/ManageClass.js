@@ -181,7 +181,7 @@ const ManageClass = (props) => {
     <Container
       header={
         <Statusbar
-          title={'Quản lý lớp học '}
+          title={'Quản lý lớp học'}
           contentBarStyles={{justifyContent: 'center'}}
           tab={tab}
           tabLabels={['Lớp đang dạy', 'Lớp đã dạy']}

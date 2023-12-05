@@ -16,30 +16,18 @@ const ManageCalendar = (props) => {
         <TouchableOpacity
           style={styles.wrapIcon}
           onPress={() => {
-            if (user.access === 'teacher') {
-              props.navigation.navigate('RegisterManagement');
-            } else {
               props.navigation.navigate('ManageRegistry');
-            }
           }}
         >
           <IconRegistry width={props.access ? '100%' : '75%'} />
         </TouchableOpacity>
-        {props.access ? (
-          <Text style={styles.textDetail}>Đăng ký{'\n'}lớp học</Text>
-        ) : (
           <Text style={styles.textDetail}>Quản lý{'\n'}đăng ký</Text>
-        )}
       </View>
       <View style={styles.itemContent}>
         <TouchableOpacity
           style={styles.wrapIcon}
           onPress={() => {
-            if (user.access === 'teacher') {
-              props.navigation.navigate('ManageRequest');
-            } else {
               props.navigation.navigate('RequestManagement');
-            }
           }}
         >
           <IconRequirement width={props.access ? '100%' : '75%'} />
@@ -49,32 +37,6 @@ style={styles.textDetail}>
           Quản lý{'\n'}yêu cầu
         </Text>
       </View>
-      <View style={styles.itemContent}>
-        <TouchableOpacity
-          style={styles.wrapIcon}
-          onPress={() => {
-            if (user.access === 'teacher') {
-              props.navigation.navigate('ManageClass');
-            } else {
-              props.navigation.navigate('ClassManagement');
-            }
-          }}
-        >
-          <IconClass width={props.access ? '100%' : '75%'} />
-        </TouchableOpacity>
-        <Text style={styles.textDetail}>Quản lý{'\n'}lớp học</Text>
-      </View>
-      {props.access ? (
-        <View style={styles.itemContent}>
-          <TouchableOpacity
-            style={styles.wrapIcon}
-            onPress={() => props.navigation.navigate('IncomeManagement')}
-          >
-            <IconWallet width={props.access ? '100%' : '75%'} />
-          </TouchableOpacity>
-          <Text style={styles.textDetail}>Quản lý{'\n'}thu nhập</Text>
-        </View>
-      ) : null}
     </View>
   );
 };

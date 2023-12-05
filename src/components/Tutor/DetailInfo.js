@@ -242,6 +242,26 @@ style={styles.textDetail}>
             </Text>
           </View>
           <View
+              style={[
+                Styles.flexRow,
+                Styles.marginVertical2,
+                Styles.flexRowCenterVertical,
+                {
+                  marginRight: 20,
+                },
+              ]}
+          >
+            <View style={[Styles.flexRowCenter, {width: 30}]}>
+              <IconPerson width={16.4} height={16} />
+            </View>
+            <Text
+                numberOfLines={2}
+                style={{...styles.textDetail, marginRight: 15}}
+            >
+              {props?.data?.phone}
+            </Text>
+          </View>
+          <View
             style={[
               Styles.flexRow,
               Styles.marginVertical2,
