@@ -24,6 +24,7 @@ import IconEmpty from '../../assets/images/svg/empty-list.svg';
 import Constants from '../../../constants/Values';
 import useDebouncedEffect from '../../hooks/useDebounce';
 import AddButton from "../../components/common/AddButton";
+import AddChat from "../../components/common/AddChat";
 const LIMIT = Constants.LIMIT * 2;
 const ChatScreen = (props) => {
   const [listGroupChat, setListGroupChat] = useState([]);
@@ -38,7 +39,7 @@ const ChatScreen = (props) => {
   }, [])
 
   function selectInbox(id) {
-    props.navigation.push('InboxChat', id);
+    props.navigation.push('InboxChat');
   }
   async function getListChat() {
     try {
@@ -85,9 +86,10 @@ height={30} />}
         />
       }
       headerHeight={ConfigStyle.statusBarHeight}
-      footer={<AddButton style={{ bottom: 100, }} onPress={() => {
+      footer={<AddChat style={{ bottom: 100, }} onPress={() => {
         props.navigation.push('InboxChat', {
-          isChatAssistant: true
+          isChatAssistant: true,
+
         })
       }} />}
       hideBackground={true}

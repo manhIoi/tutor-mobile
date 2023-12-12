@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, StatusBar, Platform} from 'react-native';
-import {WebView} from 'react-native-webview';
 import Toast from 'react-native-toast-message';
 import {Text} from 'react-native-elements';
 import {useSelector, useDispatch} from 'react-redux';
@@ -86,11 +85,7 @@ const WebViewPayment = (props) => {
     <View style={styles.container}>
       <View style={styles.header} />
       {url ? (
-        <WebView
-          source={{uri: url}}
-          style={styles.containerWebView}
-          onNavigationStateChange={(event) => {}}
-        />
+        null
       ) : (
         <View style={styles.loadingText}>
           <Text>Yêu cầu thất bại</Text>

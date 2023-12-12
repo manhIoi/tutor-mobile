@@ -48,50 +48,7 @@ const INITIAL_FORM = {
     msgError: '',
   },
 };
-const data2 = [
-  {
-    id: 0,
-    image: require('../../assets/images/Payments/vietcombank/vietcombank-vector-logo.png'),
-    codeBank: 'VIETCOMBANK',
-    nameBanking: 'Ngân hàng Ngoại thương (Vietcombank)',
-    checked: true,
-  },
-  {
-    id: 1,
-    image: require('../../assets/images/Payments/viettinbank/Logo_của_Vietinbank.png'),
-    codeBank: 'VIETINBANK',
-    nameBanking: 'Ngân hàng Công thương (Vietinbank)',
-    checked: false,
-  },
-  {
-    id: 2,
-    image: require('../../assets/images/Payments/bidv/BIDV-logo-200x200.png'),
-    codeBank: 'BIDV',
-    nameBanking: 'Ngân hàng đầu tư và phát triển Việt Nam (BIDV)',
-    checked: false,
-  },
-  {
-    id: 3,
-    image: require('../../assets/images/Payments/techcombank/Techcombank_logo.png'),
-    codeBank: 'Techcombank',
-    nameBanking: 'Ngân hàng Kỹ thương Việt Nam (TechcomBank)',
-    checked: false,
-  },
-  {
-    id: 4,
-    image: require('../../assets/images/Payments/saccombank/logo-ngan-hang-sacombank.png'),
-    codeBank: 'SACOMBANK',
-    nameBanking: 'Ngân hàng TMCP Sài Gòn Thương Tín (SacomBank)',
-    checked: false,
-  },
-  {
-    id: 5,
-    image: require('../../assets/images/Payments/acb/ACB_Logo.png'),
-    codeBank: 'ACB',
-    nameBanking: 'Ngân hàng ACB',
-    checked: false,
-  },
-];
+const data2 = [];
 const PaymentScreen = (props) => {
   const balance = useSelector((state) => state.auth.balance);
   const {navigation} = props;

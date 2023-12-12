@@ -112,6 +112,8 @@ const SelectBox = (props) => {
               keyboardType={props.keyboardType || 'default'}
               onChangeText={(value) => props.handleChange(value)}
               onFocus={handleFocusInput}
+
+              {...props?.inputProps}
             />
           ) : (
             <Text

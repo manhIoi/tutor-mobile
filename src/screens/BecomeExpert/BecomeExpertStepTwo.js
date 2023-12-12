@@ -51,36 +51,7 @@ const BecomeExpertStepTwo = (props) => {
   const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
-    handleMountComponent();
   }, []);
-
-  async function handleMountComponent() {
-    setDisabled(true);
-    const promise = [getListTopics(), getListSubjects(), getTypeClass()];
-    await Promise.all(promise);
-    if (props.route?.params?._id) {
-      const teacherInfo = props.route?.params?.teacherInfo || {};
-      setData({
-        topics: {
-          selected: teacherInfo?.topic || [],
-          msgError: '',
-        },
-        subjects: {
-          selected: teacherInfo?.subject || [],
-          msgError: '',
-        },
-        class: {
-          selected: teacherInfo?.classData || [],
-          msgError: '',
-        },
-        teachingType: {
-          ...data.teachingType,
-          selected: teacherInfo?.trainingForm || [],
-        },
-      });
-    }
-    setDisabled(false);
-  }
   function handleChangeData(name, value) {
     const currentData = JSON.parse(JSON.stringify(data));
     const index = currentData[name].selected.indexOf(value);
@@ -185,8 +156,6 @@ const BecomeExpertStepTwo = (props) => {
     };
     props.navigation.navigate('BecomeExpertStepThree', {
       infoUser,
-      _id: props.route?.params?._id || '',
-      teacherInfo: props.route?.params?.teacherInfo || {},
     });
   }
   function handleSetShowBox(index, focus) {

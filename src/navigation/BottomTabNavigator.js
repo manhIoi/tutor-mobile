@@ -230,30 +230,27 @@ export default function BottomTabNavigator() {
         name="Home"
         component={HomeStack}
         options={{
-          tabBarIcon: ({focused}) => (
-            <TabBarIcon focused={focused}
-name="iconHome" />
-          ),
+          tabBarIcon: ({focused}) => {
+            return <TabBarIcon focused={focused} name="iconHome" />
+          },
         }}
       />
       <BottomTab.Screen
         name="CalendarStack"
         component={CalendarStack}
         options={{
-          tabBarIcon: ({focused}) => (
-            <TabBarIcon focused={focused}
-name="iconMortarboard" />
-          ),
+          tabBarIcon: ({focused}) => {
+            return <TabBarIcon focused={focused} name="iconMortarboard" />
+          },
         }}
       />
       <BottomTab.Screen
         name="Chat"
         component={ChatStack}
         options={{
-          tabBarIcon: ({focused}) => (
-            <TabBarIcon focused={focused}
-name="iconChat" />
-          ),
+          tabBarIcon: ({focused}) => {
+            return <TabBarIcon focused={focused} name="iconChat" />
+          },
           tabBarVisible: ({navigation}) => {
             let tabBarVisible = true;
             if (navigation.state.index > 0) {
@@ -270,10 +267,9 @@ name="iconChat" />
         name="Menu"
         component={ProfileStack}
         options={{
-          tabBarIcon: ({focused}) => (
-            <TabBarIcon focused={focused}
-name="iconMenu" />
-          ),
+          tabBarIcon: ({focused}) => {
+            return <TabBarIcon focused={focused} name="iconMenu" />
+          },
         }}
       />
     </BottomTab.Navigator>

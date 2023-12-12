@@ -10,19 +10,16 @@ import IconMortarBoard from '../../assets/images/tab/mortarboard.svg';
 import IconMortarBoardActive from '../../assets/images/tab/mortarboard1.svg';
 import IconMenu from '../../assets/images/tab/menu.svg';
 import IconMenuActive from '../../assets/images/tab/menu1.svg';
-
-export default function TabBarIcon(props) {
+function TabBarIcon(props) {
   switch (props.name) {
     case 'iconHome':
       return props.focused ? (
-        <IconHomeActive width={26.5}
-height={23} />
+        <IconHomeActive width={26.5} height={23} />
       ) : (
         <IconHome width={26.5}
 height={23}
 fill={'#000'} />
       );
-      break;
     case 'iconChat':
       return props.focused ? (
         <IconChatActive width={24.5}
@@ -32,7 +29,6 @@ height={24.5} />
 height={24.5}
 fill={'#000'} />
       );
-      break;
     case 'iconMortarboard':
       return props.focused ? (
         <IconMortarBoardActive width={29.14}
@@ -42,7 +38,6 @@ height={21.78} />
 height={21.78}
 fill={'#000'} />
       );
-      break;
     case 'iconMenu':
       return props.focused ? (
         <IconMenuActive width={19.35}
@@ -52,10 +47,13 @@ height={19.02} />
 height={19.02}
 fill={'#000'} />
       );
-      break;
     default:
+      console.info(`LOGGER:: default`);
   }
 }
+
+export default TabBarIcon;
+
 const styles = StyleSheet.create({
   icon: {
     marginBottom: -3,

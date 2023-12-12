@@ -24,8 +24,7 @@ const ChatItem = (props) => {
   const user = useSelector((state) => state.auth.user);
   function onClickContent() {
     props.navigation.navigate('InboxChat', {
-      // to: userReceive?.id || userReceive?._id || userReceive?.teacherId,
-      // userReceive: userReceive,
+      userReceive: userReceive,
     });
   }
 
