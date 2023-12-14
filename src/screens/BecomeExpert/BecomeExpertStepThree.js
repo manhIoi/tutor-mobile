@@ -57,7 +57,10 @@ const BecomeExpertStepTwo = (props) => {
           multiple: false,
           cropping: false,
         }).then((images) => {
+          console.info(`LOG_IT:: images`, images);
           handleChangeData(images);
+        }).catch(e => {
+          console.info(`LOG_IT:: e`, e);
         });
         break;
       }
@@ -151,147 +154,63 @@ const BecomeExpertStepTwo = (props) => {
     }
   }
   async function handleSubmitRequest() {
-    if (!validateForm()) {
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Vui lòng điền đầy đủ thông tin',
-      });
-      return;
-    }
-
-    setBusy(true);
-    const promise = [
-      data.signal?.value?.medium
-        ? data.signal?.value
-        : await handleUploadImage(data.signal?.value),
-      data.identityCardBack?.value?.medium
-        ? data.identityCardBack?.value
-        : await handleUploadImage(data.identityCardBack?.value),
-      data.identityCardBack?.value?.medium
-        ? data.identityCardBack?.value
-        : await handleUploadImage(data.identityCardBack?.value),
-    ];
-    const promise2 = data.degree.value?.map(async (item) =>
-      item?.medium ? item : await handleUploadImage(item),
-    );
-    const dataResult = await Promise.all(promise);
-    const dataResult2 = await Promise.all(promise2);
-    if (dataResult && dataResult2) {
-      const dataForm = props.route?.params?.infoUser;
-      const dataPost = {
-        fullName: dataForm.fullName,
-        about: dataForm.description,
-        topic: dataForm.topics,
-        subject: dataForm.subjects,
-        typeOfTeacher: dataForm.tutorType,
-        dob: new Date(dataForm.yearBirth, 5).toISOString(),
-        email: dataForm.email,
-        address: dataForm.address,
-        isOnline: true,
-        typeClass: dataForm.class,
-        university: dataForm.university,
-        gender: dataForm.gender,
-        anotherCertificate: dataForm.otherDegree,
-        dayPerWeek: dataForm.dayStudy,
-        city: dataForm.province,
-        signature: dataResult[0],
-        identityCard: [dataResult[1], dataResult[2]],
-        certificate: dataResult2,
-        trainingForm: dataForm.teachingType,
-        lng: dataForm.lng,
-        lat: dataForm.lat,
-      };
-      if (props.route?.params?._id) {
-        await handleUpdateTeacherInfo(dataPost);
-      } else {
-        await handleRequestTeacher(dataPost);
-      }
-    } else {
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Upload hình ảnh xảy ra lỗi',
-      });
-    }
-    setBusy(true);
-  }
-
-  async function handleRequestTeacher(data) {
     try {
-      setBusy(true);
-      const response = await addTeacherInfo(data);
-      setBusy(false);
-      if (response) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: 'Cập nhật thông tin giáo viên thành công',
-        });
-        // props.navigation.push('Payment');
-        // props.navigation.reset({
-        //   index: 0,
-        //   routes: [{name: 'Profile'}],
-        // });
-        // props.navigation.push('Payment');
-        props.navigation.reset({
-          index: 0,
-          routes: [{name: 'Profile'}],
-        });
-      }
-    } catch (error) {
-      setBusy(false);
-      if (error?.response?.data?.errors) {
+      await handleUploadImage(data.signal?.value)
+      if (!validateForm()) {
         Toast.show({
           ...ConfigStyle.toastDefault,
           type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
+          text1: 'Vui lòng điền đầy đủ thông tin',
         });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
+        return;
       }
-    }
-  }
 
-  async function handleUpdateTeacherInfo(data) {
-    try {
       setBusy(true);
-      const response = await updateTeacherInfo(data);
-      setBusy(false);
-      if (response) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: 'Cập nhật thông tin giáo viên thành công',
-        });
-        props.navigation.reset({
-          index: 0,
-          routes: [{name: 'Profile'}],
-        });
-      }
-    } catch (error) {
-      setBusy(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
+      // const promise = [
+      //   data.signal?.value?.medium
+      //       ? data.signal?.value
+      //       : await handleUploadImage(data.signal?.value),
+      //   data.identityCardBack?.value?.medium
+      //       ? data.identityCardBack?.value
+      //       : await handleUploadImage(data.identityCardBack?.value),
+      //   data.identityCardBack?.value?.medium
+      //       ? data.identityCardBack?.value
+      //       : await handleUploadImage(data.identityCardBack?.value),
+      // ];
+      // const promise2 = data.degree.value?.map(async (item) =>
+      //     item?.medium ? item : await handleUploadImage(item),
+      // );
+      // const dataResult = await Promise.all(promise);
+      // const dataResult2 = await Promise.all(promise2);
+      const dataResult1 = ["https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg", "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg", "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"]
+      const dataResult2 = [
+          "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
+        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
+        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
+        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
+        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
+      ]
+      if (dataResult && dataResult2) {
+        const dataForm = props.route?.params?.infoUser;
+        const dataPost = {
+          ...dataForm,
+          signature: dataResult[0],
+          identityCard: [dataResult[1], dataResult[2]],
+          certificate: dataResult2,
+        };
+        // handle call api request teacher or update info
+        console.info(`LOG_IT:: dataPost`, dataPost);
       } else {
         Toast.show({
           ...ConfigStyle.toastDefault,
           type: 'error',
-          text1: 'Lỗi máy chủ',
+          text1: 'Update thông tin xảy ra lỗi',
         });
       }
+    } catch (e) {
+      console.info(`LOG_IT:: e`, e);
+    } finally {
+      setBusy(true);
     }
   }
 

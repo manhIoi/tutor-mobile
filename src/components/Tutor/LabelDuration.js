@@ -34,21 +34,6 @@ height={9} />
           <Text style={styles.textDate}>{formatDDMMYYY(props.finishDate)}</Text>
         </View>
       </View>
-      {!props.isShow ? (
-        <Text
-          style={[
-            Styles.textLight,
-            Styles.textBlack3,
-            styles.spaceVertical,
-            {fontSize: 12},
-          ]}
-        >
-          Tổng số buổi học:{'    '}
-          <Text style={[Styles.textOrange, Styles.textNormal, {fontSize: 14}]}>
-            {props.totalLesson} buổi
-          </Text>
-        </Text>
-      ) : null}
     </View>
   );
 };

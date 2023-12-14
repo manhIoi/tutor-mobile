@@ -36,15 +36,16 @@ const INIT_REVIEWS = {
   currentPage: 1,
 };
 const DetailClass = (props) => {
-
   const user = useSelector(state => state.auth.user);
   const [classData, setClassData] = useState(props.route?.params?.tutorRequest);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [isBusyButon, setBusyButton] = useState(false);
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
   const isMyRequest = classData?.user?._id === user?._id;
-  const isMyClass = classData.teacher?._id === user?._id;
-  const isClassNotApprove = user?.role === 'teacher' && !classData?.isTeacherApproved
+  const isClassNotApprove = classData?.status === 0;
+  const classFullStudent = classData?.students?.length === classData?.numOfStudents
+  const isInClass = classData?.students?.some(i => i?._id === user?._id)
+  console.info(`LOG_IT:: classData?.students`, classData?.students);
 
   async function acceptRequest(id) {
     try {
@@ -141,7 +142,7 @@ const DetailClass = (props) => {
         }
       } else {
         const response = await updateDetailRequest(classData._id, {
-          students: [...classData, { _id: user._id }]
+          students: [...classData?.students, { _id: user._id }]
         })
         if (response) {
           Toast.show({
@@ -154,6 +155,7 @@ const DetailClass = (props) => {
       }
 
     } catch (e) {
+      console.info(`LOG_IT:: e`, e);
       Toast.show({
         ...ConfigStyle.toastDefault,
         text1: 'Nhận lớp không thành công!',
@@ -394,15 +396,44 @@ height={16} />
         text={'HỦY ĐĂNG KÝ'}
         onPress={handleClickCancel}
     />
-    if (isMyClass && isClassNotApprove) {
+
+    if (classData?.role === 'teacher') {
+      if (isClassNotApprove) {
+        return <ButtonCustom
+            style={{ width: '100%' }}
+            text={'NHẬN LỚP NGAY'}
+            onPress={handleClickJoinClass}
+        />
+      }
       return <ButtonCustom
           style={{ width: '100%' }}
-          text={'NHẬN LỚP NGAY'}
+          text={'Đã có giáo viên nhận lớp'}
+          disabled={true}
+      />
+    } else {
+      if (classFullStudent) {
+        return <ButtonCustom
+            style={{ width: '100%' }}
+            text={'LỚP HỌC ĐÃ ĐẦY'}
+            disabled={true}
+        />
+      }
+      if (isInClass) {
+        return <ButtonCustom
+            style={{ width: '100%' }}
+            text={'BẠN ĐANG TRONG LỚP HỌC '}
+            disabled={true}
+        />
+      }
+      return <ButtonCustom
+          style={{ width: '100%' }}
+          text={'THAM GIA LỚP HỌC'}
           onPress={handleClickJoinClass}
       />
     }
-    return null;
   }
+
+  console.info(`LOG_IT:: classData?.teacher?.avatar`, classData?.teacher?.avatar);
 
   return (
     <Container
@@ -499,7 +530,7 @@ height={16} />
         <CustomActionSheet
             title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}
             arrayActions={['Xác nhận', 'Thoát']}
-            message={classData.title ? `Lớp : ${classData.title}` : ''}
+            message={classData?.title ? `Lớp : ${classData?.title}` : ''}
             actionSheetOnPress={handleActionSheetOnPress}
             shouldShow={showActionSheet}
             cancelButtonIndex={1}

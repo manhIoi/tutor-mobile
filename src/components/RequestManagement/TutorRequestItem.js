@@ -79,6 +79,24 @@ const TutorRequestItem = (props) => {
                         fontSize: 12,
                     }}
                 >
+                    Số lượng học sinh :{' '}
+                    <Text
+                        style={{
+                            ...Styles.textNormal,
+                            fontSize: 14,
+                        }}
+                    >
+                        {`${classData?.students?.length}/${classData?.numOfStudents}`}
+                    </Text>
+                </Text>
+                <Text
+                    style={{
+                        ...Styles.textLight,
+                        ...Styles.textBlack3,
+                        ...styles.spaceVertical,
+                        fontSize: 12,
+                    }}
+                >
                     Trạng thái:{' '}
                     <Text
                         style={{

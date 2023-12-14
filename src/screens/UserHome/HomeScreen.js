@@ -130,7 +130,7 @@ export default function HomeScreen(props) {
 
   return (
     <Container
-      footer={<AddButton onPress={createRequest} />}
+      footer={user?.role === 'student' ? <AddButton onPress={createRequest} /> : null}
       header={
         <StatusBarHome
           tab={tab}

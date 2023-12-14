@@ -10,8 +10,8 @@ export default {
     }
   ],
   STATUS_CLASS: {
-    0: 'Đang chờ duyệt',
-    1: 'Đã được duyệt',
+    0: 'Đang mở',
+    1: 'Có giáo viên nhận lớp',
     2: 'Đang diễn ra',
     3: 'Đã xóa',
   },

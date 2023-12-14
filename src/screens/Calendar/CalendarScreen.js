@@ -61,11 +61,8 @@ const CalendarScreen = (props) => {
   const renderItem = ({item}) => {
     return (
         <TutorRequestItem data={item} onPress={() => {
-          props.navigation.navigate('Calendar', {
-            screen: 'DetailRequest',
-            params: {
-              tutorRequest: item,
-            }
+          props.navigation.push('DetailRequest', {
+            tutorRequest: item,
           })
         }} />
     )

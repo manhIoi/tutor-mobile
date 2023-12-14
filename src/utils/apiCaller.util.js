@@ -148,28 +148,30 @@ export async function uploadFile(
   configure,
   callback = () => {},
 ) {
-  if (!(configure instanceof Object)) {
-    configure = {};
-  }
-  // Ref: https://github.com/axios/axios#cancellation
-  configure.cancelToken = new CancelToken((cancelUploadFunction) => {
-    // An executor function receives a cancel function as a parameter
-    callback(cancelUploadFunction);
-  });
-
-  if (!(configure.headers instanceof Object)) {
-    configure.headers = {};
-  }
-
-  configure.baseURL = config.UPLOAD_BASE_URL;
-
-  configure.headers.Authorization = `bearer ${await USER_TOKEN.get()}`;
-  configure.headers['Content-Type'] = 'multipart/form-data';
-
-  if (configure.method === 'put') {
-    return await axios.put(endpoint, formData, configure);
-  }
-  return await axios.post(endpoint, formData, configure);
+  console.info(`LOG_IT:: endpoint`, endpoint, formData, configure);
+  // if (!(configure instanceof Object)) {
+  //   configure = {};
+  // }
+  // // Ref: https://github.com/axios/axios#cancellation
+  // configure.cancelToken = new CancelToken((cancelUploadFunction) => {
+  //   // An executor function receives a cancel function as a parameter
+  //   callback(cancelUploadFunction);
+  // });
+  //
+  // if (!(configure.headers instanceof Object)) {
+  //   configure.headers = {};
+  // }
+  //
+  // configure.baseURL = config.UPLOAD_BASE_URL;
+  //
+  // configure.headers.Authorization = `bearer ${await USER_TOKEN.get()}`;
+  // configure.headers['Content-Type'] = 'multipart/form-data';
+  //
+  // if (configure.method === 'put') {
+  //   return await axios.put(endpoint, formData, configure);
+  // }
+  // return await axios.post(endpoint, formData, configure);
+  return callApi(endpoint, 'post', { formData })
 }
 
 export async function callApiWithToken(
