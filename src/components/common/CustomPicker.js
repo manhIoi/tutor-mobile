@@ -5,13 +5,17 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  Modal, Pressable,
+  Dimensions
 } from 'react-native';
-import Modal from 'react-native-modal';
 import {Text} from 'react-native-elements';
 import PropsTypes from 'prop-types';
 import Colors from '../../theme/Colors';
 import ArrowGrey from '../../assets/images/svg/arrow-grey.svg';
 import Styles from '../../theme/MainStyles';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const CustomPicker = (props) => {
   const [show, setShow] = useState(false);
@@ -87,15 +91,13 @@ const CustomPicker = (props) => {
         </Text>
         <ArrowGrey />
       </TouchableOpacity>
-      {show ? (
-        <ModalPicker
+      <ModalPicker
           items={props.items}
           show={show}
           hideModal={handleHideModal}
           onChange={onChange}
           title={props.title}
-        />
-      ) : null}
+      />
     </View>
   );
 };
@@ -114,61 +116,110 @@ CustomPicker.prototype = {
 export default CustomPicker;
 
 const ModalPicker = (props) => {
+  const renderHeader = () => {
+    if (!props.title) return null;
+    return (
+        <Text style={styles.modalText}>{props?.title}</Text>
+    )
+  }
+  const renderBodyModal = () => {
+    if (props.items?.length <= 0) return (
+        <Text
+            numberOfLines={1}
+            style={{textAlign: 'center', marginVertical: 20}}
+        >
+          Không có dữ liệu
+        </Text>
+    )
+    return (
+            <ScrollView >
+              {props.items?.map((item, index) => (
+                  <View style={styles.wrapItem}
+                        key={index}>
+                    <TouchableOpacity
+                        style={styles.wrapText}
+                        onPress={() => {
+                          props.hideModal();
+                          props.onChange(item);
+                        }}
+                    >
+                      <Text numberOfLines={1}
+                            style={styles.text}>
+                        {item.dial_code || item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+              ))}
+            </ScrollView>
+    )
+  }
   return (
-    <Modal
-      isVisible={props.show}
-      onBackdropPress={props.hideModal}
-      backdropOpacity={0.35}
-      style={styles.modal}
-      animationInTiming={50}
-    >
-      <View style={styles.containerModal}>
-        {props.title ? (
-          <Text style={{...Styles.textBold, ...styles.titleModal}}>
-            {props.title}
-          </Text>
-        ) : null}
-        <ScrollView>
-          {props.items?.length > 0 ? (
-            props.items?.map((item, index) => (
-              <View style={styles.wrapItem}
-key={index}>
-                <TouchableOpacity
-                  style={styles.wrapText}
-                  onPress={() => {
-                    props.hideModal();
-                    props.onChange(item);
-                  }}
-                >
-                  <Text numberOfLines={1}
-style={styles.text}>
-                    {item.dial_code || item.name}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))
-          ) : (
-            <Text
-              numberOfLines={1}
-              style={{textAlign: 'center', marginVertical: 20}}
-            >
-              Không có dữ liệu
-            </Text>
-          )}
-        </ScrollView>
+        // <Modal
+        //     visible={props.show}
+        //     animationType="slide"
+        //     transparent={true}
+        //     onRequestClose={() => {
+        //       alert('Modal has been closed.');
+        //       props.hideModal()
+        //     }}
+        // >
+        //   <View style={styles.containerModal}>
+        //     {props.title ? (
+        //         <Text style={{...Styles.textBold, ...styles.titleModal}}>
+        //           {props.title}
+        //         </Text>
+        //     ) : null}
+        //     <ScrollView >
+        //       {props.items?.length > 0 ? (
+        //           props.items?.map((item, index) => (
+        //               <View style={styles.wrapItem}
+        //                     key={index}>
+        //                 <TouchableOpacity
+        //                     style={styles.wrapText}
+        //                     onPress={() => {
+        //                       props.hideModal();
+        //                       props.onChange(item);
+        //                     }}
+        //                 >
+        //                   <Text numberOfLines={1}
+        //                         style={styles.text}>
+        //                     {item.dial_code || item.name}
+        //                   </Text>
+        //                 </TouchableOpacity>
+        //               </View>
+        //           ))
+        //       ) : (
+        //           <Text
+        //               numberOfLines={1}
+        //               style={{textAlign: 'center', marginVertical: 20}}
+        //           >
+        //             Không có dữ liệu
+        //           </Text>
+        //       )}
+        //     </ScrollView>
+        //   </View>
+        // </Modal>
+      <View style={styles.centeredView}>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={props.show}
+            onRequestClose={props.hideModal}>
+          <Pressable style={{ flex:1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00000080' }} onPress={props.hideModal} >
+            <View style={styles.modalView}>
+              {renderHeader()}
+              {renderBodyModal()}
+            </View>
+          </Pressable>
+        </Modal>
       </View>
-    </Modal>
   );
 };
 const styles = StyleSheet.create({
   containerModal: {
     backgroundColor: Colors.whiteColor,
-    maxHeight: '75%',
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: Colors.borderThin,
+    height: 300,
+    width: 300,
   },
   modal: {},
   wrapText: {
@@ -179,12 +230,10 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.borderThin,
   },
   text: {
-    fontSize: 15,
+    fontSize: 12,
     marginHorizontal: 10,
   },
-  textStyle: {
-    fontSize: 15,
-  },
+
   containerStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -196,5 +245,39 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     borderBottomWidth: 1,
     borderBottomColor: Colors.black3,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    width: windowWidth * 0.8,
+    maxHeight: windowHeight * 0.6,
+    backgroundColor: Colors.whiteColor,
+    borderRadius: 4,
+    overflow: 'hidden'
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    fontSize: 15,
+  },
+  modalText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+    padding: 8,
   },
 });

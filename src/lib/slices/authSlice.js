@@ -23,6 +23,9 @@ const authSlice = createSlice({
     updateBalance: (state, action) => {
       state.balance = action.payload;
     },
+    updateProfile: (state, action) => {
+      state.user = action.payload;
+    }
   },
 });
 
@@ -30,7 +33,7 @@ const authSlice = createSlice({
 export const selectUser = (state) => state.auth.user;
 export const selectIsUserlogged = (state) => state.auth.isUserLogged;
 
-export const {getUser, logout, updateBalance} = authSlice.actions;
+export const {getUser, logout, updateBalance, updateProfile} = authSlice.actions;
 export default authSlice.reducer;
 
 // async action

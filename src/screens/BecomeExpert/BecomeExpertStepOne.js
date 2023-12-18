@@ -11,7 +11,9 @@ import ChoiceSpecificDay from '../../components/CreateRequest/ChoiceSpecificDay'
 import FormInfo from '../../components/BecomeExpert/FormInfo';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import Loading from '../../components/common/Loading';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {updateTeacherInfo} from "../../api/users";
+import {updateProfile} from "../../lib/slices/authSlice";
 
 const UserCreateRequest = (props) => {
   const user = useSelector(state => state.auth.user)
@@ -23,33 +25,34 @@ const UserCreateRequest = (props) => {
       value: user?.phone,
     },
     gender: {
-      value: 0,
+      value: user?.metaData?.gender || 0,
       msgError: '',
     },
     email: {
-      value: '',
+      value: user?.metaData?.email ||'',
       msgError: '',
     },
     address: {
-      value: {},
+      value: user?.address,
       msgError: '',
     },
     yearBirth: {
-      value: '',
+      value: user?.dob,
       msgError: '',
     },
     university: {
-      value: '',
+      value: user?.metaData?.university,
       msgError: '',
     },
     description: {
-      value: '',
+      value: user?.metaData?.description,
       msgError: '',
     },
   });
   const [disabled, setDisabled] = useState(false);
   const [teacherInfo, setTeacherInfo] = useState({});
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   useEffect(() => {
   }, []);
 
@@ -107,30 +110,53 @@ const UserCreateRequest = (props) => {
     setData(form);
     return valid;
   }
-  function handleNext() {
-    if (!validateForm()) {
+  async function handleNext() {
+    try {
+      if (!validateForm()) {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'error',
+          text1: 'Vui lòng điền đầy đủ thông tin',
+        });
+        return;
+      }
+      const infoUser = {
+        ...user,
+        fullName: data.fullName?.value,
+        address: data.address?.value,
+        dob: data.yearBirth?.value,
+        phone: data.phoneNumber?.value,
+        metaData: {
+          ...user?.medataData,
+          gender: data.gender?.value,
+          email: data.email?.value,
+          university: data.university?.value,
+          description: data.description?.value,
+        }
+      };
+      console.info(`LOG_IT:: infoUser`, infoUser);
+      // TODO: handle submit
+      if (props?.route?.params?.isRequestTeacher || user?.role === 'teacher') {
+        props.navigation.navigate('BecomeExpertStepThree', {
+          infoUser
+        })
+      } else {
+        const response = await updateTeacherInfo(infoUser?._id, infoUser);
+        dispatch(updateProfile(response))
+        props.navigation?.popToTop();
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: 'Update thông tin thành công !',
+        });
+      }
+    } catch (e) {
       Toast.show({
         ...ConfigStyle.toastDefault,
         type: 'error',
-        text1: 'Vui lòng điền đầy đủ thông tin',
+        text1: 'Update thông tin thất bại !',
       });
-      return;
     }
-    const infoUser = {
-      ...user,
-      fullName: data.fullName?.value,
-      gender: data.gender?.value,
-      email: data.email?.value,
-      address: data.address?.value,
-      dob: data.yearBirth?.value,
-      university: data.university?.value,
-      description: data.description?.value,
-    };
-    console.info(`LOG_IT:: infoUser`, infoUser);
-    // TODO: handle submit
-    props.navigation.navigate('BecomeExpertStepThree', {
-      infoUser
-    })
   }
   const footer = (
     <BoxShadow style={styles.wrapFooter}>
@@ -147,7 +173,7 @@ const UserCreateRequest = (props) => {
   );
   return (
     <Container
-      title={'Thông tin gia sư'}
+      title={'Hồ sơ'}
       arrowBack={true}
       contentBarStyles={{justifyContent: 'space-between'}}
       navigation={props.navigation}

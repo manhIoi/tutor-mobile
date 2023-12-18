@@ -17,6 +17,7 @@ import {getprofile, updateAvatar} from '../../api/users';
 import StatusBar from '../../components/common/StatusBar';
 import EditIcon from '../../assets/images/svg/edit-button.svg';
 import config from '../../../config/config';
+import {useSelector} from "react-redux";
 
 const width = Dimensions.get('window').width;
 const height = width * 0.7;
@@ -24,25 +25,14 @@ export default function UserProfileAccountScreen(props) {
   const {route} = props;
   const datePicker = props.params;
   const [isClicked, setIsClicked] = React.useState(false);
-  const [user, setUser] = React.useState({});
+  const user = useSelector(state => state.auth.user)
   const [isScroll, setIsScroll] = React.useState(false);
-  async function getUser() {
-    try {
-      const u = await getprofile();
-      setUser(u);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  React.useEffect(() => {
-    getUser();
-  }, []);
   function handleClick(val) {
     setIsClicked(!val);
   }
   const introduction = (
     <View style={styles.viewtext}>
-      <Text style={styles.title}> Xin chào!! </Text>
+      <Text style={styles.title}> Xin chào !! </Text>
       <Text style={{...styles.name, ...MainStyles.textBold}}>
         {user?.fullName}
       </Text>
@@ -107,8 +97,8 @@ height={'23'} />
     >
       <Avatar
         title={introduction}
-        src={user?.avatar?.medium}
-        srcLg={user?.avatar?.large}
+        src={user?.avatar}
+        srcLg={user?.avatar}
         role={0}
       />
 

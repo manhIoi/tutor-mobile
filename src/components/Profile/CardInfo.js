@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import {Text} from 'react-native-elements';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
 import InputForm from './Input';
@@ -32,70 +32,34 @@ const CardInfo = (props) => {
   const {isClicked} = props;
   const {action} = props;
   const dispatch = useDispatch();
-  const INITIAL_FORM = {
+  const user = useSelector(state => state.auth.user);
+  console.info(`LOG_IT:: user`, user);
+  const [form, setForm] = React.useState({
     fullName: {
-      value: '',
+      value: user?.fullName,
       msgError: '',
     },
     phone: {
-      value: '',
+      value: user?.phone,
       msgError: '',
     },
     gender: {
-      value: 1,
+      value: user?.metaData?.gender || 1,
       msgError: '',
     },
     dob: {
-      value: new Date(),
+      value: user?.dob,
     },
     address: {
-      value: {},
+      value: user?.address,
       msgError: '',
     },
     email: {
-      value: '',
+      value: user?.metaData?.email,
       msgError: '',
     },
-  };
-  const [User, setUser] = React.useState({});
-  const [form, setForm] = React.useState(INITIAL_FORM);
+  });
   const [isBusy, setBusy] = React.useState(false);
-  React.useEffect(() => {
-    (async () => {
-      const user = await getprofile();
-      const data = {
-        fullName: {
-          value: user?.fullName,
-          msgError: '',
-        },
-        phone: {
-          value: user?.phone,
-          msgError: '',
-        },
-        gender: {
-          value: user?.gender,
-          msgError: '',
-        },
-        dob: {
-          value: user?.dob ? new Date(user?.dob) : new Date(),
-        },
-        address: {
-          value: {
-            desc: user?.address,
-            lng: user?.lng,
-            lat: user?.lat,
-          },
-          msgError: '',
-        },
-        email: {
-          value: user?.email,
-          msgError: '',
-        },
-      };
-      setForm(data);
-      setUser(user);
-    })();
-  }, []);
   function validateForm() {
     let validate = true;
     const formData = {...form};
@@ -203,8 +167,8 @@ height={19} />
         </View>
       </View>
       <View style={{...styles.topicWrap}}>
-        {User?.topic
-          ? User?.topic.map((v) => (
+        {user?.topic
+          ? user?.topic.map((v) => (
               <TouchableOpacity
                 key={v._id.toString()}
                 disabled={!isClicked}

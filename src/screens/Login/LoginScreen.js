@@ -29,11 +29,11 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const INITIAL_FORM = {
   phoneNumber: {
-    value: '',
+    value: '0926423657',
     msgError: '',
   },
   password: {
-    value: '',
+    value: '123123',
     msgError: '',
   },
 };

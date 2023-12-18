@@ -182,6 +182,9 @@ height={16.8} />}
             handleChange={(value) =>
                 props.handleChangeData('maxStudent', value)
             }
+            inputProps={{
+                editable: !props?.isHasTeacher
+            }}
         />
         {props.data?.maxStudent?.msgError ? (
             <Text style={Styles.textError}>

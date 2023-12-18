@@ -35,7 +35,7 @@ const Avatar = (props) => {
         <View style={{flexDirection: 'row'}}>
           <View style={styles.viewImage}>
             <FastImage
-              zoomView={true}
+              zoomView={false}
               style={styles.image}
               source={{uri: user.avatar}}
             />

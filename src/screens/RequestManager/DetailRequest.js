@@ -42,7 +42,7 @@ const DetailClass = (props) => {
   const [isBusyButon, setBusyButton] = useState(false);
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
   const isMyRequest = classData?.user?._id === user?._id;
-  const isClassNotApprove = classData?.status === 0;
+  const isClassNotApprove = classData?.status === 0 || classData ?.status === 1;
   const classFullStudent = classData?.students?.length === classData?.numOfStudents
   const isInClass = classData?.students?.some(i => i?._id === user?._id)
   console.info(`LOG_IT:: classData?.students`, classData?.students);
@@ -129,7 +129,7 @@ const DetailClass = (props) => {
           teacher: {
             _id: user._id,
           },
-          status: 1,
+          status: 2,
           isTeacherApproved: true,
         })
         if (response) {
@@ -397,7 +397,9 @@ height={16} />
         onPress={handleClickCancel}
     />
 
-    if (classData?.role === 'teacher') {
+    console.info(`LOG_IT:: classData?.role`, classData?.role);
+
+    if (user?.role === 'teacher') {
       if (isClassNotApprove) {
         return <ButtonCustom
             style={{ width: '100%' }}
@@ -407,7 +409,7 @@ height={16} />
       }
       return <ButtonCustom
           style={{ width: '100%' }}
-          text={'Đã có giáo viên nhận lớp'}
+          text={'Đã có giáo viên'}
           disabled={true}
       />
     } else {

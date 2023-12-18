@@ -26,7 +26,7 @@ export default function ProfileScreen(props) {
     try {
       dispatch(updateRefresh());
       const profile = await getprofile();
-      setSourceImage(profile?.avatar?.medium);
+      setSourceImage(profile?.avatar);
       setUserProfile(profile);
       if (profile?.access === 'teacher') {
         await teacherGetBalance();
@@ -78,7 +78,7 @@ export default function ProfileScreen(props) {
                 fullName={userProfile?.fullName}
                 src={sourceImage}
                 phone={userProfile?.phone}
-                srcLg={userProfile?.avatar?.large}
+                srcLg={userProfile?.avatar}
             />
             <CardProfile {...props} notification={notification} />
           </View>

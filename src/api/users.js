@@ -87,8 +87,8 @@ export const addTeacherInfo = (data) => {
   return callApi('/teacherInfo', 'post', data);
 };
 
-export const updateTeacherInfo = (data) => {
-  return callApi('/teacherInfo', 'put', data);
+export const updateTeacherInfo = (id, data) => {
+  return callApi(`/user/update/${id}`, 'post', data);
 };
 export const updatForm = (data) => {
   return callApi('/users/form', 'put', data);

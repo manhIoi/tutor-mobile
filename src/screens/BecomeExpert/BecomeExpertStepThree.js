@@ -15,30 +15,34 @@ import {addTeacherInfo, updateTeacherInfo} from '../../api/users';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
 import config from '../../../config/config';
+import {useDispatch, useSelector} from "react-redux";
+import {updateProfile} from "../../lib/slices/authSlice";
 
-const INITIAL_FORM = {
-  signal: {
-    value: {},
-    msgError: '',
-  },
-  identityCardFront: {
-    value: {},
-    msgError: '',
-  },
-  identityCardBack: {
-    value: {},
-    msgError: '',
-  },
-  degree: {
-    value: [],
-    msgError: '',
-  },
-};
 const BecomeExpertStepTwo = (props) => {
-  const [data, setData] = useState(INITIAL_FORM);
+  const user = useSelector(state => state.auth.user)
+  console.info(`LOG_IT:: user`, user);
+  const [data, setData] = useState({
+    signal: {
+      value: user?.metaData?.signature || '',
+      msgError: '',
+    },
+    identityCardFront: {
+      value: user?.metaData?.identityCard[0] || '',
+      msgError: '',
+    },
+    identityCardBack: {
+      value: user?.metaData?.identityCard[1] || '',
+      msgError: '',
+    },
+    degree: {
+      value: user?.metaData?.certificate || [],
+      msgError: '',
+    },
+  });
   const [typeAdd, setTypeAdd] = useState({});
   const [isBusy, setBusy] = useState(false);
   const [showPickImage, setShowPickerImage] = useState(false);
+  const dispatch = useDispatch();
 
   function handleActionSheetOnPress(index) {
     switch (index) {
@@ -109,14 +113,14 @@ const BecomeExpertStepTwo = (props) => {
   function validateForm() {
     const currentData = JSON.parse(JSON.stringify(data));
     let valid = true;
-    if (!(data?.signal?.value?.path || data?.signal?.value?.medium)) {
+    if (!(data?.signal?.value?.path || data?.signal?.value)) {
       currentData.signal.msgError = 'Vui lòng chọn ảnh';
       valid = false;
     }
     if (
       !(
         data?.identityCardFront?.value?.path ||
-        data?.identityCardFront?.value?.medium
+        data?.identityCardFront?.value
       )
     ) {
       currentData.identityCardFront.msgError = 'Vui lòng chọn ảnh';
@@ -125,13 +129,13 @@ const BecomeExpertStepTwo = (props) => {
     if (
       !(
         data?.identityCardBack?.value?.path ||
-        data?.identityCardBack?.value?.medium
+        data?.identityCardBack?.value
       )
     ) {
       currentData.identityCardBack.msgError = 'Vui lòng chọn ảnh';
       valid = false;
     }
-    if (!(data?.degree?.value?.[0]?.path || data?.degree?.value?.[0]?.medium)) {
+    if (!(data?.degree?.value?.[0]?.path || data?.degree?.value?.[0])) {
       currentData.degree.msgError = 'Vui lòng chọn ảnh';
       valid = false;
     }
@@ -141,21 +145,24 @@ const BecomeExpertStepTwo = (props) => {
 
   async function handleUploadImage(image) {
     try {
+      if (!image) return;
+      console.info(`LOG_IT:: image`, image);
       const formData = new FormData();
-      formData.append('file', {
-        name: `${new Date()}.jpg`,
+      formData.append('tutor_image', {
+        name: `${user?._id}_${new Date().getTime()}.jpg`,
         type: image.mime,
         uri: image.path,
       });
-      const upload = await uploadImage(formData);
-      return upload?.data?.images[0] || {};
+      console.info(`LOG_IT:: formData`, formData);
+      const url = await uploadImage(formData);
+      console.info(`LOG_IT:: upload response`, url);
+      return url;
     } catch (error) {
       console.log(error);
     }
   }
   async function handleSubmitRequest() {
     try {
-      await handleUploadImage(data.signal?.value)
       if (!validateForm()) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -166,40 +173,48 @@ const BecomeExpertStepTwo = (props) => {
       }
 
       setBusy(true);
-      // const promise = [
-      //   data.signal?.value?.medium
-      //       ? data.signal?.value
-      //       : await handleUploadImage(data.signal?.value),
-      //   data.identityCardBack?.value?.medium
-      //       ? data.identityCardBack?.value
-      //       : await handleUploadImage(data.identityCardBack?.value),
-      //   data.identityCardBack?.value?.medium
-      //       ? data.identityCardBack?.value
-      //       : await handleUploadImage(data.identityCardBack?.value),
-      // ];
-      // const promise2 = data.degree.value?.map(async (item) =>
-      //     item?.medium ? item : await handleUploadImage(item),
-      // );
-      // const dataResult = await Promise.all(promise);
-      // const dataResult2 = await Promise.all(promise2);
-      const dataResult1 = ["https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg", "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg", "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg"]
-      const dataResult2 = [
-          "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
-        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
-        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
-        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
-        "https://buffer.com/cdn-cgi/image/w=1000,fit=contain,q=90,f=auto/library/content/images/size/w1200/2023/10/free-images.jpg",
-      ]
+      console.info(`LOG_IT:: data`, data);
+      const promise = [
+        !data.signal?.value?.path
+            ? data.signal?.value
+            : await handleUploadImage(data.signal?.value),
+        !data.identityCardBack?.value?.path
+            ? data.identityCardBack?.value
+            : await handleUploadImage(data.identityCardBack?.value),
+        !data.identityCardFront?.value?.path
+            ? data.identityCardFront?.value
+            : await handleUploadImage(data.identityCardFront?.value),
+      ];
+      const promise2 = data.degree.value?.map(async (item) =>
+          !item?.path ? item : await handleUploadImage(item),
+      );
+      const dataResult = await Promise.all(promise);
+      const dataResult2 = await Promise.all(promise2);
+      console.info(`LOG_IT:: dataResult`, dataResult);
+      console.info(`LOG_IT:: dataResult2`, dataResult2);
       if (dataResult && dataResult2) {
         const dataForm = props.route?.params?.infoUser;
+        console.info(`LOG_IT:: dataForm`, dataForm);
         const dataPost = {
           ...dataForm,
-          signature: dataResult[0],
-          identityCard: [dataResult[1], dataResult[2]],
-          certificate: dataResult2,
+          metaData: {
+            ...dataForm?.metaData,
+            signature: dataResult[0],
+            identityCard: [dataResult[1], dataResult[2]],
+            certificate: dataResult2,
+          },
+          requestBecomeTutor: true,
         };
         // handle call api request teacher or update info
         console.info(`LOG_IT:: dataPost`, dataPost);
+        const response = await updateTeacherInfo(dataForm?._id, dataPost);
+        dispatch(updateProfile(response))
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: 'Update thông tin thành công !',
+        });
+        props.navigation.popToTop();
       } else {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -209,8 +224,13 @@ const BecomeExpertStepTwo = (props) => {
       }
     } catch (e) {
       console.info(`LOG_IT:: e`, e);
+      Toast.show({
+        ...ConfigStyle.toastDefault,
+        type: 'error',
+        text1: 'Update thông tin xảy ra lỗi',
+      });
     } finally {
-      setBusy(true);
+      setBusy(false);
     }
   }
 
@@ -263,23 +283,17 @@ height={31} /> : null}
       hideBackground={true}
       footer={footer}
     >
-      <View
-        style={{
-          ...styles.container,
-          paddingTop: 0,
-        }}
-      >
+      <View>
         <Text style={[Styles.title2RS, styles.title, Styles.textNormal]}>
           Chữ ký
         </Text>
         <View>
-          {data.signal?.value?.path || data.signal?.value?.medium ? (
+          {data.signal?.value?.path || data.signal?.value ? (
             <BoxShadow style={styles.wrapImageSignal}>
               <FastImage
                 source={{
                   uri:
-                    data.signal?.value?.path ||
-                    `${config.IMAGE_MD_URL}${data?.signal?.value?.medium}`,
+                    data.signal?.value?.path || data?.signal?.value,
                 }}
                 style={styles.imageStyle}
               />
@@ -301,13 +315,12 @@ height={31} /> : null}
         </Text>
         <View>
           {data.identityCardFront?.value?.path ||
-          data.identityCardFront?.value?.medium ? (
+          data.identityCardFront?.value ? (
             <BoxShadow style={styles.wrapImageUserID}>
               <FastImage
                 source={{
                   uri:
-                    data.identityCardFront?.value?.path ||
-                    `${config.IMAGE_MD_URL}${data?.identityCardFront?.value?.medium}`,
+                    data.identityCardFront?.value?.path || data?.identityCardFront?.value,
                 }}
                 style={styles.imageStyle}
               />
@@ -328,13 +341,12 @@ height={31} /> : null}
         </View>
         <View>
           {data.identityCardBack?.value?.path ||
-          data.identityCardBack?.value?.medium ? (
+          data.identityCardBack?.value ? (
             <BoxShadow style={styles.wrapImageUserID}>
               <FastImage
                 source={{
                   uri:
-                    data.identityCardBack?.value?.path ||
-                    `${config.IMAGE_MD_URL}${data?.identityCardBack?.value?.medium}`,
+                    data.identityCardBack?.value?.path || data?.identityCardBack?.value,
                 }}
                 style={styles.imageStyle}
               />
@@ -378,9 +390,7 @@ height={31} /> : null}
               source={{
                 uri: item?.path
                   ? item?.path
-                  : item?.medium
-                  ? `${config.IMAGE_MD_URL}${item?.medium}`
-                  : '',
+                  : item,
               }}
               style={[styles.imageStyle, {height: 100}]}
             />

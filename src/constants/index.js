@@ -11,8 +11,8 @@ export default {
   ],
   STATUS_CLASS: {
     0: 'Đang mở',
-    1: 'Có giáo viên nhận lớp',
-    2: 'Đang diễn ra',
+    1: 'Đợi giáo viên phản hồi',
+    2: 'Đã có giáo viên',
     3: 'Đã xóa',
   },
   STATUS_CLASS_COLOR: {

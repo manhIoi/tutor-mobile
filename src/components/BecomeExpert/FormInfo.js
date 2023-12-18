@@ -17,6 +17,8 @@ import IconUniversity from '../../assets/images/svg/university.svg';
 import IconGender from '../../assets/images/svg/gender.svg';
 import IconCalender from '../../assets/images/svg/XMLID_700_.svg';
 import IconStudent from '../../assets/images/svg/student.svg';
+import IconEmail from '../../assets/images/svg/contact.svg';
+
 
 const FormInfo = (props) => {
   return (
@@ -30,8 +32,9 @@ const FormInfo = (props) => {
         svg={<IconEmployee width={11.3}
 height={16.75} />}
         value={props.data.fullName.value}
+        handleChange={(value) => props.handleChangeData('fullName', value)}
         inputProps={{
-            editable: false
+            // editable: false
         }}
       />
       {props.data?.fullName?.msgError ? (
@@ -103,12 +106,13 @@ height={16} />}
             noPicker={true}
             isInput={true}
             autoCapitalize={'none'}
-            keyboardType={'email-address'}
+            keyboardType={'numeric'}
             svg={<IconNotes width={18.1}
                             height={18.1} />}
             value={props.data.phoneNumber.value}
+            handleChange={(value) => props.handleChangeData('phoneNumber', value)}
             inputProps={{
-                editable: false
+                // editable: false
             }}
         />
       <SelectBox
@@ -118,7 +122,7 @@ height={16} />}
         isInput={true}
         autoCapitalize={'none'}
         keyboardType={'email-address'}
-        svg={<IconNotes width={18.1}
+        svg={<IconEmail width={18.1}
 height={18.1} />}
         value={props.data.email.value}
         handleChange={(value) => props.handleChangeData('email', value)}
@@ -132,7 +136,7 @@ height={18.1} />}
             noPicker={true}
             isInput={true}
             autoCapitalize={'none'}
-            svg={<IconNotes width={18.1}
+            svg={<IconLocation width={18.1}
                             height={18.1} />}
             value={props.data.address.value}
             handleChange={(value) => props.handleChangeData('address', value)}

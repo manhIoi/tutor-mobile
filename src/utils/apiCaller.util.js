@@ -171,7 +171,7 @@ export async function uploadFile(
   //   return await axios.put(endpoint, formData, configure);
   // }
   // return await axios.post(endpoint, formData, configure);
-  return callApi(endpoint, 'post', { formData })
+  return callApi(endpoint, 'post', formData)
 }
 
 export async function callApiWithToken(

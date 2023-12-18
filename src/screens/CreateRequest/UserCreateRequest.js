@@ -23,7 +23,6 @@ import ChoiceSpecificDay from '../../components/CreateRequest/ChoiceSpecificDay'
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import Loading from '../../components/common/Loading';
 import {
-  getProvinces,
   getTypeClassAPI,
   requestCreateClass,
   userRequestClass,
@@ -42,96 +41,93 @@ import CustomActionSheet from '../../components/common/CustomActionSheet';
 import {getListTeacher, getSubjectWithTopic} from '../../api/users';
 import config from '../../../config/config';
 
-const INITIAL_FORM = {
-  title: {
-    value: '',
-    msgError: '',
-  },
-  province: {
-    value: '',
-    msgError: '',
-  },
-  address: {
-    value: {},
-    msgError: '',
-  },
-  dateStart: {
-    value: '',
-    msgError: '',
-  },
-  tutorType: {
-    value: '',
-    msgError: '',
-  },
-  phoneNumber: {
-    value: '',
-    msgError: '',
-  },
-  teachingType: {
-    value: '',
-    msgError: '',
-  },
-  topic: {
-    value: '',
-    msgError: '',
-  },
-  subject: {
-    value: '',
-    msgError: '',
-  },
-  class: {
-    value: '',
-    msgError: '',
-  },
-  time: {
-    value: '',
-    msgError: '',
-  },
-  description: {
-    value: '',
-    msgError: '',
-  },
-  numberLesson: {
-    value: 0,
-    msgError: '',
-  },
-  dayStudy: {
-    value: [],
-    msgError: '',
-  },
-  timeStart: {
-    value: new Date(),
-    msgError: '',
-  },
-  totalLesson: {
-    value: '',
-    msgError: '',
-  },
-  maxStudent: {
-    value: '',
-    msgError: '',
-  },
-  price: {
-    value: '',
-    msgError: '',
-  },
-  avatar: {
-    value: {},
-    msgError: '',
-  },
-  location: {
-    value: {},
-    msgError: '',
-  },
-};
+
 
 const UserCreateRequest = (props) => {
+  console.info(`LOG_IT:: props`, props);
   const inputDesc = React.useRef();
   const subjects = useSelector(state => state.subject.value);
+  const isHasTeacher = !!props.route?.params?.teacher?._id
 
   const animationRotate = new Animated.Value(-90);
-  const [data, setData] = useState(INITIAL_FORM);
-  const [provinces, setProvinces] = useState([]);
+  const [data, setData] = useState({
+    title: {
+      value: '',
+      msgError: '',
+    },
+    address: {
+      value: {},
+      msgError: '',
+    },
+    dateStart: {
+      value: '',
+      msgError: '',
+    },
+    tutorType: {
+      value: '',
+      msgError: '',
+    },
+    phoneNumber: {
+      value: '',
+      msgError: '',
+    },
+    teachingType: {
+      value: '',
+      msgError: '',
+    },
+    topic: {
+      value: '',
+      msgError: '',
+    },
+    subject: {
+      value: '',
+      msgError: '',
+    },
+    class: {
+      value: '',
+      msgError: '',
+    },
+    time: {
+      value: '',
+      msgError: '',
+    },
+    description: {
+      value: '',
+      msgError: '',
+    },
+    numberLesson: {
+      value: 0,
+      msgError: '',
+    },
+    dayStudy: {
+      value: [],
+      msgError: '',
+    },
+    timeStart: {
+      value: new Date(),
+      msgError: '',
+    },
+    totalLesson: {
+      value: '',
+      msgError: '',
+    },
+    maxStudent: {
+      value: '1',
+      msgError: '',
+    },
+    price: {
+      value: '',
+      msgError: '',
+    },
+    avatar: {
+      value: {},
+      msgError: '',
+    },
+    location: {
+      value: {},
+      msgError: '',
+    },
+  });
   const [topics, setTopics] = useState([]);
 
   const [classData, setClassData] = useState([]);
@@ -139,11 +135,9 @@ const UserCreateRequest = (props) => {
   const [isBusy, setBusy] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
   const [showPickImage, setShowPickerImage] = useState(false);
-  const [teachers, setTeacher] = useState([]);
-  const [loadTeacher, setLoadTeacher] = useState(false);
   const [scrollEnd, setScrollEnd] = useState('');
-  const [suggestTeacher, setSuggestTeacher] = useState([]);
   const [loading, setLoading] = useState(false);
+  console.info(`LOG_IT:: data`, data);
 
   function handleActionSheetOnPress(index) {
     switch (index) {
@@ -190,115 +184,6 @@ const UserCreateRequest = (props) => {
     //   await initDataClass(props.route.params._id);
     // }
     setLoading(false);
-  }
-  async function initDataClass(id) {
-    try {
-      let response = null;
-      if (props.route?.params?.access === 'teacher') {
-        response = await studentGetClassById(id);
-      } else {
-        response = await getRequestById(id);
-      }
-      setData({
-        ...data,
-        title: {
-          value: response.title,
-          msgError: '',
-        },
-        province: {
-          value: response?.city?._id,
-          msgError: '',
-        },
-        address: {
-          value: {
-            desc: response.address,
-            lng:
-              parseFloat(response?.location?.coordinates[0]?.toFixed(6)) ||
-              parseFloat(response.lng?.toFixed(6)),
-            lat:
-              parseFloat(response?.location?.coordinates[1]?.toFixed(6)) ||
-              parseFloat(response.lat?.toFixed(6)),
-          },
-          msgError: '',
-        },
-        tutorType: {
-          value:
-            response?.type_teacher !== undefined ? response?.type_teacher : '',
-          msgError: '',
-        },
-        phoneNumber: {
-          value: response?.contact || '',
-          msgError: '',
-        },
-        dateStart: {
-          value: response.startAt ? new Date(response.startAt) : new Date(),
-          msgError: '',
-        },
-        teachingType: {
-          value: response.isOnline ? 1 : 0,
-          msgError: '',
-        },
-        topic: {
-          value: response?.topic?.id,
-          msgError: '',
-        },
-        subject: {
-          value: response.subject?.id,
-          msgError: '',
-        },
-        class: {
-          value: response.typeClass?._id,
-          msgError: '',
-        },
-        time: {
-          value: response.timeline / 45,
-          msgError: '',
-        },
-        description: {
-          value: response.description,
-          msgError: '',
-        },
-        numberLesson: {
-          value: response.weekDays?.length,
-          msgError: '',
-        },
-        dayStudy: {
-          value: response.weekDays || [],
-          msgError: '',
-        },
-        timeStart: {
-          value: response.timeStartAt?.hour
-            ? new Date(
-                2020,
-                10,
-                10,
-                response.timeStartAt?.hour || 0,
-                response.timeStartAt?.minute || 0,
-              )
-            : new Date(),
-          msgError: '',
-        },
-        totalLesson: {
-          value: response.totalLesson?.toString(),
-          msgError: '',
-        },
-        maxStudent: {
-          value: response.quantity?.toString(),
-          msgError: '',
-        },
-        price: {
-          value: response.price?.toString(),
-          msgError: '',
-        },
-        avatar: {
-          value: response.avatar || {},
-          msgError: '',
-        },
-      });
-      setSuggestTeacher(response?.teacherListReceive || []);
-    } catch (error) {
-      console.log('initDataClass ==> ', error);
-    }
   }
 
   useEffect(() => {
@@ -355,16 +240,6 @@ const UserCreateRequest = (props) => {
     //   });
     // }
   }, [data.numberLesson?.value]);
-
-  async function getProvince() {
-    try {
-      const response = await getProvinces(1, 20);
-      setProvinces(response);
-    } catch (error) {
-      console.log('getProvince ==>', error);
-      throw error;
-    }
-  }
   async function getTopics() {
     try {
       const response = await gettopics(1, 50);
@@ -383,45 +258,7 @@ const UserCreateRequest = (props) => {
       throw error;
     }
   }
-  async function getTypeTeacher() {
-    try {
-      const response = await getTeacherInfo(1, 50);
-      if (response) {
-        const arr = [];
-        Object.keys(response)?.map((item, index) => {
-          arr.push({
-            _id: index,
-            name:
-              item === 'STUDENT'
-                ? 'SINH VIÊN/HỌC SINH'
-                : item === 'TEACHER'
-                ? 'GIÁO VIÊN/GIẢNG VIÊN'
-                : item === 'WORKING'
-                ? 'ĐANG ĐI LÀM'
-                : null,
-          });
-        });
-        setTypeTeacher(arr);
-      }
-    } catch (error) {
-      console.log('getTypeTeacher ==>', error);
-      throw error;
-    }
-  }
 
-  async function getTeacher(page = 1, limit = 4, text = '') {
-    try {
-      setLoadTeacher(true);
-      const response = await getListTeacher(page, limit, text);
-      if (response?.payload) {
-        setTeacher(response?.payload || []);
-      }
-      setLoadTeacher(false);
-    } catch (error) {
-      setLoadTeacher(false);
-      console.log('get Teacher ==>', error);
-    }
-  }
   function handleChangeData(name, value) {
     console.info("LOGGER:: name,value", name,value);
     setData({
@@ -439,20 +276,12 @@ const UserCreateRequest = (props) => {
       form.title.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
-    if (!form.province?.value) {
-      form.province.msgError = 'Trường này là bắt buộc';
-      valid = false;
-    }
-    if (!form.address?.value?.desc) {
+    if (!form.address?.value) {
       form.address.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
     if (!form.dateStart?.value) {
       form.dateStart.msgError = 'Trường này là bắt buộc';
-      valid = false;
-    }
-    if (form.tutorType?.value === '' && type !== 1) {
-      form.tutorType.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
     if (!form.phoneNumber?.value && type !== 1) {
@@ -463,16 +292,8 @@ const UserCreateRequest = (props) => {
       form.teachingType.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
-    if (!form.topic?.value) {
-      form.topic.msgError = 'Trường này là bắt buộc';
-      valid = false;
-    }
     if (!form.subject?.value) {
       form.subject.msgError = 'Trường này là bắt buộc';
-      valid = false;
-    }
-    if (!form.class?.value) {
-      form.class.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
     if (!form.time?.value) {
@@ -502,10 +323,6 @@ const UserCreateRequest = (props) => {
       form.timeStart.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
-    if (!(form.totalLesson?.value > 0)) {
-      form.totalLesson.msgError = 'Trường này là bắt buộc';
-      valid = false;
-    }
     if (!(form.maxStudent?.value > 0) && type === 1) {
       form.maxStudent.msgError = 'Trường này là bắt buộc';
       valid = false;
@@ -519,10 +336,6 @@ const UserCreateRequest = (props) => {
       title: {
         ...data.title,
         msgError: form.title?.msgError || '',
-      },
-      province: {
-        ...data.province,
-        msgError: form.province?.msgError || '',
       },
       address: {
         ...data.address,
@@ -735,14 +548,14 @@ const UserCreateRequest = (props) => {
 
   async function handleSubmitRequest() {
     // TODO: implement
-    // if (!validateForm()) {
-    //   Toast.show({
-    //     ...ConfigStyle.toastDefault,
-    //     type: 'error',
-    //     text1: 'Vui lòng điền đầy đủ thông tin',
-    //   });
-    //   return;
-    // }
+    if (!validateForm()) {
+      Toast.show({
+        ...ConfigStyle.toastDefault,
+        type: 'error',
+        text1: 'Vui lòng điền đầy đủ thông tin',
+      });
+      return;
+    }
     const day = data.dateStart?.value?.getDate();
     const month = data.dateStart?.value?.getMonth();
     const year = data.dateStart?.value?.getFullYear();
@@ -768,22 +581,11 @@ const UserCreateRequest = (props) => {
       typeClass: data.class?.value,
       trainingForm: [data.teachingType?.value],
       isOnline: !data.teachingType?.value,
-      user: { _id: user._id }
+      user: { _id: user._id },
+      students: [{ _id: user?._id }],
+      isTeacherApproved: false,
+      status: isHasTeacher ? 1 : 0,
     };
-    if (data?.avatar?.value?.path) {
-      formRequest.avatar = await handleUploadImage(data?.avatar?.value);
-    }
-    if (data.avatar?.value?.medium) {
-      formRequest.avatar = data.avatar?.value;
-    }
-    if (type === 1) {
-      formRequest.type = 'string';
-      if (props.route?.params?._id) {
-        await editClass(props.route.params._id, formRequest);
-      } else {
-        await handleCreateClass(formRequest);
-      }
-    }
     await handleUserRequestClass(formRequest, props.route?.params?.teacher?._id);
   }
   function handleAddImage() {
@@ -868,8 +670,8 @@ height={31} /> : null}
         <BoxRequesting
           data={data}
           isBusy={isBusy}
+          isHasTeacher={isHasTeacher}
           dataSelect={{
-            provinces,
             teachingType: ConstantValue.teachingType,
             subjects,
             classData,
