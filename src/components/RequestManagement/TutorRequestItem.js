@@ -4,12 +4,19 @@ import ChoiceSpecificDay from "../CreateRequest/ChoiceSpecificDay";
 import LabelDuration from "../Tutor/LabelDuration";
 import Constants from "../../constants";
 import BoxShadow from "../common/BoxShadow";
-import React from "react";
+import React, {useMemo} from "react";
 import {Pressable, StyleSheet} from "react-native";
-import Colors from "../../theme/Colors";
+
 
 const TutorRequestItem = (props) => {
     const classData = props.data;
+    const timeStart = useMemo(() => {
+        return new Date(classData?.timeStart);
+    }, [classData?.timeStart]);
+    const timeEnd = useMemo(() => {
+        return new Date(timeStart).setMinutes(timeStart.getMinutes()+classData?.timeline)
+    }, [timeStart, classData?.timeLine])
+
     return (
         <Pressable onPress={props?.onPress}>
             <BoxShadow style={styles.wrapBoxTime}>
@@ -31,24 +38,8 @@ const TutorRequestItem = (props) => {
                     containerStyle={{marginHorizontal: 0}}
                 />
                 <LabelDuration
-                    startTime={
-                        new Date(
-                            2020,
-                            8,
-                            2,
-                            classData?.timeStartAt?.hour || 0,
-                            classData?.timeStartAt?.minute || 0,
-                        )
-                    }
-                    finishTime={
-                        new Date(
-                            2020,
-                            8,
-                            2,
-                            classData?.timeEndAt?.hour || 0,
-                            classData?.timeEndAt?.minute || 0,
-                        )
-                    }
+                    startTime={timeStart}
+                    finishTime={timeEnd}
                     startDate={classData?.startAt}
                     finishDate={classData?.endAt}
                     totalLesson={classData?.totalLesson}

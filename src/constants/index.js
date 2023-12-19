@@ -13,13 +13,13 @@ export default {
     0: 'Đang mở',
     1: 'Đợi giáo viên phản hồi',
     2: 'Đã có giáo viên',
-    3: 'Đã xóa',
+    3: 'Đã hoàn tất khóa học',
   },
   STATUS_CLASS_COLOR: {
     0: '#25A053',
     1: '#FFB02C',
     2: '#EE6423',
-    3: '#FFF',
+    3: '#b904d1',
   },
   TYPE_OF_TEACHER: {
     0: 'Đang là học sinh, sinh viên',

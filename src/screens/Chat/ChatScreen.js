@@ -73,59 +73,57 @@ height={30} />}
   );
 
   return (
-    <Container
-      keyboardAvoidingView={true}
-      keyboardShouldPersistTaps={true}
-      header={
-        <Statusbar
-          search={true}
-          iconRight={iconRight}
-          textSearch={textSearch}
-          actionSearch={onSearch}
-          headerHeight={ConfigStyle.statusBarHeight}
-        />
-      }
-      headerHeight={ConfigStyle.statusBarHeight}
-      footer={<AddChat style={{ bottom: 100, }} onPress={() => {
-        props.navigation.push('InboxChat', {
-          isChatAssistant: true,
-
-        })
-      }} />}
-      hideBackground={true}
-    >
-      {listGroupChat?.length ? (
-      <FlatList
-          style={{marginTop: 13}}
-          data={listGroupChat}
-          refreshControl={
-            <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={[Colors.orange]}
+      <Container
+          keyboardAvoidingView={true}
+          keyboardShouldPersistTaps={true}
+          onRefresh={getListChat}
+          header={
+            <Statusbar
+                search={true}
+                iconRight={iconRight}
+                textSearch={textSearch}
+                actionSearch={onSearch}
+                headerHeight={ConfigStyle.statusBarHeight}
             />
           }
-          renderItem={({item}) => {
-            return <ChatItem
-                selectInbox={selectInbox}
-                deleteInbox={(id) => {
-                  deleteInbox(id);
-                }}
-                data={item}
-                navigation={props.navigation}
-            />;
-          }}
-          onEndReachedThreshold={0.4}
-          onEndReached={handleLoadMore}
-      />
-      ) : (
-      <View style={Styles.wrapEmptyImage}>
-        <IconEmpty width={'50%'}
-                   height={'50%'} />
-        <Text style={Styles.textBlack3}>Không có hộp thoại nào</Text>
-      </View>
-      )}
-    </Container>
+          headerHeight={ConfigStyle.statusBarHeight}
+          footer={<AddChat style={{ bottom: 100, borderWidth:2, width: 50, height: 50, borderRadius: 25, borderColor: Colors.borderThin, overflow: "hidden" }} onPress={() => {
+            props.navigation.push('InboxChat', {
+              isChatAssistant: true,
+
+            })
+          }} />}
+          hideBackground={true}
+      >
+        <FlatList
+            style={{marginTop: 13 }}
+            data={listGroupChat}
+            refreshControl={
+              <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={[Colors.orange]}
+              />
+            }
+            renderItem={({item}) => {
+              return <ChatItem
+                  selectInbox={selectInbox}
+                  deleteInbox={(id) => {
+                    deleteInbox(id);
+                  }}
+                  data={item}
+                  navigation={props.navigation}
+              />;
+            }}
+            onEndReachedThreshold={0.4}
+            onEndReached={handleLoadMore}
+            ListEmptyComponent={<View style={Styles.wrapEmptyImage}>
+                <IconEmpty width={'50%'}
+                           height={'50%'} />
+                <Text style={Styles.textBlack3}>Không có hộp thoại nào</Text>
+            </View>}
+        />
+      </Container>
   );
 };
 export default ChatScreen;

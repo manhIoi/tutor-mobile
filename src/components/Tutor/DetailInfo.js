@@ -26,39 +26,6 @@ import ConfigStyle from '../../theme/ConfigStyle';
 
 const DetailInfo = (props) => {
   const user = useSelector((state) => state.auth.user);
-  const [favorite, setFavorite] = React.useState(false);
-  useEffect(() => {
-    setFavorite(props?.isFollow);
-  }, [props?.data]);
-  async function followClass() {
-    await addFavoriteClass();
-  }
-  async function addFavoriteClass() {
-    try {
-      const list = await favoriteClass({classes: props?.data?._id});
-      setFavorite(!favorite);
-      if (list?.payload?.class) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: 'Theo dõi lớp thành công',
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: 'Hủy theo dõi lớp thành công',
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Theo dõi lớp thất bại',
-      });
-    }
-  }
 
   return (
     <View style={styles.container}>
@@ -188,38 +155,6 @@ style={{fontSize: 14}}>
                 )}
               </View>
             )}
-          </View>
-          <View style={Styles.flexRow}>
-            <TouchableOpacity style={styles.paddingBtn}>
-              {user.access === 'teacher' ? null : !props?.isRequest ? (
-                props.favorite ? (
-                  <TouchableOpacity
-                    style={styles.wrapIconHeart}
-                    onPress={props.activeFollow}
-                  >
-                    <IconLikeActive width={20}
-height={20} />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.wrapIconHeart}
-                    onPress={
-                      props.type !== 'class'
-                        ? props.activeFollow
-                        : addFavoriteClass
-                    }
-                  >
-                    {!favorite ? (
-                      <IconLike width={20}
-height={20} />
-                    ) : (
-                      <IconLikeActive width={20}
-height={20} />
-                    )}
-                  </TouchableOpacity>
-                )
-              ) : null}
-            </TouchableOpacity>
           </View>
         </View>
       </View>

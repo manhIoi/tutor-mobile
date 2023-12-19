@@ -14,12 +14,9 @@ import Profile from './ProfileStack';
 import Calendar from './CalendarStack';
 import DetailClass from '../screens/DetailClass/DetailClass';
 import ShowAllList from '../screens/UserHome/ShowAllList';
-import HobbyScreen from '../screens/Login/Hobby';
-import WebViewPayment from '../screens/Payment/WebViewPayment';
-import Calling from '../screens/Call/CallVideo';
-import ReviewScreens from '../screens/DetailClass/Review';
+import SearchScreen from '../screens/Search';
 
-import ReviewScreen from '../screens/DetailClass/Review';
+
 
 const Home = createStackNavigator();
 const HomeStack = ({navigation, route}) => {
@@ -104,34 +101,13 @@ const HomeStack = ({navigation, route}) => {
           headerShown: false,
         }}
       />
-      <Home.Screen
-        name="Hobby"
-        component={HobbyScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Home.Screen
-        name="Calling"
-        component={Calling}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Home.Screen
-        name="WebViewPayment"
-        component={WebViewPayment}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Home.Screen
-        name={'Review'}
-        component={ReviewScreens}
-        options={{
-          headerShown: false,
-        }}
-      />
+        <Home.Screen
+            name={"Search"}
+            component={SearchScreen}
+            options={{
+                headerShown: false,
+            }}
+        />
     </Home.Navigator>
   );
 };

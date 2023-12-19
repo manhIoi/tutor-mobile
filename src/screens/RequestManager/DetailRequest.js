@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   Image,
-  TouchableOpacity,
+  TouchableOpacity, TextInput,
 } from 'react-native';
 import {Text} from 'react-native-elements';
 import FastImage from 'react-native-fast-image';
@@ -30,6 +30,9 @@ import IconChatActive from '../../assets/images/tab/chat1.svg';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
 import {useSelector} from "react-redux";
 
+import Star from '../../assets/images/svg/star.svg';
+import StarGrey from '../../assets/images/svg/star-grey.svg';
+
 const INIT_REVIEWS = {
   data: [],
   totalItems: 0,
@@ -42,75 +45,15 @@ const DetailClass = (props) => {
   const [isBusyButon, setBusyButton] = useState(false);
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
   const isMyRequest = classData?.user?._id === user?._id;
+  const isClassEnd = classData?.status === 3;
   const isClassNotApprove = classData?.status === 0 || classData ?.status === 1;
   const classFullStudent = classData?.students?.length === classData?.numOfStudents
   const isInClass = classData?.students?.some(i => i?._id === user?._id)
-  console.info(`LOG_IT:: classData?.students`, classData?.students);
+  const [voteData, setVoteData] = useState({
+    value: 0,
+    message: ''
+  })
 
-  async function acceptRequest(id) {
-    try {
-      setBusyButton(true);
-      const accept = await userAcceptRequest(id);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        text1: 'Chấp nhận đề nghị thành công!',
-        type: 'success',
-      });
-      setBusyButton(false);
-      onRefresh();
-    } catch (error) {
-      console.log(error);
-      setBusyButton(false);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        text1: 'Lỗi hệ thống!',
-        type: 'error',
-      });
-    }
-  }
-  async function rejectRequest(id) {
-    try {
-      setBusyButton(true);
-      const reject = await userRejectRequest(id);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        text1: 'Từ chối đề nghị thành công!',
-        type: 'success',
-      });
-      setBusyButton(false);
-      onRefresh();
-    } catch (error) {
-      console.log(error);
-      setBusyButton(false);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        text1: 'Lỗi hệ thống!',
-        type: 'error',
-      });
-    }
-  }
-  async function getTeacher(id, page = 1, limit = 2) {
-    try {
-      setBusyTeacher(true);
-      const data = await getTeacherByRequestId(id, page, limit);
-      setTeachers(data?.payload);
-      setBusyTeacher(false);
-    } catch (error) {
-      setBusyTeacher(false);
-      console.log(error);
-    }
-  }
-  async function getTeacherRequest(id, page = 1, limit = 2, status = false) {
-    try {
-      setBusyTeacher(true);
-      const data = await getTeacherByRequestId(id, page, limit, status);
-      setTeacherRequest(data?.payload);
-      setBusyTeacher(false);
-    } catch (error) {
-      setBusyTeacher(false);
-      console.log(error);
-    }
-  }
   function handleClickCancel() {
     setShowActionSheet(true);
     setTimeout(() => {
@@ -289,115 +232,105 @@ const DetailClass = (props) => {
       }
     }
   }
-  const ItemTeacher = (item) => {
+
+  const handleVoteClass = () => {
+    // TODO: call api vote
+  }
+
+  const renderVoteStar = () => {
+
+    return <View>
+      <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 10 }} >
+        {[1,2,3,4,5].map(i => <TouchableOpacity onPress={() => setVoteData({...voteData, value: i})} style={{ marginVertical: 4, marginHorizontal: 10}}>
+          {voteData.value < i ? <StarGrey width={40} height={40} /> : <Star width={40} height={40} />}
+        </TouchableOpacity> )}
+      </View>
+      <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{marginBottom: 10, borderRadius:4, borderWidth:1, borderColor: Colors.borderThin}} onChangeText={(text) => setVoteData({...voteData, message: text})} />
+    </View>
+  }
+
+  const renderInboxTeacher = () => {
+    if (!classData?.teacher) return null;
+    const isMyClass = user?._id === classData?.teacher?._id
+    const nameTeacher = isMyClass ? "Tôi" : classData?.teacher?.fullName
+    const subTitle = classData?.teacher?.metaData?.description || '';
+
     return (
-      <BoxShadow style={styles.container}>
-        <View style={[Styles.flexRow, {flex: 5, marginBottom: 5}]}>
-          <View style={[{flex: 1}]}>
-            <FastImage
-              source={{
-                uri: config?.IMAGE_SM_URL + item?.item?.teacher?.avatar?.small,
-              }}
-              style={styles.image}
-            />
-          </View>
-          <View
-            style={[{flex: 2, marginHorizontal: 20, justifyContent: 'center'}]}
-          >
-            <Text style={{fontSize: 20, color: Colors.black4}}>
-              {item?.item?.teacher?.fullName}
-            </Text>
-            <Text>{''}</Text>
-            <Text style={{fontSize: 12, color: Colors.greyBold}}>
-              {item?.item?.status === 'pending'
-                ? 'Đang chờ duyệt'
-                : item?.item?.status === 'reject' ||
-                  item?.item?.status === 'cancel'
-                ? 'Đã từ chối'
-                : item?.item?.status === 'approve'
-                ? 'Đã duyệt'
-                : ''}
-            </Text>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.itemChat}
-              onPress={() => {
-                props.navigation.push('InboxChat', {
-                  to: item?.item?.teacher?._id,
-                  userReceive: {
-                    avatar: item?.item?.teacher?.avatar,
-                    online: false,
-                    fullName: item?.item?.teacher?.fullName,
-                  },
-                });
-              }}
+        <View style={{marginTop: 20}}>
+          <Text style={{fontSize: ConfigStyle.font20}}>
+            Giáo viên nhận lớp
+          </Text>
+          <BoxShadow style={{...styles.container, flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <View>
+                <Image
+                    source={{
+                      uri: classData?.teacher?.avatar,
+                    }}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 25,
+                      borderWidth: 1,
+                      borderColor: Colors.borderThin,
+                    }}
+                />
+                <View
+                    style={{
+                      ...styles.marker,
+                      ...props.styleMarker,
+                      backgroundColor: classData?.teacher?.isOnline
+                          ? Colors.green
+                          : Colors.grey,
+                    }}
+                />
+              </View>
+
+              <View
+                  style={{
+                    flexDirection: 'column',
+                    marginHorizontal: 20,
+                    justifyContent: 'center',
+                  }}
+              >
+                <Text style={{fontSize: ConfigStyle.font16}}>
+                  {nameTeacher}
+                </Text>
+                <Text style={{fontSize: ConfigStyle.font10}}>
+                  {subTitle}
+                </Text>
+              </View>
+            </View>
+            {isMyClass ? null : <TouchableOpacity
+                style={{
+                  ...styles.itemChat,
+                  position: 'absolute',
+                  top: 0,
+                  right: 10,
+                }}
+                onPress={() => {
+                  props.navigation.push('InboxChat', {
+                    to: classData?.teacher?.id,
+                    userReceive: classData?.teacher,
+                  });
+                }}
             >
-              <IconChatActive width={16}
-height={16} />
-            </TouchableOpacity>
-          </View>
+              <IconChatActive width={16} height={16} />
+            </TouchableOpacity>}
+          </BoxShadow>
         </View>
-        {item?.isInvite ? null : (
-          <View style={styles.groupBtn}>
-            <ButtonCustom
-              style={styles.btnAction}
-              // isBusy={leftBusSy}
-              disabled={
-                isBusyButon ||
-                item?.item?.status === 'reject' ||
-                item?.item?.status === 'approve' ||
-                item?.item?.status === 'cancel'
-              }
-              text={'KHÔNG DUYỆT'}
-              onPress={async () => rejectRequest(item?.item?._id)}
-              textBtn={{fontSize: 12, paddingHorizontal: 10}}
-            />
-            <ButtonCustom
-              style={styles.btnAction}
-              // isBusy={rightBusy}
-              disabled={
-                isBusyButon ||
-                item?.item?.status === 'reject' ||
-                item?.item?.status === 'approve' ||
-                item?.item?.status === 'cancel'
-              }
-              //   disabled ||
-              //   props.data?.status === 'approve' ||
-              //   checked ||
-              //   props.data?.status === 'reject'
-              // }
-              text={'DUYỆT'}
-              onPress={async () => acceptRequest(item?.item?._id)}
-              textBtn={{fontSize: 12, paddingHorizontal: 10}}
-            />
-          </View>
-        )}
-        <CustomActionSheet
-          title={'Từ chối đăng ký'}
-          arrayActions={['Xác nhận', 'Thoát']}
-          message={
-            props.data?.user?.fullName
-              ? `Học viên : ${props.data?.user?.fullName}`
-              : ''
-          }
-          actionSheetOnPress={handleActionSheetOnPress}
-          shouldShow={showActionSheet}
-          cancelButtonIndex={1}
-          destructiveButtonIndex={0}
-        />
-      </BoxShadow>
-    );
-  };
+    )
+  }
 
   const renderButton = () => {
-    if (isMyRequest) return <ButtonCustom
-        style={{ width: '100%' }}
-        text={'HỦY ĐĂNG KÝ'}
-        onPress={handleClickCancel}
-    />
+    const buttonProps = {
+      style: { width: '100%' },
+    }
+    if (isClassEnd) {
+      return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={ "Gửi đánh giá" } />
+    }
 
-    console.info(`LOG_IT:: classData?.role`, classData?.role);
+    if (isMyRequest) return <ButtonCustom {...buttonProps} text={'HỦY ĐĂNG KÝ'} onPress={handleClickCancel} />
 
     if (user?.role === 'teacher') {
       if (isClassNotApprove) {
@@ -461,73 +394,8 @@ height={16} />
           Thông tin lớp
         </Text>
         <TutorRequestItem data={classData} />
-        {classData?.teacher ? (
-            <View style={{marginTop: 20}}>
-              <Text style={{fontSize: ConfigStyle.font20}}>
-                Giáo viên nhận lớp
-              </Text>
-              <BoxShadow style={{...styles.container, flexDirection: 'row'}}>
-                <View style={{flexDirection: 'row', marginTop: 10}}>
-                  <View>
-                    <Image
-                        source={{
-                          uri: classData?.teacher?.avatar,
-                        }}
-                        style={{
-                          width: 50,
-                          height: 50,
-                          borderRadius: 25,
-                          borderWidth: 1,
-                          borderColor: Colors.borderThin,
-                        }}
-                    />
-                    <View
-                        style={{
-                          ...styles.marker,
-                          ...props.styleMarker,
-                          backgroundColor: classData?.teacher?.isOnline
-                              ? Colors.green
-                              : Colors.grey,
-                        }}
-                    />
-                  </View>
-
-                  <View
-                      style={{
-                        flexDirection: 'column',
-                        marginHorizontal: 20,
-                        justifyContent: 'center',
-                      }}
-                  >
-                    <Text style={{fontSize: ConfigStyle.font16}}>
-                      {classData?.teacher?.fullName}
-                    </Text>
-                  </View>
-                </View>
-                {classData?.teacher?.id !== user._id ? null : <TouchableOpacity
-                    style={{
-                      ...styles.itemChat,
-                      position: 'absolute',
-                      top: 0,
-                      right: 10,
-                    }}
-                    onPress={() => {
-                      props.navigation.push('InboxChat', {
-                        to: classData?.teacher?.id,
-                        userReceive: {
-                          avatar: classData?.teacher?.avatar,
-                          fullName: classData?.teacher?.fullName,
-                        },
-                      });
-                    }}
-                >
-                  <IconChatActive width={16}
-                                  height={16} />
-                </TouchableOpacity>}
-              </BoxShadow>
-            </View>
-        ) : null}
-
+        {renderInboxTeacher()}
+        {renderVoteStar()}
         {renderButton()}
         <CustomActionSheet
             title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}

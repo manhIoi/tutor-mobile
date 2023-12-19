@@ -22,6 +22,7 @@ import IconFill from '../../assets/images/svg/icon-fill.svg';
 import IconFillActive from '../../assets/images/svg/icon-fill-active.svg';
 import {getNotificationStatistic} from '../../api/notification';
 import {updateNumberNotify} from '../../lib/slices/notificationSlice';
+import IconNotification from "../../assets/images/svg/alarm.svg";
 
 const INIT_FORM = {
   city: '',
@@ -46,6 +47,7 @@ const StatusBarHome = (props) => {
   const [form, setForm] = useState(INIT_FORM);
   const [autoFocus, setAutoFocus] = useState(false);
   const [shouldSearch, setShouldSearch] = useState('');
+  const isSearchTeacher = props?.tab === 0;
   useEffect(() => {
     if (Platform.OS === 'android') {
       setStatusBarHeight(StatusBar.currentHeight);
@@ -144,44 +146,26 @@ backgroundColor="transparent" />
       >
         <View style={styles.searchBar}>
           <View style={styles.controlGroup}>
-            <View style={{height: 43}}>
-              {!showFilter && !showModalSearch ? (
-                <InputSearch
-                  iconRight={iconRight}
-                  onSearch={props.onSearch}
-                  textSearch={props.textSearch}
-                  onFocusSearch={() => onFocusSearch(true)}
-                  disabled={true}
-                />
-              ) : null}
+            <View style={{height: 43, flexDirection: "row", justifyContent: "space-between"}}>
+              <TouchableOpacity style={{ flex:1}} onPress={() => {
+                props.navigation.navigate('Search', {
+                  isSearchTeacher
+                })
+              }} >
+                <InputSearch textInputProps={{ editable: false, placeholder: `Tìm kiếm ${isSearchTeacher ? "giáo viên" : "lớp học"} ...` }}   />
+              </TouchableOpacity>
+              <View>
+                <View style={{ marginLeft:10, backgroundColor: Colors.whiteColor,height: "100%", aspectRatio:1, borderRadius: 50, justifyContent: "center", alignItems: "center"}}>
+                  <IconNotification
+                      onPress={() =>
+                          props.navigation.navigate('Profile', {screen: 'Notification'})
+                      }
+                  />
+                </View>
+              </View>
             </View>
 
             <View style={styles.controlTab}>
-              {props.tab === 0 ? (
-                <IconCustom
-                  width={26.7}
-                  height={30.3}
-                  svg={<IconContact width={26.7}
-height={30.3} />}
-                  containerStyle={{marginLeft: 5}}
-                  styleNumber={{right: 3, top: -3}}
-                  onPress={() =>
-                    props.navigation.navigate('Chat', {screen: 'Contacts'})
-                  }
-                />
-              ) : (
-                <TouchableOpacity
-                  onPress={() =>
-                    props.navigation.navigate('Calendar', {
-                      screen: 'ManageRegistry',
-                      params: {tab: 1},
-                    })
-                  }
-                >
-                  <IconHeart width={30}
-height={30} />
-                </TouchableOpacity>
-              )}
 
               {!showModalSearch ? (
                 <SwitchTab
@@ -191,16 +175,6 @@ height={30} />
                 />
               ) : null}
             </View>
-          </View>
-          <View style={{...styles.iconNoti}}>
-            <IconCustom
-              type="ionicon"
-              number={numberNotify}
-              name="notifications-outline"
-              onPress={() =>
-                props.navigation.navigate('Profile', {screen: 'Notification'})
-              }
-            />
           </View>
         </View>
 
@@ -252,15 +226,16 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
   },
   controlGroup: {
-    width: '84%',
+    width: '100%',
   },
   controlTab: {
     flexDirection: 'row',
     marginTop: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     height: 45,
     alignItems: 'center',
   },

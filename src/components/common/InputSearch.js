@@ -44,6 +44,7 @@ const InputSearch = (props) => {
         onChangeText={props?.isSearch ? (v) => props.Search(v) : null}
         onFocus={props.onFocusSearch}
         autoFocus={props.autoFocus}
+        {...props?.textInputProps}
       />
       {props.iconRight ? props.iconRight : null}
     </View>
