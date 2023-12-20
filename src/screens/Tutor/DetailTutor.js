@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
+    Image
 } from 'react-native';
 import {Text} from 'react-native-elements';
 import Toast from 'react-native-toast-message';
@@ -24,114 +25,52 @@ import Loading from '../../components/common/Loading';
 import Colors from '../../theme/Colors';
 import ImageUtils from '../../utils/images.util';
 import {
-  getReviewByClass,
-  getReviewByTeacher,
-  getTeacherById,
-  userFollow,
-  userUnFollow,
+  getVoteByTeacher
 } from '../../api/users';
-import {getClassByTeacher} from '../../api/class';
+import VoteItem from "../../components/common/VoteItem";
 
 const INIT_REVIEWS = {
   data: [],
   totalItems: 0,
   currentPage: 1,
 };
+
+const EmptyComponent = () => {
+  return (
+      <View style={{ justifyContent: 'center', alignItems: 'center' }} >
+        <Text style={{fontStyle: 'italic'}}>
+          Không có dữ liệu
+        </Text>
+      </View>
+
+  )
+}
+
 const DetailTutor = (props) => {
   const {teacher} = props.route.params
   const [classBusy, setClassBusy] = useState(false);
   const [classes, setClasses] = useState([]);
   const [loadReview, setLoadReview] = useState(true);
-  const [reviews, setReviews] = useState(INIT_REVIEWS);
   const [favorite, setFavorite] = useState(false);
+  const [voteList, setVoteList] = useState([]);
   const [refreshing, setRefresh] = useState(false);
+  console.info(`LOG_IT:: voteList`, voteList);
 
   useEffect(() => {
-    setFavorite(teacher?.statusIsFollow);
+    getVoteList()
   }, [teacher]);
 
-  async function fetchData(id) {
-    const promise = [getTeacherData(id), getClasses(id), getListReview(id)];
-    await Promise.all(promise);
-  }
-  function reloadReview() {
-    getListReview(teacher?._id, 1, 5, '', true);
-  }
-
-  async function getListReview(id, page = 1, limit = 4, refresh = false) {
+  const getVoteList = async () => {
     try {
-      if (!refresh) {
-        setLoadReview(true);
-      }
-      const response = await getReviewByTeacher(id, page, limit);
-      console.log('getReviewByTeacher');
-      console.log(response);
-      setLoadReview(false);
-      setReviews({
-        data: response?.payload || [],
-        currentPage: response?.page,
-        totalItems: response?.total_item || 0,
-      });
-    } catch (error) {
-      console.log('getListReview ==>', error);
+      const response = await getVoteByTeacher(teacher?._id);
+      setVoteList(response);
+    } catch (e) {
+      console.info(`LOG_IT:: getVoteList e`, e);
     }
   }
+
   async function onRefresh(showLoading = true) {
-    // if (showLoading) {
-    //   setRefresh(true);
-    // }
-    // getClasses(props.route.params._id, 1, 4, true);
-  }
-  async function handleFollow() {
-    try {
-      const response = await userFollow({guest: teacher._id});
-      if (response) {
-        setFavorite(true);
-      }
-    } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-      console.log('handleFollow =>>', error);
-    }
-  }
-
-  async function handleDisFollow() {
-    try {
-      const response = await userUnFollow({guest: teacher._id});
-      if (response) {
-        setFavorite(false);
-      }
-    } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-      console.log('handleDisFollow =>>', error);
-    }
+    getVoteList();
   }
 
   const footer = (
@@ -164,7 +103,15 @@ const DetailTutor = (props) => {
       </TouchableOpacity>
     </BoxShadow>
   );
-  console.log(classes);
+
+  const renderVoteItem = ({ item, index }) => {
+    console.info(`LOG_IT:: item`, item);
+    const { message, userSend } = item || {}
+    return (
+        <VoteItem message={message} userSend={userSend} />
+    )
+  }
+
   return (
     <Container
       title={'Hồ sơ gia sư'}
@@ -179,11 +126,7 @@ const DetailTutor = (props) => {
     >
       <View style={styles.container}>
         <View>
-          <DetailInfo
-              favorite={favorite}
-              activeFollow={favorite ? handleDisFollow : handleFollow}
-              data={teacher}
-          />
+          <DetailInfo data={teacher} />
           <View style={styles.containerList}>
             <View style={styles.wrapTitle}>
               <Text
@@ -195,9 +138,7 @@ const DetailTutor = (props) => {
               >
                 Danh sách lớp đang mở
               </Text>
-              <TouchableOpacity
-                  // onPress={props.viewMoreAction ? props.viewMoreAction : null}
-              >
+              <TouchableOpacity>
                 {classes?.length > 4 ? (
                     <Text style={styles.viewAll}>Xem tất cả</Text>
                 ) : null}
@@ -229,9 +170,7 @@ const DetailTutor = (props) => {
                             marginBottom: 0,
                           }}
                       >
-                        <Text style={{fontStyle: 'italic'}}>
-                          Không có dữ liệu
-                        </Text>
+                        <EmptyComponent />
                       </View>
                   )
               ) : (
@@ -239,6 +178,19 @@ const DetailTutor = (props) => {
                     <ActivityIndicator color={Colors.orange} />
                   </View>
               )}
+            </View>
+
+            <View>
+              <Text
+                  style={{
+                    ...Styles.title2RS,
+                    ...Styles.textNormal,
+                    marginLeft: 5,
+                  }}
+              >
+                Đánh giá giáo viên
+              </Text>
+              <FlatList data={voteList} renderItem={renderVoteItem} keyExtractor={(item) => `vote_${item?._id}`} ListEmptyComponent={EmptyComponent} />
             </View>
           </View>
           {/*<ListTopics data={teacher?.topic} />*/}

@@ -11,7 +11,7 @@ export async function callApi(endpoint, method = 'get', body) {
       url: endpoint,
       data: body,
       headers: {
-        // Authorization: `Bearer ${await USER_TOKEN.get()}`,
+        Authorization: `Bearer ${await USER_TOKEN.get()}`,
       },
       baseURL: config.API_BASE_URL,
     }

@@ -20,8 +20,6 @@ import IconCalendar from '../../assets/images/svg/calendar.svg';
 import IconGender from '../../assets/images/svg/gender.svg';
 import BackgroundGradient from '../common/BackgroudGradient';
 import Constants from '../../constants';
-import IconLikeActive from '../../assets/images/svg/like-active.svg';
-import {favoriteClass} from '../../api/class';
 import ConfigStyle from '../../theme/ConfigStyle';
 
 const DetailInfo = (props) => {
@@ -47,8 +45,7 @@ style={Styles.title2RS}>
             ) : null}
 
             <View style={Styles.flexRowCenterVertical}>
-              <RateStar star={props?.data?.rate}
-size={10} />
+              <RateStar size={10}  activeValue={Math.round(props?.data?.voteValue) } numberOfVotes={props?.data?.votes?.length} />
               {props?.data?.totalRate ? (
                 <Text style={{marginLeft: 5}}>({props?.data?.totalRate})</Text>
               ) : null}

@@ -28,9 +28,7 @@ import CustomActionSheet from '../common/CustomActionSheet';
 import {userInviteTeacher} from '../../api/class';
 
 const ProfileHorizontal = (props) => {
-  const [favorite, setFavorite] = useState(false);
-  const [showPick, setShowPick] = useState(false);
-  const [isBusy, setBusy] = useState(false);
+
   const subjectName = useMemo(() => {
     const names = props.data.subjects.map(i => i.name);
     return names.join(', ')
@@ -41,118 +39,7 @@ const ProfileHorizontal = (props) => {
       props.hideModalSearch();
     }
   }
-  async function handleFollow(id) {
-    try {
-      console.log(id);
-      const response = await userFollow({guest: id});
-      if (response) {
-        // set status follow
-        setFavorite(true);
-        props.onRefresh(false);
-      }
-    } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-      console.log('handleFollow =>>', error);
-    }
-  }
-  useEffect(() => {
-    setFavorite(props.data?.isFollow || props.data?.statusIsFollow);
-  }, [props.data]);
 
-  async function handleDisFollow(id) {
-    try {
-      console.log(id);
-      const response = await userUnFollow({guest: id});
-      if (response) {
-        // set status follow
-        setFavorite(false);
-        props.onRefresh(false);
-      }
-    } catch (error) {
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-      console.log('handleDisFollow =>>', error);
-    }
-  }
-
-  function inviteTeacherToClass() {
-    if (props.classId) {
-      setShowPick(true);
-      setTimeout(() => {
-        setShowPick(false);
-      }, 150);
-    }
-  }
-
-  async function inviteTeacher() {
-    try {
-      setBusy(true);
-      const data = {
-        teacherId: props.data?.teacherId || props.data?._id,
-        classId: props.classId,
-      };
-      const response = await userInviteTeacher(data);
-      setBusy(false);
-      // props.onRefresh(false);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'success',
-        text1: 'Mời dạy lớp học thành công',
-      });
-      props?.onRefresh(false);
-    } catch (error) {
-      setBusy(false);
-      console.log('handleInvite => ', error);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
-  }
-
-  function handleActionSheetOnPress(index) {
-    if (index === 0) {
-      inviteTeacher();
-    }
-  }
   return (
     <TouchableWithoutFeedback onPress={handleCLickItem}>
       <View>
@@ -165,15 +52,6 @@ const ProfileHorizontal = (props) => {
                 }}
                 style={styles.image}
               />
-              {favorite ? (
-                <TouchableOpacity
-                  style={styles.wrapIconHeart}
-                  onPress={() => handleDisFollow(props.data?._id)}
-                >
-                  <IconHeartActive width={20}
-height={20} />
-                </TouchableOpacity>
-              ) : null}
             </View>
             <View style={styles.boxInfo}>
               <View style={{...styles.wrapTitle, flex: 5}}>
@@ -184,8 +62,7 @@ height={20} />
                   {props.data?.fullName}
                 </Text>
               </View>
-              <RateStar star={props.data?.rate || 0}
-size={10} />
+              <RateStar activeValue={Math.round(props?.data?.voteValue)} numberOfVotes={props?.data?.votes?.length}  size={10} />
               <View style={[Styles.flexRow, styles.wrapBirth]}>
                 <IconCake width={8}
 height={12} />
@@ -213,15 +90,6 @@ height={12} />
             </View>
           </View>
         </BoxShadow>
-        <CustomActionSheet
-          title={'Mời dạy lớp'}
-          message={`Mời giáo viên ${props?.data?.fullName} dạy lớp ${props.className}`}
-          arrayActions={['Xác nhận', 'Hủy']}
-          actionSheetOnPress={handleActionSheetOnPress}
-          shouldShow={showPick}
-          cancelButtonIndex={1}
-          destructiveButtonIndex={0}
-        />
       </View>
     </TouchableWithoutFeedback>
   );

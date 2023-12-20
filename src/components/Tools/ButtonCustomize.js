@@ -16,6 +16,12 @@ import MainStyles from '../../theme/MainStyles';
 // import Svg, { Circle, SvgUri, SvgCssUri } from 'react-native-svg';
 
 const ButtonCustomize = (props) => {
+  const _renderIcon = () => {
+    if (typeof props?.renderIcon === 'function') {
+      return props?.renderIcon?.();
+    }
+    return null;
+  }
   const handlePress = () => {
     props.onPress();
   };
@@ -59,13 +65,7 @@ const ButtonCustomize = (props) => {
               </Text>
             </View>
           )}
-          {props.iconName && (
-            <Icon
-              name={props.iconName}
-              color={props.color || Colors.btnLogin}
-              style={styles.viewButtonIcon}
-            />
-          )}
+          {_renderIcon?.()}
           {/* <Svg height="50%" width="50%" viewBox="0 0 100 100">
                         <Circle
                             cx="50"

@@ -78,7 +78,7 @@ const TextForm = (props) => {
   }
   return (
     <TouchableOpacity
-      style={styles.viewText}
+      style={[styles.viewText, props?.style]}
       onPress={() => {
         props.navigation.navigate(
           props.navigate,

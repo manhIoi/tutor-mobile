@@ -5,6 +5,10 @@ import {
   callApiList,
 } from '../utils/apiCaller.util';
 
+export function voteClass(voteData) {
+  return callApi('/vote/add', 'post', voteData)
+}
+
 export function getProvinces(page, limit) {
   return callApiClass(`/cities?page=${page}&limit=${limit}`);
 }
@@ -422,4 +426,8 @@ export function teacherAcceptAndReject(type, data) {
     'put',
     data,
   );
+}
+
+export function getVoteByClass(id, idUser) {
+  return callApi(`/vote/class/${id}/${idUser}`, 'get')
 }

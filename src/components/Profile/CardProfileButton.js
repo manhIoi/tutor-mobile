@@ -9,7 +9,7 @@ import {
   Keyboard,
 } from 'react-native';
 import {Text} from 'react-native-elements';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
 import BackgroundGradient from '../common/BackgroudGradient';
@@ -18,16 +18,23 @@ import IconPassword from '../../assets/images/svg/IconStart.svg';
 import IconPolicy from '../../assets/images/svg/IconPolicy.svg';
 import IconHelp from '../../assets/images/svg/question.svg';
 import IconNotification from '../../assets/images/svg/alarm.svg';
+import IconLogout from '../../assets/images/svg/logout.svg';
 import IconUserProfile from '../../assets/images/svg/employee.svg';
 import IconRelationship from '../../assets/images/svg/care.svg';
 import BoxShadow from '../common/BoxShadow';
 import ButtonCustom from "../common/ButtonFooterCustom";
+import {logoutAsync} from "../../lib/slices/authSlice";
 
 const width = Dimensions.get('window').width;
 const CardInfo = (props) => {
   const role = useSelector((state) => state.auth.user);
   const isStudent = role?.role === 'student';
-  const isRequestedApprove = role?.requestBecomeTutor === true
+  const isRequestedApprove = role?.requestBecomeTutor === true;
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    await dispatch(logoutAsync())
+  }
   const renderButton = () => {
     if (isStudent && !isRequestedApprove) return (
           <View style={{ margin: 10}}>
@@ -84,6 +91,10 @@ height={21} />}
 {/*          {...props}*/}
 {/*        />*/}
         {renderButton()}
+        <TouchableOpacity onPress={handleLogout} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, padding:10 }}  >
+          <Text style={{ fontWeight: 'bold' }} >Đăng xuất</Text>
+          <IconLogout width={17} height={21} />
+        </TouchableOpacity>
       </BoxShadow>
     </View>
   );

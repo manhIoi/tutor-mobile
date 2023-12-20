@@ -14,14 +14,16 @@ import Styles from '../../theme/MainStyles';
 import BoxShadow from '../../components/common/BoxShadow';
 import Colors from '../../theme/Colors';
 import ImageUtils from '../../utils/images.util';
+import { isEmpty } from "lodash";
+
 
 import {
   cancelRegistryClass,
   registerClass,
   teacherRegistryRequest,
-  getTeacherByRequestId,
-  userRejectRequest,
-  userAcceptRequest, getDetailRequestCreated, updateDetailRequest,
+  updateDetailRequest,
+  voteClass,
+  getVoteByClass
 } from '../../api/class';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
@@ -51,8 +53,28 @@ const DetailClass = (props) => {
   const isInClass = classData?.students?.some(i => i?._id === user?._id)
   const [voteData, setVoteData] = useState({
     value: 0,
-    message: ''
-  })
+    message: '',
+    editable: false,
+    userSend: user,
+  });
+
+  useEffect(() => {
+    getVoteData();
+  }, [])
+
+  const getVoteData = async () => {
+    try {
+      const response = await getVoteByClass(classData?._id, user?._id) || {};
+
+      setVoteData({
+        ...voteData,
+        ...response,
+        editable: isEmpty(response),
+      })
+    } catch (e) {
+
+    }
+  }
 
   function handleClickCancel() {
     setShowActionSheet(true);
@@ -233,19 +255,54 @@ const DetailClass = (props) => {
     }
   }
 
-  const handleVoteClass = () => {
-    // TODO: call api vote
+  const handleVoteClass = async () => {
+    try {
+      const _voteData = {
+        userSend: user?._id,
+        userReceive: classData?.teacher?._id,
+        value: voteData.value,
+        message: voteData?.message,
+        class: classData?._id,
+      }
+      const response = await voteClass(_voteData);
+      if (response) {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          text1: 'Gửi đánh giá thành công! Cảm ơn sự đánh giá của bạn.',
+          type: 'success',
+        });
+        props.navigation.goBack()
+      } else {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          text1: 'Gửi đánh giá thất bại',
+          type: 'error',
+        });
+      }
+    } catch (e) {
+      Toast.show({
+        ...ConfigStyle.toastDefault,
+        text1: 'Gửi đánh giá thất bại',
+        type: 'error',
+      });
+    }
   }
 
   const renderVoteStar = () => {
-
+    if (!isClassEnd || isEmpty(classData?.teacher)) return null;
     return <View>
       <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 10 }} >
-        {[1,2,3,4,5].map(i => <TouchableOpacity onPress={() => setVoteData({...voteData, value: i})} style={{ marginVertical: 4, marginHorizontal: 10}}>
+        {[1,2,3,4,5].map(i => <TouchableOpacity onPress={() =>  {
+          if (!voteData.editable) return;
+          setVoteData({...voteData, value: i})
+        }} style={{ marginVertical: 4, marginHorizontal: 10}}>
           {voteData.value < i ? <StarGrey width={40} height={40} /> : <Star width={40} height={40} />}
         </TouchableOpacity> )}
       </View>
-      <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{marginBottom: 10, borderRadius:4, borderWidth:1, borderColor: Colors.borderThin}} onChangeText={(text) => setVoteData({...voteData, message: text})} />
+      {voteData?.editable
+          ? <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{marginBottom: 10, borderRadius:4, borderWidth:1, borderColor: Colors.borderThin}} onChangeText={(text) => setVoteData({...voteData, message: text})} />
+          :  <View style={{ justifyContent: 'center', alignItems: 'center' }} ><Text>Bạn đã đánh giá: {voteData.message}</Text></View>
+      }
     </View>
   }
 
@@ -327,7 +384,10 @@ const DetailClass = (props) => {
       style: { width: '100%' },
     }
     if (isClassEnd) {
-      return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={ "Gửi đánh giá" } />
+      if (voteData?.editable && !isEmpty(classData?.teacher)) {
+        return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={ "Gửi đánh giá" } />
+      }
+      return <ButtonCustom {...buttonProps} disabled={true} text={ "Lớp học đã hết hạn" } />;
     }
 
     if (isMyRequest) return <ButtonCustom {...buttonProps} text={'HỦY ĐĂNG KÝ'} onPress={handleClickCancel} />

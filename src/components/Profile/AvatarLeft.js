@@ -81,13 +81,13 @@ const Avatar = (props) => {
           </View>
         ) : null}
       </View>
-      <TouchableOpacity onPress={handleLogout}
-style={styles.btnLogout}>
-        <Text>Đăng xuất</Text>
-        <IconLogout style={{marginLeft: 8}}
-width={18}
-height={19} />
-      </TouchableOpacity>
+{/*      <TouchableOpacity onPress={handleLogout}*/}
+{/*style={styles.btnLogout}>*/}
+{/*        <Text>Đăng xuất</Text>*/}
+{/*        <IconLogout style={{marginLeft: 8}}*/}
+{/*width={18}*/}
+{/*height={19} />*/}
+{/*      </TouchableOpacity>*/}
     </View>
   );
 };

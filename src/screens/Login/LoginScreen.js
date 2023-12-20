@@ -22,8 +22,7 @@ import ConfigStyle from '../../theme/ConfigStyle';
 import {getUser, loginUserAsync} from '../../lib/slices/authSlice';
 import {login, resendVerifyCode} from '../../api/users';
 import {USER_TOKEN} from '../../utils/auth.util';
-import {checkNotificationStatus} from '../../utils/checkPermission';
-import Constants from '../../../constants/Values';
+import IconLogout from '../../assets/images/svg/logout.svg';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -267,7 +266,7 @@ disabled={isBusy}>
               </TouchableOpacity>
               <ButtonCustomize
                 name="Đăng nhập"
-                iconName="arrowright"
+                renderIcon={() => <IconLogout width={20} height={12} />}
                 onPress={handleLogin}
                 isBusy={isBusy}
               />

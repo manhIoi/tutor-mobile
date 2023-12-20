@@ -6,6 +6,10 @@ import {
 } from '../utils/apiCaller.util';
 import axios from "axios";
 
+export const getVoteByTeacher = (id) => {
+  return callApi(`/vote/teacher/${id}`)
+}
+
 export const register = async (data) => {
   return callApi('/user/register', 'post', data);
 };
