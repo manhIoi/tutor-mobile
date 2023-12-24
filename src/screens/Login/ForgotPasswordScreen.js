@@ -16,7 +16,7 @@ import InputForm from '../../components/common/InputForm';
 import MainStyles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
-import {checkPhoneNumber, resendVerifyCode} from '../../api/users';
+import {checkPhoneNumber, resendVerifyCode, verifyPhoneNumber} from '../../api/users';
 
 const INITIAL_FORM = {
   phoneNumber: {
@@ -34,11 +34,11 @@ function ForgotPasswordScreen(props) {
   const [phoneCode, setPhoneCode] = useState('+84');
   const [isBusy, setBusy] = useState(false);
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+    Keyboard?.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard?.addListener('keyboardDidHide', _keyboardDidHide);
     return () => {
-      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+      Keyboard?.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard?.removeListener('keyboardDidHide', _keyboardDidHide);
     };
   }, []);
 
@@ -62,20 +62,19 @@ function ForgotPasswordScreen(props) {
   const handleContinue = async () => {
     try {
       setBusy(true);
-      const response = await resendVerifyCode({
+      const response = await verifyPhoneNumber({
         phone: form.phoneNumber?.value,
-        forgotPassword: true,
       });
-      setBusy(false);
-      if (response) {
-        props.navigation.navigate('InputVerifyCodeScreen', {
-          phoneNumber: form.phoneNumber.value,
-          smsId: response.SMSID,
-          forgotPassword: true,
+      if (response?.error) {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'error',
+          text1: response?.error || 'Server Internal Error.'
         });
+      } else {
+        props.navigation.replace('InputVerifyCodeScreen', { phoneNumber: form.phoneNumber.value, forgotPassword: true, });
       }
     } catch (error) {
-      setBusy(false);
       if (error?.response?.data?.errors) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -91,6 +90,8 @@ function ForgotPasswordScreen(props) {
           text1: 'Server Internal Error.',
         });
       }
+    } finally {
+      setBusy(false)
     }
   };
 

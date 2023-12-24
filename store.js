@@ -10,6 +10,7 @@ import socketReducer from './src/lib/slices/socketSlice';
 import notificationReducer from './src/lib/slices/notificationSlice';
 import callingSlice from './src/lib/slices/callSlice';
 import subjectSlice from "./src/lib/slices/subjectSlice";
+import mainSlice from "./src/lib/slices/mainSlice";
 
 export default configureStore({
   reducer: {
@@ -23,5 +24,6 @@ export default configureStore({
     notification: notificationReducer,
     calling: callingSlice,
     subject: subjectSlice,
+    main: mainSlice,
   },
 });

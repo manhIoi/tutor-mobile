@@ -34,13 +34,14 @@ function ChangePasswordScreen(props) {
   const [form, setForm] = useState(INITIAL_FORM);
   const [isBusy, setBusy] = useState(false);
   const [showBottom, setShowBottom] = useState(true);
+  const user = useSelector(state => state.auth?.user);
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+    Keyboard?.addListener?.('keyboardDidShow', _keyboardDidShow);
+    Keyboard?.addListener?.('keyboardDidHide', _keyboardDidHide);
     return () => {
-      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+      Keyboard?.removeListener?.('keyboardDidShow', _keyboardDidShow);
+      Keyboard?.removeListener?.('keyboardDidHide', _keyboardDidHide);
     };
   }, []);
 
@@ -94,6 +95,7 @@ function ChangePasswordScreen(props) {
       const data = {
         currentPassword: form.currentPassword.value,
         newPassword: form.newPassword.value,
+        _id: user?._id,
       };
       form.currentPassword.msgError = '';
       form.newPassword.msgError = '';
@@ -107,11 +109,7 @@ function ChangePasswordScreen(props) {
           type: 'success',
           text1: 'Thay đổi mật khẩu thành công',
         });
-        // navigation.reset({
-        //   index: 0,
-        //   routes: [{name: 'Profile'}],
-        // });
-        navigation.push('UpdateSuccess');
+        navigation.replace('UpdateSuccess');
       } catch (error) {
         console.log(error);
         setBusy(false);
@@ -128,17 +126,6 @@ function ChangePasswordScreen(props) {
 
   return (
     <Container
-      // header={
-      //   <StatusBar
-      //     contentBarStyles={{justifyContent: 'space-between'}}
-      //     navigation={props.navigation}
-      //     headerHeight={ConfigStyle.statusBarHeight}
-      //     hideBackground={false}
-      //     arrowBack={true}
-      //     title="Đổi mật khẩu"
-      //   />
-      // }
-      // headerHeight={ConfigStyle.statusBarHeight}
       title="Đổi mật khẩu"
       arrowBack={true}
       contentBarStyles={{justifyContent: 'space-between'}}

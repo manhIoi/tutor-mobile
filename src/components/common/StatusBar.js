@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   container: {
-    // minHeight: 90,
+    minHeight: 90,
     marginTop: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 0,
+    // backgroundColor: 'red'
   },
   holdAction: {
     width: 32,
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
   mainContent: {
     justifyContent: 'flex-start',
     flex: 1,
+    // backgroundColor: 'orange'
   },
   textAction: {
     color: '#fff',

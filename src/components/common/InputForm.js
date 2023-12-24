@@ -73,27 +73,27 @@ const InputForm = ({
             isFocus && onFocus(true);
           }}
         />
-        {!icon ? null : !show ? (
-          <View style={{margin: 3}}>
-            <Icon
-              type="feather"
-              name="eye"
-              size={20}
-              color="#c6c5c5"
-              onPress={() => setShow(true)}
-            />
-          </View>
-        ) : (
-          <View style={{margin: 3}}>
-            <Icon
-              type="feather"
-              name="eye-off"
-              size={20}
-              color="#c6c5c5"
-              onPress={() => setShow(false)}
-            />
-          </View>
-        )}
+        {/*{!icon ? null : !show ? (*/}
+        {/*  <View style={{margin: 3}}>*/}
+        {/*    <Icon*/}
+        {/*      type="feather"*/}
+        {/*      name="eye"*/}
+        {/*      size={20}*/}
+        {/*      color="#c6c5c5"*/}
+        {/*      onPress={() => setShow(true)}*/}
+        {/*    />*/}
+        {/*  </View>*/}
+        {/*) : (*/}
+        {/*  <View style={{margin: 3}}>*/}
+        {/*    <Icon*/}
+        {/*      type="feather"*/}
+        {/*      name="eye-off"*/}
+        {/*      size={20}*/}
+        {/*      color="#c6c5c5"*/}
+        {/*      onPress={() => setShow(false)}*/}
+        {/*    />*/}
+        {/*  </View>*/}
+        {/*)}*/}
       </View>
     </View>
   );

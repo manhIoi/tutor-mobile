@@ -27,6 +27,7 @@ import {IP_ADDRESS} from './src/utils/auth.util';
 import ActionNotification from './src/components/Notification/ActionNotification';
 import ModalMatch from './src/components/common/ModalMatch';
 import SocketIO from "./src/utils/SocketIO";
+import ConfigStyle from "./src/theme/ConfigStyle";
 
 const width = Dimensions.get('window').width;
 
@@ -58,6 +59,28 @@ const App = (props) => {
   useEffect(() => {
     SocketIO.connect();
   }, [])
+
+  useEffect(() => {
+    if (user?._id) {
+      console.info(`LOG_IT:: notify_${user?._id}`, );
+      SocketIO.on(`notify_${user?._id}`, data => {
+        console.info(`LOG_IT::  notify_ data`, data);
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: data?.message,
+        });
+      })
+      SocketIO.on(`become_teacher_${user?._id}`, data => {
+        console.info(`LOG_IT::  notify_ data`, data);
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: data?.message,
+        });
+      })
+    }
+  }, [user]);
 
   const handleShow = ()=>{
     setShow(false);

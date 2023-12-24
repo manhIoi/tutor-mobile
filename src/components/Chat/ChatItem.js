@@ -20,8 +20,10 @@ import Colors from '../../theme/Colors';
 
 const width = Dimensions.get('window').width;
 const ChatItem = (props) => {
-  const [userReceive, setUserReceive] = useState(props.data?.persons?.[0]);
+  const userReceive = props?.data?.persons?.[0];
+  const firstName = userReceive?.fullName.split(" ").pop();
   const user = useSelector((state) => state.auth.user);
+  const isLastMessage = props?.data?.lastMessage?.userSend === user?._id;
   function onClickContent() {
     props.navigation.navigate('InboxChat', {
       userReceive: userReceive,
@@ -83,16 +85,8 @@ style={Styles.title2RS}>
                       }}
                       numberOfLines={1}
                     >
-                      {props.data?.lastMessage?.from &&
-                      props.data?.lastMessage.from === user?._id
-                        ? 'Bạn : '
-                        : ''}
-                      {props.data?.lastMessage?.content || ''}
-                      {props.data?.lastMessage?.images?.length
-                        ? `${props.data?.lastMessage?.images?.length} [Hình ảnh]`
-                        : props.data?.lastMessage?.files?.length
-                        ? `${props.data?.lastMessage?.files?.length} [Tập tin]`
-                        : ''}
+                      {isLastMessage ? 'Bạn' : firstName}: {props.data?.lastMessage?.content || ''}
+
                     </Text>
                     {props.data?.messageUnread > 0 ? (
                       <Text

@@ -90,15 +90,6 @@ const TextForm = (props) => {
       <View style={styles.viewTitle}>
         <Text style={styles.text}>{props.title}</Text>
       </View>
-      {props.rightIcon ? (
-        <Icon
-          name="right"
-          size={10}
-          style={{position: 'absolute', right: 0, top: 20, color: '#C0C0C0'}}
-        />
-      ) : (
-        <View />
-      )}
       {props.switch ? (
         <Switch
           style={{position: 'absolute', right: 0, top: 10}}

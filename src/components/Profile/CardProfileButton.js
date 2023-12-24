@@ -66,14 +66,6 @@ height={19} />}
           title="Tài khoản"
         />
         <InputForm
-            src={<IconUserProfile width={13}
-                                  height={19} />}
-            rightIcon={true}
-            navigate={'Account'}
-            {...props}
-            title="Tài khoản 2"
-        />
-        <InputForm
           src={<IconPassword width={17}
 height={21} />}
           rightIcon={true}

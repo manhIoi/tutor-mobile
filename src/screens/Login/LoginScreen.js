@@ -151,7 +151,7 @@ onPress={() => handleResendCode()}>
       try {
         setBusy(true);
         const response = await login(data);
-        const { token, user, chatBot } = response || {}
+        const { token, user, chatBot, error } = response || {}
         if (user) {
           await USER_TOKEN.set(token);
           setBusy(false);
@@ -171,11 +171,11 @@ onPress={() => handleResendCode()}>
           Toast.show({
             ...ConfigStyle.toastDefault,
             type: 'error',
-            text1: 'Lỗi. Vui lòng thử lại sau.',
+            text1: error || 'Lỗi. Vui lòng thử lại sau.',
           });
         }
       } catch (error) {
-        console.info("LOGGER:: call handle login error",error);
+        console.info("LOGGER:: call handle login error",JSON.stringify(error) );
         setBusy(false);
         if (
           error?.response?.data?.errors[0]?.param ===
@@ -200,6 +200,8 @@ onPress={() => handleResendCode()}>
             text1: 'Lỗi máy chủ',
           });
         }
+      } finally {
+        setBusy(false)
       }
     } else {
       // Alert.alert('Login fail');

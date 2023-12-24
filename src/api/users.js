@@ -26,8 +26,12 @@ export const resendVerifyCode = async (data) => {
   return callApi('/users/resend-verify-phone-code', 'post', data);
 };
 
+export const verifyPhoneNumber = async (data) => {
+  return callApi('/user/forgot-password', 'post', data )
+}
+
 export const verifyToResetPassword = async (data) => {
-  return callApi('/users/verify-to-reset-password', 'post', data);
+  return callApi('/users/verify-otp', 'post', data);
 };
 
 export const resendCode = async (data) => {
@@ -47,10 +51,10 @@ export const getprofile = async () => {
 };
 
 export const resetPassword = async (data) => {
-  return await callApi('/users/forgotPassword', 'post', data);
+  return await callApi('/users/reset-password', 'post', data);
 };
 export const changePassword = async (data) => {
-  return await callApi('/users/changePassword', 'put', data);
+  return await callApi('/user/update-password', 'post', data);
 };
 export const updateProfile = async (data) => {
   return await callApi('/users/updateProfile', 'put', data);

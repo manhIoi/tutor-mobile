@@ -4,20 +4,36 @@ import config from '../../config/config';
 
 const CancelToken = axios.CancelToken;
 
+const message = axios.create({
+  baseURL: config.API_BASE_URL
+})
+
+message.interceptors.request.use(
+    async function (config) {
+      const token = await USER_TOKEN.get(); // Thay 'token' bằng cách lấy token của bạn từ nơi lưu trữ, ví dụ như localStorage
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      console.info(`LOG_IT:: [req]`, config.url);
+      return config;
+    },
+)
+
+message.interceptors.response.use(
+    async function (config) {
+      console.info(`LOG_IT:: [res]`, config.config.url, config.status, config.data);
+      return config;
+    },
+)
+
 export async function callApi(endpoint, method = 'get', body) {
   try {
     const params = {
       method: method,
       url: endpoint,
       data: body,
-      headers: {
-        Authorization: `Bearer ${await USER_TOKEN.get()}`,
-      },
-      baseURL: config.API_BASE_URL,
     }
-    console.info("LOGGER:: [req]", params);
-    const res = await axios(params);
-    console.info("LOGGER:: [res]", res);
+    const res = await message(params);
     if (res && res.status === 200) {
       return res.data;
     }

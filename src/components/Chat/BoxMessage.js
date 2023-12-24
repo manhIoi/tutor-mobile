@@ -24,9 +24,9 @@ const BoxMessage = (props) => {
   }, [props.showScroll]);
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard?.addListener?.('keyboardDidShow', _keyboardDidShow);
     return () => {
-      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard?.removeListener?.('keyboardDidShow', _keyboardDidShow);
     };
   }, []);
 

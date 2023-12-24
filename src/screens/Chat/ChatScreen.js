@@ -28,10 +28,7 @@ import AddChat from "../../components/common/AddChat";
 const LIMIT = Constants.LIMIT * 2;
 const ChatScreen = (props) => {
   const [listGroupChat, setListGroupChat] = useState([]);
-  const [textSearch, setTextSearch] = useState('');
-  const [isBusy, setBusy] = useState(true);
-  const [refreshing, setRefresh] = useState(false);
-  const newNotification = useSelector((state) => state.socket.newNotification);
+  const [textSearch, setTextSearch] = useState('');  const [refreshing, setRefresh] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -90,7 +87,6 @@ height={30} />}
           footer={<AddChat style={{ bottom: 100, borderWidth:2, width: 50, height: 50, borderRadius: 25, borderColor: Colors.borderThin, overflow: "hidden" }} onPress={() => {
             props.navigation.push('InboxChat', {
               isChatAssistant: true,
-
             })
           }} />}
           hideBackground={true}

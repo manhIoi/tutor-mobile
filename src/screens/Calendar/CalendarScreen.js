@@ -10,7 +10,7 @@ import {
 import {Text} from 'react-native-elements';
 import moment from 'moment';
 import MonthPicker from 'react-native-month-year-picker';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Container from '../../components/common/Container';
 import Statusbar from '../../components/common/StatusBar';
 import ConfigStyle from '../../theme/ConfigStyle';
@@ -28,6 +28,7 @@ import {
 } from '../../api/class';
 import BoxShadow from '../../components/common/BoxShadow';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
+import {syncMyRequestList} from "../../helper/main";
 
 const INIT_DATA = {
   data: [],
@@ -37,25 +38,11 @@ const INIT_DATA = {
 };
 const CalendarScreen = (props) => {
   const user = useSelector((state) => state.auth.user);
-  const [classes, setClasses] = useState([]);
-
-
-  useEffect(() => {
-    getData()
-  }, []);
-
-  const getData = async () => {
-    try {
-      const response = user?.role === 'teacher' ? await getRequestByTeacherId(user._id) : await userGetListRequest(user._id);
-      console.info(`🔥LOGGER:: response`,response);
-      setClasses(response)
-    } catch (e) {
-      console.info(`🔥LOGGER:: e`,e);
-    }
-  }
+  const { myRequestList: classes } = useSelector(state => state.main)
+  const dispatch = useDispatch()
 
   const onRefresh = () => {
-    getData();
+    syncMyRequestList(dispatch, user);
   }
 
   const renderItem = ({item}) => {

@@ -99,16 +99,19 @@ function InputVerifyCodeScreen({navigation, route}) {
       };
       setBusy(true);
       const response = await verifyToResetPassword(data);
-      setBusy(false);
-      if (response) {
-        navigation.navigate('ResetPassword', {
-          smsId: smsId,
+      if (response?.status) {
+        navigation.replace('ResetPassword', {
           code: form.verifyCode?.value,
           phone: route?.params?.phoneNumber,
         });
+      } else {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'error',
+          text1: response?.error || "Lỗi hệ thống"
+        });
       }
     } catch (error) {
-      setBusy(false);
       if (error?.response?.data?.errors) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -124,6 +127,8 @@ function InputVerifyCodeScreen({navigation, route}) {
           text1: 'Server Internal Error.',
         });
       }
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -221,11 +226,12 @@ style={styles.titleViewText} />
             iconName="arrowright"
             onPress={() => {
               Keyboard.dismiss();
-              if (route.params?.forgotPassword) {
-                verifyToForgot();
-              } else {
-                handleContinue();
-              }
+              verifyToForgot();
+              // if (route.params?.forgotPassword) {
+              //
+              // } else {
+              //   handleContinue();
+              // }
             }}
             isBusy={isBusy}
           />

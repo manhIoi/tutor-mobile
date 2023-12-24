@@ -138,7 +138,7 @@ const Register = (props) => {
     try {
       const response = await register(data);
       setBusy(false);
-      const { token, user, chatBot } = response || {}
+      const { token, user, chatBot, error } = response || {}
       if (user) {
         await USER_TOKEN.set(token);
         setBusy(false);
@@ -154,7 +154,7 @@ const Register = (props) => {
         Toast.show({
           ...ConfigStyle.toastDefault,
           type: 'error',
-          text1: 'Đăng ký thất bại',
+          text1: error ||  'Đăng ký thất bại',
           visibilityTime: 1000,
         });
       }
@@ -175,6 +175,8 @@ const Register = (props) => {
           text1: 'Server Internal Error.',
         });
       }
+    } finally {
+      setBusy(false)
     }
   }
 

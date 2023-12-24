@@ -63,31 +63,13 @@ const Avatar = (props) => {
             <Text style={styles.phoneNumberText}>{user.phone}</Text>
           </Text>
         </View>
-        {checkIsTeacher(user) ? (
-          <View style={styles.phoneNumberView}>
-            <Text style={styles.phoneNumber}>
-              Vai trò :{' '}
-              <Text style={styles.phoneNumberText}>{"Giáo viên"}</Text>
-            </Text>
-            <Text style={styles.phoneNumber}>
-              Số dư tài khoản :{' '}
-              <Text style={{...styles.phoneNumberText, ...styles.textBalance}}>
-                {balance?.toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
-                })}
-              </Text>
-            </Text>
-          </View>
-        ) : null}
+        <View style={styles.phoneNumberView}>
+          <Text style={styles.phoneNumber}>
+            Vai trò :{' '}
+            <Text style={styles.phoneNumberText}>{checkIsTeacher(user) ? "Giáo viên" : "Học sinh"}</Text>
+          </Text>
+        </View>
       </View>
-{/*      <TouchableOpacity onPress={handleLogout}*/}
-{/*style={styles.btnLogout}>*/}
-{/*        <Text>Đăng xuất</Text>*/}
-{/*        <IconLogout style={{marginLeft: 8}}*/}
-{/*width={18}*/}
-{/*height={19} />*/}
-{/*      </TouchableOpacity>*/}
     </View>
   );
 };

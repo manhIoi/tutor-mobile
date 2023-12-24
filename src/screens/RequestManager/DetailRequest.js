@@ -30,10 +30,12 @@ import CustomActionSheet from '../../components/common/CustomActionSheet';
 import config from '../../../config/config';
 import IconChatActive from '../../assets/images/tab/chat1.svg';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 import Star from '../../assets/images/svg/star.svg';
 import StarGrey from '../../assets/images/svg/star-grey.svg';
+import {syncMyRequestList, syncTutorRequestList} from "../../helper/main";
+import SocketIO from "../../utils/SocketIO";
 
 const INIT_REVIEWS = {
   data: [],
@@ -51,12 +53,15 @@ const DetailClass = (props) => {
   const isClassNotApprove = classData?.status === 0 || classData ?.status === 1;
   const classFullStudent = classData?.students?.length === classData?.numOfStudents
   const isInClass = classData?.students?.some(i => i?._id === user?._id)
+  const dispatch = useDispatch();
   const [voteData, setVoteData] = useState({
     value: 0,
     message: '',
     editable: false,
     userSend: user,
   });
+
+  console.info(`LOG_IT:: classData`, classData);
 
   useEffect(() => {
     getVoteData();
@@ -103,6 +108,7 @@ const DetailClass = (props) => {
             text1: 'Nhận lớp thành công!',
             type: 'success',
           });
+          SocketIO.emit("joinClass", { tutorRequest: response, userId: user?._id })
           props.navigation.goBack()
         }
       } else {
@@ -115,6 +121,7 @@ const DetailClass = (props) => {
             text1: 'Tham gia lớp thành công!',
             type: 'success',
           });
+          SocketIO.emit("joinClass", { tutorRequest: response, userId: user?._id })
           props.navigation.goBack()
         }
       }
@@ -132,10 +139,12 @@ const DetailClass = (props) => {
   async function handleActionSheetOnPress(index) {
     setShowActionSheet(false);
     switch (index) {
-      case 0: {
+      case 0: {[]
         if (isMyRequest) {
         } else {
           await handleJoinClass()
+          syncTutorRequestList(dispatch, user)
+          syncMyRequestList(dispatch, user)
         }
         break;
       }

@@ -64,8 +64,7 @@ function ResetPassword({navigation, route}) {
     try {
       setBusy(true);
       const response = await resetPassword(data);
-      setBusy(false);
-      if (response) {
+      if (response?.status) {
         Toast.show({
           ...ConfigStyle.toastDefault,
           type: 'success',
@@ -75,10 +74,15 @@ function ResetPassword({navigation, route}) {
           index: 0,
           routes: [{name: 'Login'}],
         });
+      } else {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'error',
+          text1: 'Cập nhật mật không thành công',
+        });
       }
     } catch (error) {
       console.log(error);
-      setBusy(false);
       if (error?.response?.data?.errors) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -94,6 +98,8 @@ function ResetPassword({navigation, route}) {
           text1: 'Lỗi máy chủ',
         });
       }
+    } finally {
+      setBusy(false)
     }
   };
 

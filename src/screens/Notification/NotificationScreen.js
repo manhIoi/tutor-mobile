@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,6 +27,7 @@ import {
   getNotification,
   getNotificationById,
   deleteNotificationById,
+  readNotificationApi,
 } from '../../api/chat';
 import BoxShadow from '../../components/common/BoxShadow';
 import {formatDDMMYYY} from '../../utils/string.util';
@@ -68,7 +69,7 @@ const NotificationScreen = (props) => {
   const [status, setStatus] = useState(false);
   const [isModalVisible, setisModalVisible] = React.useState(false);
   const [isBusy, setBusy] = useState(false);
-  const [notifications, setNotifications] = useState(INIT_VALUE);
+  const [_notifications, setNotifications] = useState([]);
   const [detailData, setDetailData] = useState({});
   const [refreshing, setRefresh] = useState(false);
   const newNotifications = useSelector(
@@ -77,109 +78,37 @@ const NotificationScreen = (props) => {
   const user = useSelector((state) => state.auth.user);
   const [busyLeft, setBusyLeft] = useState(false);
   const [busyRight, setBusyRight] = useState(false);
+  const notifications = useMemo(() => {
+    return _notifications.map(item => {
+      return {
+        ...item,
+        data: item?.data && JSON.parse(item?.data)
+      }
+    })
+  }, [_notifications])
 
   useEffect(() => {
-    onRefresh(true);
-  }, [newNotifications]);
+    getData()
+  }, [])
 
-  async function getNotifications(
-    page = 1,
-    limit = 18,
-    loadMore = false,
-    refreshing = false,
-  ) {
+  const getData = async () => {
     try {
-      if (!loadMore && !refreshing) {
-        setBusy(true);
-      }
-      const response = await getNotification(page, limit);
-
-      if (loadMore) {
-        if (response?.payload) {
-          setNotifications({
-            data: [...notifications.data, ...(response?.payload || [])],
-            currentPage: response?.page,
-            totalItems: response.total_item,
-          });
-        }
-      } else {
-        if (response?.payload) {
-          setNotifications({
-            data: response?.payload || [],
-            currentPage: response?.page,
-            totalItems: response.total_item,
-          });
-        }
-        setBusy(false);
-      }
-      setRefresh(false);
-    } catch (error) {
-      setBusy(false);
-      console.log(error);
-    }
-  }
-
-  async function getNotificationsClear(page = 1, limit = 18) {
-    try {
-      const response = await getNotification(page, limit);
-      if (response?.payload) {
-        setNotifications({
-          data: [],
-          currentPage: response?.page,
-          totalItems: response.total_item,
-        });
-        setNotifications({
-          data: response?.payload || [],
-          currentPage: response?.page,
-          totalItems: response.total_item,
-        });
-      }
-      setBusy(false);
-      setRefresh(false);
-    } catch (error) {
-      setBusy(false);
-      console.log(error);
-    }
-  }
-
-  async function getNoitficationsById(id) {
-    try {
-      await getNotificationById(id);
-    } catch (error) {
-      console.log(error);
+      const response = await getNotification(user?._id)
+      setNotifications(response);
+    } catch (e) {
+      console.info(`LOG_IT:: e`, e);
       Toast.show({
         ...ConfigStyle.toastDefault,
         type: 'error',
         text1: 'Lỗi hệ thống!',
-      });
+      })
     }
   }
-  async function deleteNoitficationsById(id) {
-    try {
-      const data = await deleteNotificationById(id);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'success',
-        text1: 'Xóa thông báo thành công!',
-      });
-      getNotificationsClear();
-    } catch (error) {
-      console.log(error);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Lỗi hệ thống!',
-      });
-    }
-  }
-  useEffect(() => {
-    getNotifications();
-  }, []);
   const rightButtons = (id) => [
     <TouchableOpacity
       style={styles.rightButton}
       onPress={() => {
-        deleteNoitficationsById(id);
+        alert('Dêlete');
       }}
     >
       <Text style={styles.textButton}>XÓA</Text>
@@ -337,36 +266,53 @@ const NotificationScreen = (props) => {
     }
     getNotifications(1, 18, false, true);
   }
+
+  const readNotification = async (item) => {
+    try {
+      if (item?.isRead) {
+        return;
+      }
+      const newList = notifications.map?.(_item => {
+       if (_item?._id === item?._id) return {
+         ..._item,
+         isRead: true,
+       }
+       return _item;
+      })
+      setNotifications(newList);
+      readNotificationApi(item?._id);
+    } catch (e) {
+
+    }
+  }
+
   const renderItem = ({item}) => {
+
     return (
       <Swipeable rightButtons={rightButtons(item?._id)}
 rightButtonWidth={115}>
         <BoxShadow style={styles.card}>
           <TouchableOpacity
-            onPress={() => {
-              setDetailData(item);
-              getNoitficationsById(item?._id);
-              toggleModal();
-            }}
+            onPress={() => readNotification(item)}
           >
             <Text
               numberOfLines={1}
               style={!item.isRead ? styles.viewTitle : styles.viewTitleSeen}
             >
-              {item.title}
+              {item?.title || ''}
             </Text>
             <Text
               numberOfLines={4}
               style={!item.isRead ? styles.viewContent : styles.viewContentSeen}
             >
-              {item?.body}
+              {item?.message}
             </Text>
             <Text
               style={
                 !item.isRead ? styles.viewDatetime : styles.viewDatetimeSeen
               }
             >
-              {formatDDMMYYY(item?.date)}
+              {item?.createdAt}
             </Text>
           </TouchableOpacity>
         </BoxShadow>
@@ -376,13 +322,13 @@ rightButtonWidth={115}>
 
   const renderFooter = (
     <View style={{marginBottom: 20}}>
-      {notifications.data?.length >= notifications.totalItems ? (
-        <Text style={styles.countResult}>
-          {notifications.totalItems} kết quả
-        </Text>
-      ) : (
-        <ActivityIndicator color={Colors.orange} />
-      )}
+      {/*{notifications.data?.length >= notifications.totalItems ? (*/}
+      {/*  <Text style={styles.countResult}>*/}
+      {/*    {notifications.totalItems} kết quả*/}
+      {/*  </Text>*/}
+      {/*) : (*/}
+      {/*  <ActivityIndicator color={Colors.orange} />*/}
+      {/*)}*/}
     </View>
   );
 
@@ -466,7 +412,7 @@ rightButtonWidth={115}>
         />
       ) : (
         <FlatList
-          data={notifications.data}
+          data={notifications}
           style={styles.flatlist}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
@@ -477,11 +423,7 @@ rightButtonWidth={115}>
               colors={[Colors.orange]}
             />
           }
-          ListFooterComponent={renderFooter}
           onEndReachedThreshold={0.4}
-          onEndReached={() => {
-            handleLoadMore();
-          }}
         />
       )}
       {isModalVisible ? (

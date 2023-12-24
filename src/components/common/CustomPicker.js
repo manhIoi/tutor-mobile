@@ -116,6 +116,15 @@ CustomPicker.prototype = {
 export default CustomPicker;
 
 const ModalPicker = (props) => {
+  const { isMultiSelect = false } = props || {}
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const _onPress = (item) => {
+    if (!isMultiSelect) {
+      props.hideModal();
+      props.onChange(item);
+    }
+  }
   const renderHeader = () => {
     if (!props.title) return null;
     return (
@@ -139,8 +148,7 @@ const ModalPicker = (props) => {
                     <TouchableOpacity
                         style={styles.wrapText}
                         onPress={() => {
-                          props.hideModal();
-                          props.onChange(item);
+                          _onPress(item)
                         }}
                     >
                       <Text numberOfLines={1}
@@ -215,6 +223,8 @@ const ModalPicker = (props) => {
       </View>
   );
 };
+
+export { ModalPicker }
 const styles = StyleSheet.create({
   containerModal: {
     backgroundColor: Colors.whiteColor,

@@ -81,8 +81,11 @@ export default {
   customeTitle1: 16,
   customTitle2: 14,
   backdropOpacity: 0.52,
-  statusBarHeight: 70,
-  statusBarIb: 50,
+  statusBarHeight: Platform.select({
+    ios: 90,
+    android: 70,
+  }),
+  statusBarIb: 90,
   statusBarHomeHeight: 102,
   statusBarHomeHeightTutor: 80,
   statusBarHeight1: 95,

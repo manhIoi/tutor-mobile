@@ -132,7 +132,10 @@ height={18} />
     <View
       style={{
         ...styles.wrapper,
-        height: ConfigStyle.statusBarHomeHeight + statusBarHeight,
+        height: Platform.select({
+          ios: 170,
+          android: ConfigStyle.statusBarHomeHeight + statusBarHeight
+        }),
       }}
     >
       <StatusBar translucent
@@ -141,7 +144,7 @@ backgroundColor="transparent" />
       <View
         style={{
           ...styles.container,
-          marginTop: statusBarHeight,
+          marginTop: Platform.select({ android: statusBarHeight, ios: 60 }) ,
         }}
       >
         <View style={styles.searchBar}>

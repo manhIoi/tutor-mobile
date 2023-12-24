@@ -29,12 +29,15 @@ export function getListMessageByGroup(id, page, limit, keyword, message = '') {
 export function requestCall(data) {
   return callApiNotification('/message/request-call', 'post', data);
 }
-export function getNotification(page = 1, limit = 10) {
-  return callApiListNotification(
-    `/notification?page=${page}&limit=${limit}`,
-    'get',
-  );
+export function getNotification(id) {
+  return callApi(`/notification/${id}`,'get');
 }
+
+export const readNotificationApi = (id) => {
+  return callApi(`/notification/read/${id}`,'post')
+}
+
+
 export function getNotificationById(id) {
   return callApiNotification(`/notification/${id}`, 'get');
 }

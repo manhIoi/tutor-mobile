@@ -42,7 +42,7 @@ const LIMIT = 3 * Constants.LIMIT;
 const InboxChat = (props) => {
   const user = useSelector((state) => state.auth.user);
   const chatBot = useSelector(state => state.auth.chatBot)
-  const { userReceive: _userParams, isChatAssistant = false, roomChat = null } = props.route?.params || {};
+  const { userReceive: _userParams, isChatAssistant = false, roomChat = null, callBackDismiss } = props.route?.params || {};
   const roomChatRef = useRef(roomChat);
   const userReceive = isChatAssistant ? {
     avatar: 'https://media.istockphoto.com/id/1010001882/vector/%C3%B0%C3%B0%C2%B5%C3%B1%C3%B0%C3%B1%C3%B1.jpg?s=612x612&w=0&k=20&c=1jeAr9KSx3sG7SKxUPR_j8WPSZq_NIKL0P-MA4F1xRw=',
@@ -69,6 +69,9 @@ const InboxChat = (props) => {
 
   useEffect(() => {
     executeTaskChat();
+    return () => {
+      callBackDismiss?.();
+    }
   }, []);
 
   const executeTaskChat = () => {

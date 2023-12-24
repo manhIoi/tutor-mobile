@@ -34,6 +34,7 @@ import TutorRequestItem from "../../components/RequestManagement/TutorRequestIte
 import Calendar from "../../routes/CalendarStack";
 import {getSubjects} from "../../api/subject";
 import {setSubjectsValue} from "../../lib/slices/subjectSlice";
+import {syncAll, syncAllAsync} from "../../helper/main";
 
 
 const width = Dimensions.get('window').width;
@@ -42,46 +43,30 @@ const height = Dimensions.get('window').height;
 export default function HomeScreen(props) {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user)
+  const mainState = useSelector(state => state.main)
   const [tab, setTab] = useState(0);
   const [textSearch, setTextSearch] = useState('');
   const [refreshing, setRefresh] = useState(false);
   const [scrollTop, setScrollTop] = useState(new Date().getTime());
+  const [loading, setLoading] = useState(true)
 
-  const [state, setState] = useReducer((prev, next) => ({
-    ...prev, ...next
-  }), {
-    teachers: [],
-    classes: [],
-    loading: true,
-  })
-  const { loading, teachers} = state
+  const { teacherList: teachers,  tutorRequestList: classes} = mainState || {}
   useEffect(() => {
-    syncData();
-  }, []);
-
-  const syncData = () => {
-    if (user._id) {
-      getTeachers();
-      getClasses();
+    if (user?._id) {
+      syncData();
       getListSubject();
     }
+  }, [user?._id]);
+
+  const syncData = () => {
+    syncAllAsync(dispatch, user).then(() => {
+      setLoading(false)
+    })
   }
 
   const getListSubject = async () => {
     const subjects = await getSubjects();
     dispatch(setSubjectsValue(subjects))
-  }
-
-  const getClasses = async () => {
-    try {
-      const data = await getAvailableClasses(user._id);
-      if (data) {
-        setState({ classes: data });
-      }
-    } catch (error) {
-    } finally {
-      setState({ loading: false });
-    }
   }
 
   function createRequest() {
@@ -96,7 +81,7 @@ export default function HomeScreen(props) {
     setTextSearch(text);
   }
   async function onRefresh(showLoading = true) {
-    syncData();
+    syncAllAsync(dispatch, user);
   }
   async function getTeachers() {
     try {
@@ -199,7 +184,7 @@ height={'50%'} />
       ) : null}
       {tab === 1 ? (
         <View style={styles.marginContent}>
-          <FlatList data={state.classes} renderItem={renderClassItem} />
+          <FlatList data={classes} renderItem={renderClassItem} />
         </View>
       ) : null}
       {/*TODO: */}
