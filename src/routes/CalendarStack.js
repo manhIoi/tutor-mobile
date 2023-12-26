@@ -28,6 +28,7 @@ import UserCreateRequest from '../screens/CreateRequest/UserCreateRequest';
 import ListTeacher from '../screens/RequestManager/TeacherRequest';
 import StudentClass from '../screens/ClassManager/StudentClass';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
+import DetailTutor from "../screens/Tutor/DetailTutor";
 
 const Calendar = createStackNavigator();
 
@@ -111,6 +112,13 @@ const CalendarStack = ({navigation, route}) => {
           headerShown: false,
         }}
       />
+        <Calendar.Screen
+            name="DetailTutor"
+            component={DetailTutor}
+            options={{
+                headerShown: false,
+            }}
+        />
       <Calendar.Screen
         name={'ListRegistry'}
         component={ListRegistry}

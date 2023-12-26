@@ -603,13 +603,7 @@ const UserCreateRequest = (props) => {
       <ButtonCustom
         isBusy={isBusy}
         //TODO: disabled={disabled}
-        text={
-          props.route?.params?._id
-            ? 'Chỉnh sửa'
-            : type === 1
-            ? 'TẠO NGAY'
-            : 'Đăng ký ngay'
-        }
+        text={"TẠO NGAY"}
         style={styles.btnAction}
         onPress={handleSubmitRequest}
       />
@@ -643,17 +637,18 @@ height={31} /> : null}
     >
       {loading ? <Loading /> : null}
       <View style={styles.container}>
-        <Text style={[Styles.title2RS, styles.title]}>Tiêu đề</Text>
-        <BoxShadow style={styles.wrapInputTitle}>
-          <TextInput
-            style={styles.input}
-            placeholderStyle={Styles.textLight}
-            placeholder={'VD : Tìm lớp Photoshop cơ bản'}
-            editable={!isBusy}
-            value={data?.title?.value || ''}
-            onChangeText={(value) => handleChangeData('title', value)}
-          />
+        <BoxShadow>
+          <Text style={[Styles.title2RS, styles.title]}>Tiêu đề</Text>
+            <TextInput
+                style={styles.input}
+                placeholderStyle={Styles.textLight}
+                placeholder={'VD : Tìm lớp Photoshop cơ bản'}
+                editable={!isBusy}
+                value={data?.title?.value || ''}
+                onChangeText={(value) => handleChangeData('title', value)}
+            />
         </BoxShadow>
+
         {data?.title?.msgError ? (
           <Text style={{...Styles.textError, marginLeft: 10}}>
             {data?.title?.msgError}
@@ -788,52 +783,6 @@ height={31} /> : null}
           </Text>
         ) : null}
       </View>
-      <View
-        style={{
-          ...styles.container,
-          marginHorizontal: 10,
-          paddingTop: 0,
-        }}
-      >
-        <Text
-          style={[
-            Styles.title2RS,
-            styles.title,
-            {
-              paddingBottom: 5,
-              paddingTop: 0,
-              marginTop: 15,
-            },
-          ]}
-        >
-          Thêm Avatar cho lớp học
-        </Text>
-
-        {data.avatar?.value?.path || data.avatar?.value?.medium ? (
-          <BoxShadow style={styles.wrapImageSignal}>
-            {data.avatar?.value?.path ? (
-              <FastImage
-                source={{uri: data.avatar?.value?.path}}
-                style={styles.imageStyle}
-              />
-            ) : null}
-            {data.avatar?.value?.medium ? (
-              <FastImageCustom
-                source={{
-                  uri: `${config.IMAGE_MD_URL}${data?.avatar?.value?.medium}`,
-                }}
-                style={styles.imageStyle}
-              />
-            ) : null}
-
-            {iconAddImage(false)}
-          </BoxShadow>
-        ) : (
-          <View style={[styles.wrapImageSignal, styles.wrapEmptyImage]}>
-            {iconAddImage()}
-          </View>
-        )}
-      </View>
 
       <CustomActionSheet
         title={'Chọn hình ảnh từ ?'}
@@ -859,6 +808,8 @@ const styles = StyleSheet.create({
     height: 43,
     marginHorizontal: 20,
     fontSize: 14,
+    borderTopWidth:1,
+    borderTopColor: Colors.grey,
   },
   wrapInputTitle: {
     borderRadius: 25,
@@ -868,6 +819,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginVertical: 10,
     marginTop: 20,
+    color: Colors.orange2,
+    fontWeight: "bold",
   },
   textDescription: {
     marginVertical: 13,

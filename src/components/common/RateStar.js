@@ -15,7 +15,7 @@ const RateStar = (props) => {
             <Element width={props.size || 10} height={props.size || 10} />
         );
       })}
-      <Text style={{ color: Colors.greyText, fontSize: 12, marginLeft: 4, }} >({numberOfVotes})</Text>
+      {numberOfVotes > 0 ? <Text style={{ color: Colors.greyText, fontSize: 12, marginLeft: 4, }} >({numberOfVotes})</Text> : null}
     </View>
   );
 };

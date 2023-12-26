@@ -1,6 +1,13 @@
 import {getTeacherSuggest} from "../api/users";
 import {getAvailableClasses, getRequestByTeacherId, userGetListRequest} from "../api/class";
-import {setAll, setMyRequestList, setTeacherList, setTutorRequestList} from "../lib/slices/mainSlice";
+import {
+    setAll,
+    setMyRequestList,
+    setNotificationList,
+    setTeacherList,
+    setTutorRequestList
+} from "../lib/slices/mainSlice";
+import {getNotification} from "../api/chat";
 
 export const syncAll = async (dispatch, payload) => {
     try {
@@ -38,7 +45,7 @@ export const syncMyRequestList = async (dispatch, payload) => {
         const myRequestList = await funcGetMyRequest(_id);
         dispatch(setMyRequestList(myRequestList))
     } catch (e) {
-        console.info(`LOG_IT:: e syncAll helper`, e);
+        console.info(`LOG_IT:: e syncMyRequestList helper`, e);
     }
 }
 
@@ -47,7 +54,7 @@ export const syncTeacherList = async (dispatch, payload) => {
         const teacherList = await getTeacherSuggest();
         dispatch(setTeacherList(teacherList))
     } catch (e) {
-        console.info(`LOG_IT:: e syncAll helper`, e);
+        console.info(`LOG_IT:: e syncTeacherList helper`, e);
     }
 }
 
@@ -56,7 +63,16 @@ export const syncTutorRequestList = async (dispatch, payload) => {
         const teacherList = await getAvailableClasses(payload?._id);
         dispatch(setTutorRequestList(teacherList))
     } catch (e) {
-        console.info(`LOG_IT:: e syncAll helper`, e);
+        console.info(`LOG_IT:: e syncTutorRequestList helper`, e);
+    }
+}
+
+export const getNotificationList = async (dispatch, payload) => {
+    try {
+        const notificationList = await getNotification(payload?._id)
+        dispatch(setNotificationList(notificationList));
+    } catch (e) {
+        console.info(`LOG_IT:: e getNotificationList helper`, e);
     }
 }
 

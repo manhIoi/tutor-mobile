@@ -20,9 +20,9 @@ import Colors from '../../theme/Colors';
 
 const width = Dimensions.get('window').width;
 const ChatItem = (props) => {
-  const userReceive = props?.data?.persons?.[0];
-  const firstName = userReceive?.fullName.split(" ").pop();
   const user = useSelector((state) => state.auth.user);
+  const userReceive = props?.data?.persons?.find?.(u => u?._id !== user?._id);
+  const firstName = userReceive?.fullName.split(" ").pop();
   const isLastMessage = props?.data?.lastMessage?.userSend === user?._id;
   function onClickContent() {
     props.navigation.navigate('InboxChat', {

@@ -373,6 +373,8 @@ height={13.5} />
           marginBottom: 5,
           marginLeft: 5,
           marginTop: 10,
+            color: Colors.orange2,
+            fontWeight: "bold",
         }}
       >
         Thông tin

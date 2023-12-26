@@ -79,6 +79,14 @@ const App = (props) => {
           text1: data?.message,
         });
       })
+      SocketIO.on(`vote_teacher_${user?._id}`, data => {
+        console.info(`LOG_IT::  notify_ data`, data);
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: data?.message,
+        });
+      })
     }
   }, [user]);
 

@@ -154,9 +154,7 @@ const InboxChat = (props) => {
   const joinRoomEvent = async () => {
     console.info(`🔥🔥LOGGER::  messageSendTo_${userReceive._id}`);
     if (!roomChat) {
-      const response = await joinRoomApi(user._id, { person: {
-          _id: userReceive?._id,
-        }});
+      const response = await joinRoomApi([user?._id, userReceive?._id]);
 
       roomChatRef.current = response;
 
@@ -366,17 +364,6 @@ const InboxChat = (props) => {
               >
                 {userReceive?.fullName}
               </Text>
-              <Text
-                style={{
-                  ...Styles.title5RS,
-                  ...styles.textStatus,
-                  color: userReceive?.online
-                    ? Colors.green
-                    : Colors.inputBorder,
-                }}
-              >
-                {userReceive?.online ? 'Online' : 'Offline'}
-              </Text>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -399,7 +386,6 @@ fill={'#fff'} />
           navigation={props.navigation}
           content={contentHeader}
           headerHeight={ConfigStyle.statusBarIb}
-          iconRight={iconRight}
         />
       }
       headerHeight={ConfigStyle.statusBarIb}

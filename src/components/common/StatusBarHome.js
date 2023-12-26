@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
   Platform,
+  Text
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
@@ -41,6 +42,7 @@ const StatusBarHome = (props) => {
   const newNotifications = useSelector(
     (state) => state.notification.newNotifications,
   );
+  const notificationList = useSelector(state => state.main.notificationList)
   const [showFilter, setFilter] = useState(false);
   const [showModalSearch, setModalSearch] = useState(false);
   const [statusBarHeight, setStatusBarHeight] = useState(0);
@@ -48,6 +50,9 @@ const StatusBarHome = (props) => {
   const [autoFocus, setAutoFocus] = useState(false);
   const [shouldSearch, setShouldSearch] = useState('');
   const isSearchTeacher = props?.tab === 0;
+  const notificationUnReadList = useMemo(() => {
+    return notificationList?.filter?.(item => item?.isRead === false)
+  }, [notificationList])
   useEffect(() => {
     if (Platform.OS === 'android') {
       setStatusBarHeight(StatusBar.currentHeight);
@@ -159,6 +164,9 @@ backgroundColor="transparent" />
               </TouchableOpacity>
               <View>
                 <View style={{ marginLeft:10, backgroundColor: Colors.whiteColor,height: "100%", aspectRatio:1, borderRadius: 50, justifyContent: "center", alignItems: "center"}}>
+                  <View style={{ position: 'absolute', right: 0, top:0, width: 20, justifyContent: 'center', alignItems: 'center', height: 20, borderRadius: 20, backgroundColor: Colors.orange }}>
+                    <Text style={{fontSize: 10, fontWeight: 'bold',color: Colors.whiteColor }} >{notificationUnReadList?.length}</Text>
+                  </View>
                   <IconNotification
                       onPress={() =>
                           props.navigation.navigate('Profile', {screen: 'Notification'})

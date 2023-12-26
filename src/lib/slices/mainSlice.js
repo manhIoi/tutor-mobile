@@ -3,7 +3,8 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
     tutorRequestList: [],
     teacherList: [],
-    myRequestList: []
+    myRequestList: [],
+    notificationList: [],
 };
 
 const mainSlice = createSlice({
@@ -37,6 +38,13 @@ const mainSlice = createSlice({
                 ...state,
                 myRequestList: action.payload
             }
+        },
+        setNotificationList(state,action) {
+            console.info(`LOG_IT:: state setNotificationList`, state);
+            return {
+                ...state,
+                notificationList: action.payload
+            }
         }
     },
 });
@@ -44,6 +52,7 @@ const mainSlice = createSlice({
 export const {
     setTeacherList,
     setTutorRequestList ,
-    setMyRequestList, setAll
+    setMyRequestList, setAll,
+    setNotificationList
 } = mainSlice.actions;
 export default mainSlice.reducer;

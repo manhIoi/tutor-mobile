@@ -32,6 +32,10 @@ export function updateDetailRequest(idClass, newData) {
   return callApi(`/tutor-request/detail/update/${idClass}`, 'post', newData)
 }
 
+export function cancelDetailRequest(idClass) {
+  return callApi(`/tutor-request/delete`, 'delete',[idClass])
+}
+
 export function getListClass(page, limit, keyword = '') {
   return callApiClassList(`/classes/all?page=${page}&limit=${limit}`);
 }

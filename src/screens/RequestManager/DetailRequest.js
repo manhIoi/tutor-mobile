@@ -23,7 +23,7 @@ import {
   teacherRegistryRequest,
   updateDetailRequest,
   voteClass,
-  getVoteByClass
+  getVoteByClass, cancelDetailRequest
 } from '../../api/class';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
@@ -60,8 +60,6 @@ const DetailClass = (props) => {
     editable: false,
     userSend: user,
   });
-
-  console.info(`LOG_IT:: classData`, classData);
 
   useEffect(() => {
     getVoteData();
@@ -136,16 +134,40 @@ const DetailClass = (props) => {
     }
   }
 
+  const cancelMyRequest = async () => {
+    try {
+      const response = await cancelDetailRequest(classData?._id)
+      console.info(`LOG_IT:: response`, response);
+      if (response) {
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          text1: 'Hủy yêu cầu thành công!',
+          type: 'success',
+        });
+        props.navigation.goBack()
+      }
+    } catch (e) {
+      console.info(`LOG_IT:: e cancelMyRequest`, e);
+      Toast.show({
+        ...ConfigStyle.toastDefault,
+        text1: 'Hủy yêu cầu không thành công!',
+        type: 'error',
+      });
+    }
+  }
+
   async function handleActionSheetOnPress(index) {
     setShowActionSheet(false);
     switch (index) {
-      case 0: {[]
+      case 0: {
         if (isMyRequest) {
+          await cancelMyRequest()
+          break;
         } else {
           await handleJoinClass()
-          syncTutorRequestList(dispatch, user)
-          syncMyRequestList(dispatch, user)
         }
+        syncTutorRequestList(dispatch, user)
+        syncMyRequestList(dispatch, user)
         break;
       }
       case 1: {
@@ -153,114 +175,6 @@ const DetailClass = (props) => {
       }
       default:
         break;
-    }
-  }
-
-  async function handleRegister(id) {
-    try {
-      setRequesting(true);
-      setRightRequest(true);
-      const response = await registerClass(id);
-      setRequesting(false);
-      setRightRequest(false);
-      if (response) {
-        setClassData({
-          ...classData,
-          statusRegister: {id: response._id, status: 'pending'},
-        });
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: 'Yêu cầu đăng ký đã được ghi nhận',
-          text2: 'Vui lòng chờ giáo viên xác nhận',
-        });
-      }
-    } catch (error) {
-      console.log('handleRegister ==>', error);
-      setRequesting(false);
-      setRightRequest(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
-  }
-
-  async function teacherRegistryRequestClass() {
-    try {
-      setRequesting(true);
-      setRightRequest(true);
-      await teacherRegistryRequest({requestId: classData?._id});
-      setRequesting(false);
-      setRightRequest(false);
-      onRefresh();
-    } catch (error) {
-      console.log('teacherRegistryRequest ==>', error);
-      setRequesting(false);
-      setRightRequest(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
-    }
-  }
-
-  async function studentCancelRegistry(id) {
-    try {
-      setRequesting(true);
-      setLeftRequest(true);
-      await cancelRegistryClass(id);
-      setRequesting(false);
-      setLeftRequest(false);
-      setClassData({
-        ...classData,
-        statusRegister: null,
-      });
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'success',
-        text1: 'Hủy đăng ký lớp học thành công',
-      });
-    } catch (error) {
-      setRequesting(false);
-      setLeftRequest(false);
-      if (error?.response?.data?.errors) {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1:
-            error?.response?.data?.errors[0].message ||
-            error?.response?.data?.errors[0].param,
-        });
-      } else {
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'error',
-          text1: 'Lỗi máy chủ',
-        });
-      }
     }
   }
 
@@ -298,7 +212,7 @@ const DetailClass = (props) => {
   }
 
   const renderVoteStar = () => {
-    if (!isClassEnd || isEmpty(classData?.teacher)) return null;
+    if (!isClassEnd || isEmpty(classData?.teacher) || user?.role === 'teacher') return null;
     return <View>
       <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 10 }} >
         {[1,2,3,4,5].map(i => <TouchableOpacity onPress={() =>  {
@@ -323,12 +237,16 @@ const DetailClass = (props) => {
 
     return (
         <View style={{marginTop: 20}}>
-          <Text style={{fontSize: ConfigStyle.font20}}>
+          <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2}}>
             Giáo viên nhận lớp
           </Text>
-          <BoxShadow style={{...styles.container, flexDirection: 'row'}}>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-              <View>
+          <TouchableOpacity onPress={() => {
+            props?.navigation?.push?.("DetailTutor", {
+              teacher: classData?.teacher,
+            })
+          }} >
+            <BoxShadow style={{...styles.container, flexDirection: 'row'}}>
+              <View style={{flexDirection: 'row', flex:1}}>
                 <Image
                     source={{
                       uri: classData?.teacher?.avatar,
@@ -341,49 +259,44 @@ const DetailClass = (props) => {
                       borderColor: Colors.borderThin,
                     }}
                 />
+
                 <View
                     style={{
-                      ...styles.marker,
-                      ...props.styleMarker,
-                      backgroundColor: classData?.teacher?.isOnline
-                          ? Colors.green
-                          : Colors.grey,
+                      flexDirection: 'column',
+                      marginLeft: 10,
+                      justifyContent: 'center',
+                      flex:1,
                     }}
-                />
+                >
+                  <Text style={{fontSize: ConfigStyle.font16}}>
+                    {nameTeacher}
+                  </Text>
+                  <Text style={{fontSize: ConfigStyle.font12}}>
+                    {classData?.teacher?.phone}
+                  </Text>
+                  <Text style={{fontSize: ConfigStyle.font10}} numberOfLines={2}>
+                    {subTitle}
+                  </Text>
+                </View>
               </View>
-
-              <View
+              {isMyClass ? null : <TouchableOpacity
                   style={{
-                    flexDirection: 'column',
-                    marginHorizontal: 20,
-                    justifyContent: 'center',
+                    ...styles.itemChat,
+                    position: 'absolute',
+                    top: 0,
+                    right: 10,
+                  }}
+                  onPress={() => {
+                    props.navigation.push('InboxChat', {
+                      to: classData?.teacher?.id,
+                      userReceive: classData?.teacher,
+                    });
                   }}
               >
-                <Text style={{fontSize: ConfigStyle.font16}}>
-                  {nameTeacher}
-                </Text>
-                <Text style={{fontSize: ConfigStyle.font10}}>
-                  {subTitle}
-                </Text>
-              </View>
-            </View>
-            {isMyClass ? null : <TouchableOpacity
-                style={{
-                  ...styles.itemChat,
-                  position: 'absolute',
-                  top: 0,
-                  right: 10,
-                }}
-                onPress={() => {
-                  props.navigation.push('InboxChat', {
-                    to: classData?.teacher?.id,
-                    userReceive: classData?.teacher,
-                  });
-                }}
-            >
-              <IconChatActive width={16} height={16} />
-            </TouchableOpacity>}
-          </BoxShadow>
+                <IconChatActive width={16} height={16} />
+              </TouchableOpacity>}
+            </BoxShadow>
+          </TouchableOpacity>
         </View>
     )
   }
@@ -393,13 +306,16 @@ const DetailClass = (props) => {
       style: { width: '100%' },
     }
     if (isClassEnd) {
-      if (voteData?.editable && !isEmpty(classData?.teacher)) {
+      if (voteData?.editable && !isEmpty(classData?.teacher) && user?.role === 'student') {
         return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={ "Gửi đánh giá" } />
       }
       return <ButtonCustom {...buttonProps} disabled={true} text={ "Lớp học đã hết hạn" } />;
     }
 
-    if (isMyRequest) return <ButtonCustom {...buttonProps} text={'HỦY ĐĂNG KÝ'} onPress={handleClickCancel} />
+    if (isMyRequest) {
+      console.info(`LOG_IT:: `, classData?.teacher, classData?.students > 1);
+      return <ButtonCustom {...buttonProps} disabled={classData?.teacher || classData?.students > 1} text={'HỦY ĐĂNG KÝ'} onPress={handleClickCancel} />
+    }
 
     if (user?.role === 'teacher') {
       if (isClassNotApprove) {
@@ -451,15 +367,24 @@ const DetailClass = (props) => {
       imageSource={ImageUtils.bgNotDot}
     >
       <View style={styles.container}>
-        <Text style={{fontSize: ConfigStyle.font20}}>
+        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2}}>
           Giới thiệu
         </Text>
         <View>
-          <Text>Tiêu đề: {classData?.title || ''}</Text>
-          <Text>Mô tả: {classData?.description || ''}</Text>
-          <Text>Môn học: {coursesString || ''}</Text>
+          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
+            <Text style={{fontSize: 14, fontWeight: "bold"}} >Tiêu đề: </Text>
+            <Text>{classData?.title || ''}</Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
+            <Text style={{fontSize: 14, fontWeight: "bold"}} >Mô tả: </Text>
+            <Text>{classData?.description || ''}</Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
+            <Text style={{fontSize: 14, fontWeight: "bold"}} >Môn học: </Text>
+            <Text>{coursesString || ''}</Text>
+          </View>
         </View>
-        <Text style={{fontSize: ConfigStyle.font20}}>
+        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold",  color: Colors.orange2, marginTop: 10}}>
           Thông tin lớp
         </Text>
         <TutorRequestItem data={classData} />
@@ -609,5 +534,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 17,
     paddingVertical: 12,
+    backgroundColor: Colors.whiteColor,
   },
 });

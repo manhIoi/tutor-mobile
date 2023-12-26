@@ -29,6 +29,7 @@ import {
 import BoxShadow from '../../components/common/BoxShadow';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
 import {syncMyRequestList} from "../../helper/main";
+import EmptyListComponent from "../../components/common/EmptyListComponent";
 
 const INIT_DATA = {
   data: [],
@@ -48,7 +49,7 @@ const CalendarScreen = (props) => {
   const renderItem = ({item}) => {
     return (
         <TutorRequestItem data={item} onPress={() => {
-          props.navigation.push('DetailRequest', {
+          props.navigation.navigate('DetailRequest', {
             tutorRequest: item,
           })
         }} />
@@ -69,7 +70,7 @@ const CalendarScreen = (props) => {
       onRefresh={onRefresh}
       refreshing={false}
     >
-      <FlatList data={classes} renderItem={renderItem} keyExtractor={(item) => item?._id} />
+      <FlatList data={classes} renderItem={renderItem} keyExtractor={(item) => item?._id} ListEmptyComponent={ <EmptyListComponent /> } />
     </Container>
   );
 };

@@ -61,6 +61,6 @@ export function getMessageByRoom(data) {
   return callApi('/chat/room','post', data);
 }
 
-export function joinRoomApi(id, data) {
-  return callApi(`/room/join/${id}`, 'post', data)
+export function joinRoomApi(data) {
+  return callApi(`/room/join`, 'post', data)
 }

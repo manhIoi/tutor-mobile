@@ -53,22 +53,6 @@ const ChatScreen = (props) => {
   async function handleLoadMore() {
   }
 
-  function onSearch(event) {
-    const {text} = event.nativeEvent;
-    setTextSearch(text);
-  }
-
-  const iconRight = (
-    <IconCustom
-      width={27}
-      height={30}
-      svg={<IconContact width={27}
-height={30} />}
-      styleNumber={{top: -4, right: 2}}
-      onPress={() => props.navigation.push('Contacts')}
-    />
-  );
-
   return (
       <Container
           keyboardAvoidingView={true}
@@ -76,10 +60,7 @@ height={30} />}
           onRefresh={getListChat}
           header={
             <Statusbar
-                search={true}
-                iconRight={iconRight}
-                textSearch={textSearch}
-                actionSearch={onSearch}
+                title={"Trò chuyện"}
                 headerHeight={ConfigStyle.statusBarHeight}
             />
           }

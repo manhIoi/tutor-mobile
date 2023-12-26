@@ -34,7 +34,7 @@ import TutorRequestItem from "../../components/RequestManagement/TutorRequestIte
 import Calendar from "../../routes/CalendarStack";
 import {getSubjects} from "../../api/subject";
 import {setSubjectsValue} from "../../lib/slices/subjectSlice";
-import {syncAll, syncAllAsync} from "../../helper/main";
+import {getNotificationList, syncAll, syncAllAsync} from "../../helper/main";
 
 
 const width = Dimensions.get('window').width;
@@ -59,6 +59,7 @@ export default function HomeScreen(props) {
   }, [user?._id]);
 
   const syncData = () => {
+    getNotificationList(dispatch, user);
     syncAllAsync(dispatch, user).then(() => {
       setLoading(false)
     })

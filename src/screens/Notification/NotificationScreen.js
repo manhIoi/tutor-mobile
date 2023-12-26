@@ -15,7 +15,7 @@ import Swipeable from 'react-native-swipeable';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import {func} from 'prop-types';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Container from '../../components/common/ContainerRenderList';
 import MainStyles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
@@ -35,6 +35,9 @@ import Constants from '../../../constants/Values';
 import Statusbar from '../../components/common/StatusBar';
 import * as RootNavigation from '../../../RootNavigation';
 import {teacherAcceptAndReject} from '../../api/class';
+import EmptyListComponent from "../../components/common/EmptyListComponent";
+import {getNotificationList} from "../../helper/main";
+import {setNotificationList} from "../../lib/slices/mainSlice";
 
 const width = Dimensions.get('window').width;
 
@@ -69,41 +72,26 @@ const NotificationScreen = (props) => {
   const [status, setStatus] = useState(false);
   const [isModalVisible, setisModalVisible] = React.useState(false);
   const [isBusy, setBusy] = useState(false);
-  const [_notifications, setNotifications] = useState([]);
   const [detailData, setDetailData] = useState({});
   const [refreshing, setRefresh] = useState(false);
   const newNotifications = useSelector(
     (state) => state.notification.newNotifications,
   );
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const [busyLeft, setBusyLeft] = useState(false);
   const [busyRight, setBusyRight] = useState(false);
+  const myRequestList = useSelector(state => state.main.myRequestList)
+  const notificationList = useSelector(state => state.main.notificationList)
   const notifications = useMemo(() => {
-    return _notifications.map(item => {
+    return notificationList.map(item => {
       return {
         ...item,
-        data: item?.data && JSON.parse(item?.data)
+        data: item?.data && JSON.parse(item?.data || '')
       }
     })
-  }, [_notifications])
+  }, [notificationList])
 
-  useEffect(() => {
-    getData()
-  }, [])
-
-  const getData = async () => {
-    try {
-      const response = await getNotification(user?._id)
-      setNotifications(response);
-    } catch (e) {
-      console.info(`LOG_IT:: e`, e);
-      Toast.show({
-        ...ConfigStyle.toastDefault,
-        type: 'error',
-        text1: 'Lỗi hệ thống!',
-      })
-    }
-  }
   const rightButtons = (id) => [
     <TouchableOpacity
       style={styles.rightButton}
@@ -114,7 +102,7 @@ const NotificationScreen = (props) => {
       <Text style={styles.textButton}>XÓA</Text>
     </TouchableOpacity>,
   ];
-  const [newData, setNewData] = React.useState({});
+
   const toggleModal = () => {
     if (isModalVisible) {
       onRefresh(true);
@@ -261,33 +249,37 @@ const NotificationScreen = (props) => {
   }
 
   async function onRefresh(loading = false) {
-    if (!loading) {
-      setRefresh(true);
-    }
-    getNotifications(1, 18, false, true);
+    getNotificationList(dispatch, user)
   }
 
   const readNotification = async (item) => {
     try {
+      const { data } = item || {}
+      console.info(`LOG_IT:: data`, data);
+      if (data?.type === 'tutor_request' && data?.id) {
+        const tutorRequest = myRequestList?.find?.(item => item?._id === data?.id)
+        console.info(`LOG_IT:: tutorRequest`, tutorRequest);
+        navigation.push('DetailTutor', {
+          teacher: tutorRequest?.teacher
+        })
+      }
       if (item?.isRead) {
         return;
       }
-      const newList = notifications.map?.(_item => {
+      const newList = notificationList.map?.(_item => {
        if (_item?._id === item?._id) return {
          ..._item,
          isRead: true,
        }
        return _item;
       })
-      setNotifications(newList);
       readNotificationApi(item?._id);
+      dispatch(setNotificationList(newList))
     } catch (e) {
-
     }
   }
 
   const renderItem = ({item}) => {
-
     return (
       <Swipeable rightButtons={rightButtons(item?._id)}
 rightButtonWidth={115}>
@@ -424,6 +416,7 @@ rightButtonWidth={115}>
             />
           }
           onEndReachedThreshold={0.4}
+          ListEmptyComponent={<EmptyListComponent />}
         />
       )}
       {isModalVisible ? (
