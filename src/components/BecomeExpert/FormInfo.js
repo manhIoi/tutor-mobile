@@ -15,12 +15,21 @@ import IconNotes from '../../assets/images/svg/notes.svg';
 import IconMortar from '../../assets/images/svg/mortarboard.svg';
 import IconUniversity from '../../assets/images/svg/university.svg';
 import IconGender from '../../assets/images/svg/gender.svg';
+import IconBook from '../../assets/images/svg/open-magazine.svg';
+
 import IconCalender from '../../assets/images/svg/XMLID_700_.svg';
 import IconStudent from '../../assets/images/svg/student.svg';
 import IconEmail from '../../assets/images/svg/contact.svg';
+import Selection from '../common/Selection';
+import { ModalPicker } from '../common/CustomPicker';
+import { useSelector } from 'react-redux';
+import Colors from '../../theme/Colors';
 
 
 const FormInfo = (props) => {
+  const subjects = useSelector(state => state.subject.value);
+  const [showSubject, setShowSubject] = useState(false);
+  const subjectString = props.data?.subjects?.value?.map?.(item => item?.name)?.join?.(", ")
   return (
     <BoxShadow style={{...styles.container, paddingTop: 20}}>
       <SelectBox
@@ -169,9 +178,31 @@ height={12.3} />}
       {props.data?.university?.msgError ? (
         <Text style={Styles.textError}>{props.data.university.msgError}</Text>
       ) : null}
-      {props.data?.tutorType?.msgError ? (
-        <Text style={Styles.textError}>{props.data.tutorType.msgError}</Text>
+      <Selection 
+      renderIcon={() =>  <IconBook width={20.5}
+      height={12.3} />}
+      textInputProps={{
+          placeholder: "Môn học",
+          value: subjectString,
+          style: {
+            marginLeft: 10,
+            color: Colors.black
+          }
+      }} onPress={() => setShowSubject(true)}
+          style={styles.selectionContainer}
+      />
+      {props.data?.subjects?.msgError ? (
+        <Text style={Styles.textError}>{props.data.subjects?.msgError}</Text>
       ) : null}
+      <ModalPicker
+          items={subjects}
+          show={showSubject}
+          hideModal={() => setShowSubject(!showSubject)}
+          onChange={(data) => props.handleChangeData('subjects', data)}
+          isMultiSelect
+          selectedItems={props.data?.subjects?.value || []}
+          title={"Môn học"}
+      />
     </BoxShadow>
   );
 };
@@ -184,4 +215,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingTop: 12,
   },
+  selectionContainer: {
+    borderWidth: 0
+  }
 });

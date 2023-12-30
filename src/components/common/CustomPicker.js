@@ -6,13 +6,16 @@ import {
   StyleSheet,
   ScrollView,
   Modal, Pressable,
-  Dimensions
+  Dimensions,
+  FlatList
 } from 'react-native';
 import {Text} from 'react-native-elements';
 import PropsTypes from 'prop-types';
 import Colors from '../../theme/Colors';
 import ArrowGrey from '../../assets/images/svg/arrow-grey.svg';
 import Styles from '../../theme/MainStyles';
+import isEqual from 'lodash/isEqual'
+import ButtonCustom from './ButtonFooterCustom';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -116,49 +119,98 @@ CustomPicker.prototype = {
 export default CustomPicker;
 
 const ModalPicker = (props) => {
-  const { isMultiSelect = false } = props || {}
-  const [selectedIds, setSelectedIds] = useState([]);
+  const { isMultiSelect = false, selectedItems = [] } = props || {}
+  const [selectedIds, setSelectedIds] = useState(selectedItems);
 
   const _onPress = (item) => {
     if (!isMultiSelect) {
       props.hideModal();
       props.onChange(item);
+    } else {
+      const indexToRemove = selectedIds.findIndex(_item => isEqual(item,_item));
+      if (indexToRemove !== -1) {
+        const newList = selectedIds?.filter?.((_item, index) => {
+          return index !== indexToRemove;
+        })
+        setSelectedIds(newList)
+      } else {
+        setSelectedIds([...selectedIds, item]);
+      }
     }
   }
   const renderHeader = () => {
     if (!props.title) return null;
     return (
+      <View>
         <Text style={styles.modalText}>{props?.title}</Text>
+      </View>
     )
   }
-  const renderBodyModal = () => {
-    if (props.items?.length <= 0) return (
-        <Text
-            numberOfLines={1}
-            style={{textAlign: 'center', marginVertical: 20}}
-        >
-          Không có dữ liệu
-        </Text>
-    )
+
+  const _renderItem = ({item, index}) => {
+    const isSelected = selectedIds.some(_item => isEqual(item, _item));
+    if (!isSelected) {
+      return (
+        <View style={styles.wrapItem}>
+          <TouchableOpacity
+              style={styles.wrapText}
+              onPress={() => {
+                _onPress(item)
+              }}
+          >
+            <Text numberOfLines={1}
+                  style={styles.text}>
+              {item.dial_code || item.name}
+            </Text>
+          </TouchableOpacity>
+      </View>
+      )
+    }
+
     return (
-            <ScrollView >
-              {props.items?.map((item, index) => (
-                  <View style={styles.wrapItem}
-                        key={index}>
-                    <TouchableOpacity
-                        style={styles.wrapText}
-                        onPress={() => {
-                          _onPress(item)
-                        }}
-                    >
-                      <Text numberOfLines={1}
-                            style={styles.text}>
-                        {item.dial_code || item.name}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-              ))}
-            </ScrollView>
+      <View style={[styles.wrapItem, { borderRadius: 4, overflow: 'hidden' }]}>
+          <TouchableOpacity
+              style={[styles.wrapText, { backgroundColor: Colors.orange2 }]}
+              onPress={() => {
+                _onPress(item)
+              }}
+          >
+            <Text numberOfLines={1}
+                  style={[styles.text, { color: Colors.whiteColor }]}>
+              {item.dial_code || item.name}
+            </Text>
+          </TouchableOpacity>
+      </View>
+    )
+    
+  }
+
+  const renderBodyModal = () => {
+    return (
+      <FlatList 
+        data={props.items}  
+        renderItem={_renderItem}  
+        ListEmptyComponent={() => (
+          <Text
+              numberOfLines={1}
+              style={{textAlign: 'center', marginVertical: 20}}
+          >
+            Không có dữ liệu
+          </Text>
+        )}
+      />
+    )
+  }
+
+  const renderFooterModal = () => {
+    if (!isMultiSelect) return;
+    return (
+      <View>
+        <ButtonCustom text="Xác nhận" onPress={() => {
+          props.onChange(selectedIds)
+          props.hideModal();
+        }}  />
+      </View>
     )
   }
   return (
@@ -217,6 +269,7 @@ const ModalPicker = (props) => {
             <View style={styles.modalView}>
               {renderHeader()}
               {renderBodyModal()}
+              {renderFooterModal()}
             </View>
           </Pressable>
         </Modal>
@@ -268,7 +321,8 @@ const styles = StyleSheet.create({
     maxHeight: windowHeight * 0.6,
     backgroundColor: Colors.whiteColor,
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    padding:10,
   },
   button: {
     borderRadius: 20,

@@ -48,6 +48,10 @@ const UserCreateRequest = (props) => {
       value: user?.metaData?.description,
       msgError: '',
     },
+    subjects: {
+      value: user?.subjects,
+      msgError: '',
+    }
   });
   const [disabled, setDisabled] = useState(false);
   const [teacherInfo, setTeacherInfo] = useState({});
@@ -68,6 +72,12 @@ const UserCreateRequest = (props) => {
   function validateForm() {
     const form = JSON.parse(JSON.stringify(data));
     let valid = true;
+    
+    if (!form.subjects?.value?.length) {
+      form.subjects.msgError = "Chọn ít nhất một môn học"
+      valid =  false
+    }
+
     if (!form.fullName?.value) {
       form.fullName.msgError = 'Trường này là bắt buộc';
       valid = false;
@@ -126,6 +136,7 @@ const UserCreateRequest = (props) => {
         address: data.address?.value,
         dob: data.yearBirth?.value,
         phone: data.phoneNumber?.value,
+        subjects: data.subjects?.value,
         metaData: {
           ...user?.medataData,
           gender: data.gender?.value,

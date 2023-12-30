@@ -226,11 +226,21 @@ const SearchScreen = (props) => {
         >
             {renderForm()}
             {renderResult()}
-            <ModalPicker
+            {/* <ModalPicker
                 items={subjects}
                 show={showSubject}
                 hideModal={() => setShowSubject(!showSubject)}
                 onChange={setCurrentSubject}
+                title={"Môn học"}
+            /> */}
+            <ModalPicker
+                items={subjects}
+                show={showSubject}
+                hideModal={() => setShowSubject(!showSubject)}
+                onChange={(data) => {
+                    console.log(`🔥LOG_IT:: data`,data)
+                }}
+                isMultiSelect
                 title={"Môn học"}
             />
             <ModalPicker

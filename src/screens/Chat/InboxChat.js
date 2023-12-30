@@ -157,6 +157,7 @@ const InboxChat = (props) => {
       const response = await joinRoomApi([user?._id, userReceive?._id]);
 
       roomChatRef.current = response;
+      alert('call done api')
 
       console.info(`LOGGER:: response`,response);
     }
@@ -246,7 +247,11 @@ const InboxChat = (props) => {
   async function handleSend(content = '', images = [], files = []) {
     console.info(`🔥🔥🔥LOGGER:: id `, userReceive?._id, user?._id);
     try {
-      SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
+      if (!roomChatRef.current?._id) {
+        console.log(`🔥LOG_IT:: roomChatRef`, roomChatRef.current)
+      } else {
+        SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
+      }
     } catch (error) {
       if (error?.response?.data?.errors) {
         Toast.show({

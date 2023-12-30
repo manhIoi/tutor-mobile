@@ -435,3 +435,7 @@ export function teacherAcceptAndReject(type, data) {
 export function getVoteByClass(id, idUser) {
   return callApi(`/vote/class/${id}/${idUser}`, 'get')
 }
+
+export function getOtherVoteByClass(id, idUser) {
+  return callApi(`/vote/class/other-vote/${id}/${idUser}`, 'get')
+}

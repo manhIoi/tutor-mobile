@@ -6,6 +6,8 @@ import RateStar from "./RateStar";
 
 const VoteItem = (props) => {
     const { message, userSend, value } = props?.vote || {}
+    
+    console.log(`🔥LOG_IT:: userSend`, userSend)
     return (
         <View style={[{ padding: 8, borderRadius: 6, }, props?.style]} >
             <View style={{ flexDirection: 'row' }} >

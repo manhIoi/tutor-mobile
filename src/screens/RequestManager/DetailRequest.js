@@ -23,7 +23,8 @@ import {
   teacherRegistryRequest,
   updateDetailRequest,
   voteClass,
-  getVoteByClass, cancelDetailRequest
+  getVoteByClass, cancelDetailRequest,
+  getOtherVoteByClass
 } from '../../api/class';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
@@ -36,6 +37,7 @@ import Star from '../../assets/images/svg/star.svg';
 import StarGrey from '../../assets/images/svg/star-grey.svg';
 import {syncMyRequestList, syncTutorRequestList} from "../../helper/main";
 import SocketIO from "../../utils/SocketIO";
+import VoteItem from '../../components/common/VoteItem';
 
 const INIT_REVIEWS = {
   data: [],
@@ -61,13 +63,17 @@ const DetailClass = (props) => {
     userSend: user,
   });
 
+  const [otherVotes, setOtherVotes] = useState([]);
+
   useEffect(() => {
     getVoteData();
+    getOtherVote();
   }, [])
 
   const getVoteData = async () => {
     try {
       const response = await getVoteByClass(classData?._id, user?._id) || {};
+      console.log(`🔥LOG_IT:: response`, response)
 
       setVoteData({
         ...voteData,
@@ -75,7 +81,17 @@ const DetailClass = (props) => {
         editable: isEmpty(response),
       })
     } catch (e) {
+      console.log(`🔥LOG_IT:: getVoteData e`, e)
+    }
+  }
 
+  const getOtherVote = async () => {
+    try {
+      const response = await getOtherVoteByClass(classData?._id,  user?._id) || {};
+      console.log(`🔥LOG_IT:: response`, response)
+      setOtherVotes(response);
+    } catch (error) {
+      console.log(`🔥LOG_IT:: getVoteData e`, error)
     }
   }
 
@@ -226,6 +242,26 @@ const DetailClass = (props) => {
           ? <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{marginBottom: 10, borderRadius:4, borderWidth:1, borderColor: Colors.borderThin}} onChangeText={(text) => setVoteData({...voteData, message: text})} />
           :  <View style={{ justifyContent: 'center', alignItems: 'center' }} ><Text>Bạn đã đánh giá: {voteData.message}</Text></View>
       }
+    </View>
+  }
+
+  const renderOtherVotes = () => {
+    console.log(`🔥LOG_IT:: otherVotes`, otherVotes)
+    if (!isClassEnd || isEmpty(classData?.teacher) || otherVotes?.length === 0) return null;
+    return <View>
+      <View style={{ flexDirection: 'row', alignItems: 'center',justifyContent: 'space-between',  marginTop: 10, marginBottom: 8 }}>
+        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2, marginRight: 10}}>
+          Nhận xét khác 
+        </Text>
+        <Text style={{ fontSize: ConfigStyle.font16 }} >({otherVotes.length})</Text>
+      </View>
+      {otherVotes?.map?.(item => (
+        <View style={{ marginBottom: 8 }} key={`other_vote_item_${item?._id}`} >
+          <BoxShadow>
+            <VoteItem vote={item} />
+          </BoxShadow>
+        </View>
+      ))}
     </View>
   }
 
@@ -391,6 +427,7 @@ const DetailClass = (props) => {
         {renderInboxTeacher()}
         {renderVoteStar()}
         {renderButton()}
+        {renderOtherVotes()}
         <CustomActionSheet
             title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}
             arrayActions={['Xác nhận', 'Thoát']}
