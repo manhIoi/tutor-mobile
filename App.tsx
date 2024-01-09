@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, LogBox, StatusBar, Platform, Dimensions} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, LogBox, StatusBar, Platform, Dimensions } from 'react-native';
 import {
   NavigationContainer,
   DefaultTheme,
@@ -7,27 +7,18 @@ import {
 } from '@react-navigation/native';
 
 import Toast from 'react-native-toast-message'
-import { useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ThemeProvider, Text } from 'react-native-elements';
-// import messaging from '@react-native-firebase/messaging';
-// import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { NetworkInfo } from "react-native-network-info";
 import AuthStack from './src/routes/AuthStack';
-import LoadingScreen from './src/screens/Loading/LoadingScreen';
-import useCachedResources from './src/hooks/useCachedResources';
-import { selectIsUserlogged, updateBalance} from './src/lib/slices/authSlice';
+import { selectIsUserlogged } from './src/lib/slices/authSlice';
 import { selectThemeMode } from './src/lib/slices/settingSlice';
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
-import {displayedNewMessage} from './src/lib/slices/socketSlice';
-import MiniCallStream from "./src/components/Call/MiniCallStream";
 import { navigationRef, isReadyRef } from './RootNavigation';
-// import {fcmService} from './src/utils/FCMService';
-// import {localNotificationService} from './src/utils/LocalNotificationService';
-import {IP_ADDRESS} from './src/utils/auth.util';
 import ActionNotification from './src/components/Notification/ActionNotification';
-import ModalMatch from './src/components/common/ModalMatch';
+import ModalApprove from './src/components/common/ModalMatch';
 import SocketIO from "./src/utils/SocketIO";
 import ConfigStyle from "./src/theme/ConfigStyle";
+import Loading from './src/components/common/Loading';
 
 const width = Dimensions.get('window').width;
 
@@ -45,16 +36,12 @@ const App = (props) => {
   const routeNameRef = React.useRef();
   const isUserLogged = useSelector(selectIsUserlogged);
   const isDarkMode = useSelector(selectThemeMode);
-  const isLoadingComplete = useCachedResources();
-  const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
-  const onCallView = useSelector(state => state.calling.onCallView);
-  const newNotification = useSelector(state => state.socket.newNotification);
-  const [classData, setClass] = useState([])
-  const notification = useSelector(
-    (state) => state.notification.newNotifications,
-  );
-  const [isShow, setShow] = useState(false);
+  const modal = useSelector(state => state.modal);
+  const { isShowApprovePopup, isShowLoading, } = modal || {}
+
+
+  console.log(`🔥LOG_IT:: isShowApprovePopup`, isShowApprovePopup)
 
   useEffect(() => {
     SocketIO.connect();
@@ -62,7 +49,7 @@ const App = (props) => {
 
   useEffect(() => {
     if (user?._id) {
-      console.info(`LOG_IT:: notify_${user?._id}`, );
+      console.info(`LOG_IT:: notify_${user?._id}`,);
       SocketIO.on(`notify_${user?._id}`, data => {
         console.info(`LOG_IT::  notify_ data`, data);
         Toast.show({
@@ -90,24 +77,6 @@ const App = (props) => {
     }
   }, [user]);
 
-  const handleShow = ()=>{
-    setShow(false);
-  }
-  // useEffect(() => {
-  //   if  (newNotification?.from?.id
-  //     && user?._id
-  //     && newNotification?.from?.id !== user?._id) {
-  //     dispatch(displayedNewMessage());
-  //   }
-  // }, [newNotification])
-  // useEffect(() => {
-  //  //  if()
-  //  // console.log('1newNotification',newNotification)
-  //  //  const data = JSON?.parse(JSON.stringify(notification));
-  //   if(notification.type ==='USER_REQUEST_CHANGE_TIME' && user?.access ==='teacher')
-  //   setShow(true);
-  //   setClass(notification);
-  // }, [notification])
   async function requestUserPermission() {
     // const authStatus = await messaging().requestPermission();
     // const enabled =
@@ -115,78 +84,7 @@ const App = (props) => {
     //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   }
-  // useEffect(() => {
-  //   // PushNotificationIOS.addEventListener('notification', onRemoteNotification);
-  //   // fcmService.registerAppWithFCM();
-  //   // fcmService.register(onRegister, onNotification, onOpenNotification);
-  //   // localNotificationService.configure(onOpenNotification, dispatch);
-  //   function onRegister() {
-  //   }
-  //   function onOpenNotification(navigation) {
-  //     if (navigation.screen) {
-  //       props.Navigation(navigation);
-  //     } else {
-  //       if (navigation?.data?.data) {
-  //         const data = JSON.parse(navigation.data.data);
-  //         const userInfo = {
-  //           fullName: data?.from?.fullName,
-  //           avatar: data?.from?.avatar,
-  //           online: true,
-  //           _id: data?.from?._id,
-  //           groupChat: data?.group,
-  //         };
-  //         props.Navigation({
-  //           screen: 'InboxChat',
-  //           params: {
-  //             to: userInfo?._id,
-  //             userReceive: userInfo,
-  //             flagTime: new Date().getTime(),
-  //           },
-  //         });
-  //       }
-  //     }
-  //   }
-  //   function onNotification(notify) {
-  //   }
 
-  //   NetworkInfo.getIPAddress().then(async (ipAddress) => {
-  //     await IP_ADDRESS.set(ipAddress);
-  //   });
-
-  //   return () => {
-  //     fcmService.unRegister();
-  //     localNotificationService.unregister();
-  //   };
-  // }, []);
-
-  const onRemoteNotification = (notification) => {
-    const actionIdentifier = notification.getActionIdentifier();
-
-    if (actionIdentifier === 'open') {
-      // Perform action based on open action
-    }
-
-    if (actionIdentifier === 'text') {
-      // Text that of user input.
-      const userText = notification.getUserText();
-      // Perform action based on textinput action
-    }
-  };
-
-  // useEffect(() => {
-  //   requestUserPermission();
-  //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
-
-  //   // });
-  //   return () => {
-  //     isReadyRef.current = false
-  //   };
-  // }, []);
-  // if (!isLoadingComplete) {
-  //     // if (isLoadingComplete) {
-  //     // return <SplashScreen/>;
-  //     return <LoadingScreen />;
-  // }
   return (
     <ThemeProvider theme={theme}>
       <View style={styles.container}>
@@ -199,12 +97,6 @@ const App = (props) => {
           onStateChange={async () => {
             const previousRouteName = routeNameRef.current;
             const currentRouteName = navigationRef.current.getCurrentRoute().name;
-            // if (previousRouteName !== currentRouteName) {
-            //     await analytics().logScreenView({
-            //         screen_name: currentRouteName,
-            //         screen_class: currentRouteName,
-            //     });
-            // }
             routeNameRef.current = currentRouteName;
           }}
           onReady={() => {
@@ -212,22 +104,12 @@ const App = (props) => {
             routeNameRef.current = navigationRef.current.getCurrentRoute().name;
           }}
           theme={isDarkMode ? DarkTheme : DefaultTheme}>
-          {!isUserLogged  ?  <AuthStack /> : <BottomTabNavigator /> }
+          {!isUserLogged ? <AuthStack /> : <BottomTabNavigator />}
         </NavigationContainer>
-        {
-          onCallView ? (
-            <MiniCallStream />
-          ) : null
-        }
-
         <ActionNotification />
-
         <Toast ref={(ref) => Toast.setRef(ref)} />
-        <ModalMatch data={classData}
-                    status={1}
-                    isModalVisible={isShow}
-                    action={handleShow} />
-
+        {isShowApprovePopup ? <ModalApprove /> : null}
+        {isShowLoading ? <Loading /> : null}
       </View>
     </ThemeProvider>
   );

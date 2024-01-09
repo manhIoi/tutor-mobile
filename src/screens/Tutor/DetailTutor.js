@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,11 +6,11 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-    Image
+  Image
 } from 'react-native';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import ConfigStyle from '../../theme/ConfigStyle';
 import Container from '../../components/common/ContainerAnimated';
 import DetailInfo from '../../components/Tutor/DetailInfo';
@@ -28,7 +28,7 @@ import {
   getVoteByTeacher
 } from '../../api/users';
 import VoteItem from "../../components/common/VoteItem";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 
 const INIT_REVIEWS = {
   data: [],
@@ -38,24 +38,19 @@ const INIT_REVIEWS = {
 
 const EmptyComponent = () => {
   return (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }} >
-        <Text style={{fontStyle: 'italic'}}>
-          Không có dữ liệu
-        </Text>
-      </View>
+    <View style={{ justifyContent: 'center', alignItems: 'center' }} >
+      <Text style={{ fontStyle: 'italic' }}>
+        Không có dữ liệu
+      </Text>
+    </View>
 
   )
 }
 
 const DetailTutor = (props) => {
-  const {teacher} = props.route.params;
+  const { teacher } = props.route.params;
   const user = useSelector(state => state?.auth?.user);
-  const [classBusy, setClassBusy] = useState(false);
-  const [classes, setClasses] = useState([]);
-  const [loadReview, setLoadReview] = useState(true);
-  const [favorite, setFavorite] = useState(false);
   const [voteList, setVoteList] = useState([]);
-  const [refreshing, setRefresh] = useState(false);
   console.info(`LOG_IT:: voteList`, voteList);
 
   useEffect(() => {
@@ -97,22 +92,22 @@ const DetailTutor = (props) => {
             },
           });
         }}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
       >
         <BackgroundGradient style={styles.wrapBtn}>
           <Text style={[Styles.textWhite, styles.textBtn]}>CHAT</Text>
         </BackgroundGradient>
       </TouchableOpacity>
     </BoxShadow>
-  ) :  null;
+  ) : null;
 
   const renderVoteItem = ({ item, index }) => {
     return (
-        <View style={{ marginBottom: 8 }} >
-          <BoxShadow>
-            <VoteItem vote={item} />
-          </BoxShadow>
-        </View>
+      <View style={{ marginBottom: 8 }} >
+        <BoxShadow>
+          <VoteItem vote={item} />
+        </BoxShadow>
+      </View>
 
     )
   }
@@ -121,7 +116,7 @@ const DetailTutor = (props) => {
     <Container
       title={'Hồ sơ gia sư'}
       arrowBack={true}
-      contentBarStyles={{justifyContent: 'space-between'}}
+      contentBarStyles={{ justifyContent: 'space-between' }}
       navigation={props.navigation}
       headerHeight={ConfigStyle.statusBarHeight}
       hideBackground={false}
@@ -129,7 +124,7 @@ const DetailTutor = (props) => {
       footer={footer}
       imageSource={ImageUtils.bgNotDot}
     >
-      <View style={{ marginHorizontal:15,}} >
+      <View style={{ marginHorizontal: 15, }} >
         <BoxShadow>
           <View style={styles.container}>
             <View>
@@ -137,20 +132,19 @@ const DetailTutor = (props) => {
               <View style={styles.containerList}>
                 <View>
                   <Text
-                      style={{
-                        ...Styles.title2RS,
-                        ...Styles.textNormal,
-                        marginLeft: 5,
-                        color: Colors.orange2,
-                        fontWeight: "bold",
-                      }}
+                    style={{
+                      ...Styles.title2RS,
+                      ...Styles.textNormal,
+                      marginLeft: 5,
+                      color: Colors.orange2,
+                      fontWeight: "bold",
+                    }}
                   >
                     Đánh giá giáo viên
                   </Text>
                   <FlatList data={voteList} renderItem={renderVoteItem} keyExtractor={(item) => `vote_${item?._id}`} ListEmptyComponent={EmptyComponent} />
                 </View>
               </View>
-              {/*<ListTopics data={teacher?.topic} />*/}
             </View>
           </View>
         </BoxShadow>

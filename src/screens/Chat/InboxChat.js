@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,8 +8,8 @@ import {
   Keyboard,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import {useSelector, useDispatch} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import Container from '../../components/common/Container2';
 import Statusbar from '../../components/common/StatusBar';
 import Avatar from '../../components/common/Avatar';
@@ -22,14 +22,15 @@ import {
   createChatSingle,
   getMessageByRoom, joinRoomApi,
 } from '../../api/chat';
-import {uploadImage, handleUploadFile} from '../../api/uploadImage';
-import {SOCKET_ID, DEVICE_TOKEN} from '../../utils/auth.util';
+import { uploadImage, handleUploadFile } from '../../api/uploadImage';
+import { SOCKET_ID, DEVICE_TOKEN } from '../../utils/auth.util';
 import Constants from '../../../constants/Values';
-import {updateCurrentChatGroup} from '../../lib/slices/socketSlice';
+import { updateCurrentChatGroup } from '../../lib/slices/socketSlice';
 import IconEllipsis from '../../assets/images/svg/ellipsis-h.svg';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
 import ModalReport from '../../components/Chat/ModalReport';
 import SocketIO from "../../utils/SocketIO";
+import { hideLoadingModal, showLoadingModal } from '../../lib/slices/modalSlice';
 
 const INITIAL_MESSAGES = {
   data: [],
@@ -64,10 +65,11 @@ const InboxChat = (props) => {
   const newNotification = useSelector((state) => state.socket.newNotification);
 
   const messagesDataSorted = useMemo(() => {
-      return messages.data.sort((a,b ) => new Date(b.createdAt).getTime()  - new Date(a.createdAt).getTime())
+    return messages.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   }, [messages.data])
 
   useEffect(() => {
+    dispatch(showLoadingModal())
     executeTaskChat();
     return () => {
       callBackDismiss?.();
@@ -75,8 +77,10 @@ const InboxChat = (props) => {
   }, []);
 
   const executeTaskChat = () => {
-    Promise.all([getListMessage(),joinRoomEvent()]).catch(e => {
+    Promise.all([getListMessage(), joinRoomEvent()]).catch(e => {
       console.info(`🔥LOGGER::  executeTaskChat error`, e);
+    }).finally(() => {
+      dispatch(hideLoadingModal())
     })
   }
 
@@ -125,20 +129,20 @@ const InboxChat = (props) => {
     }
   }
 
-  async function getListMessage () {
+  async function getListMessage() {
     try {
       const messages = await getMessageByRoom({
         idReceive: userReceive._id,
         idSend: user._id,
         isChatBot: isChatAssistant
       })
-      console.info(`LOGGER:: messages`,messages);
+      console.info(`LOGGER:: messages`, messages);
       const _messagesFormatted = messages?.map?.(m => {
-        const isReceive = user?._id === m.userReceive || (isChatAssistant&& m?.isBotMessage)
+        const isReceive = user?._id === m.userReceive || (isChatAssistant && m?.isBotMessage)
         return {
           ...m,
           receive: isReceive,
-          from: isReceive ?  userReceive : user
+          from: isReceive ? userReceive : user
         }
       })
       setMessages({
@@ -157,15 +161,14 @@ const InboxChat = (props) => {
       const response = await joinRoomApi([user?._id, userReceive?._id]);
 
       roomChatRef.current = response;
-      alert('call done api')
 
-      console.info(`LOGGER:: response`,response);
+      console.info(`LOGGER:: response`, response);
     }
     SocketIO.on(`messageResponse_${user._id}`, data => {
       console.info(`🔥🔥🔥LOGGER messageResponse_`);
       if (data?.status === true) {
         setMessages(messages => {
-          const newData = [...messages.data,{
+          const newData = [...messages.data, {
             ...data,
             from: user,
           }]
@@ -177,12 +180,12 @@ const InboxChat = (props) => {
       }
     })
     SocketIO.on(`messageSendTo_${user._id}`, data => {
-      const newData = [...messages.data,{
+      const newData = [...messages.data, {
         ...data,
         from: userReceive,
       }]
       setMessages(messages => {
-        const newData = [...messages.data,{
+        const newData = [...messages.data, {
           receive: true,
           createdAt: new Date().getTime(),
           content: data?.content,
@@ -250,7 +253,7 @@ const InboxChat = (props) => {
       if (!roomChatRef.current?._id) {
         console.log(`🔥LOG_IT:: roomChatRef`, roomChatRef.current)
       } else {
-        SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend:  user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
+        SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend: user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
       }
     } catch (error) {
       if (error?.response?.data?.errors) {
@@ -314,7 +317,7 @@ const InboxChat = (props) => {
   async function handleBlockUser() {
   }
 
-  async function handleUnBlockUser() {}
+  async function handleUnBlockUser() { }
 
   function handleDeleteMessage(id) {
     const listMessage = [...messages.data];
@@ -377,10 +380,10 @@ const InboxChat = (props) => {
   );
   const iconRight = (
     <TouchableOpacity style={styles.iconRight}
-onPress={handlePressRightHeader}>
+      onPress={handlePressRightHeader}>
       <IconEllipsis width={20}
-height={5}
-fill={'#fff'} />
+        height={5}
+        fill={'#fff'} />
     </TouchableOpacity>
   );
   return (
@@ -403,12 +406,10 @@ fill={'#fff'} />
       keyboardShouldPersistTaps={true}
       footer={
         <CustomInputToolBar onlyMessage={isChatAssistant} sendMessage={sendMessage}
-groupChat={groupChat} />
+          groupChat={groupChat} />
       }
       showScroll={showScroll}
     >
-      {/*{isBusy ? <Loading /> : null}*/}
-
       <BoxMessage
         messages={messagesDataSorted}
         showScroll={showScroll}

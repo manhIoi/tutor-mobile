@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import {
   View,
@@ -6,7 +6,7 @@ import {
   Image,
   TouchableOpacity, TextInput,
 } from 'react-native';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import FastImage from 'react-native-fast-image';
 import ConfigStyle from '../../theme/ConfigStyle';
 import Container from '../../components/common/ContainerAnimated';
@@ -31,11 +31,11 @@ import CustomActionSheet from '../../components/common/CustomActionSheet';
 import config from '../../../config/config';
 import IconChatActive from '../../assets/images/tab/chat1.svg';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Star from '../../assets/images/svg/star.svg';
 import StarGrey from '../../assets/images/svg/star-grey.svg';
-import {syncMyRequestList, syncTutorRequestList} from "../../helper/main";
+import { syncMyRequestList, syncTutorRequestList } from "../../helper/main";
 import SocketIO from "../../utils/SocketIO";
 import VoteItem from '../../components/common/VoteItem';
 
@@ -52,9 +52,16 @@ const DetailClass = (props) => {
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
   const isMyRequest = classData?.user?._id === user?._id;
   const isClassEnd = classData?.status === 3;
-  const isClassNotApprove = classData?.status === 0 || classData ?.status === 1;
+  const isClassNotApprove = classData?.status === 0 || classData?.status === 1;
   const classFullStudent = classData?.students?.length === classData?.numOfStudents
   const isInClass = classData?.students?.some(i => i?._id === user?._id)
+  const isValidSubject = useMemo(() => {
+    const subjectHash = classData?.subjects?.reduce?.((current, item, index) => {
+      current[item?._id] = item;
+      return current;
+    }, {})
+    return user?.subjects?.some?.(item => subjectHash[item?._id]);
+  }, [classData?.subjects, user])
   const dispatch = useDispatch();
   const [voteData, setVoteData] = useState({
     value: 0,
@@ -87,7 +94,7 @@ const DetailClass = (props) => {
 
   const getOtherVote = async () => {
     try {
-      const response = await getOtherVoteByClass(classData?._id,  user?._id) || {};
+      const response = await getOtherVoteByClass(classData?._id, user?._id) || {};
       console.log(`🔥LOG_IT:: response`, response)
       setOtherVotes(response);
     } catch (error) {
@@ -231,16 +238,16 @@ const DetailClass = (props) => {
     if (!isClassEnd || isEmpty(classData?.teacher) || user?.role === 'teacher') return null;
     return <View>
       <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 10 }} >
-        {[1,2,3,4,5].map(i => <TouchableOpacity onPress={() =>  {
+        {[1, 2, 3, 4, 5].map(i => <TouchableOpacity onPress={() => {
           if (!voteData.editable) return;
-          setVoteData({...voteData, value: i})
-        }} style={{ marginVertical: 4, marginHorizontal: 10}}>
+          setVoteData({ ...voteData, value: i })
+        }} style={{ marginVertical: 4, marginHorizontal: 10 }}>
           {voteData.value < i ? <StarGrey width={40} height={40} /> : <Star width={40} height={40} />}
-        </TouchableOpacity> )}
+        </TouchableOpacity>)}
       </View>
       {voteData?.editable
-          ? <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{marginBottom: 10, borderRadius:4, borderWidth:1, borderColor: Colors.borderThin}} onChangeText={(text) => setVoteData({...voteData, message: text})} />
-          :  <View style={{ justifyContent: 'center', alignItems: 'center' }} ><Text>Bạn đã đánh giá: {voteData.message}</Text></View>
+        ? <TextInput multiline={true} placeholder={"Nhập đánh giá"} style={{ marginBottom: 10, borderRadius: 4, borderWidth: 1, borderColor: Colors.borderThin }} onChangeText={(text) => setVoteData({ ...voteData, message: text })} />
+        : <View style={{ justifyContent: 'center', alignItems: 'center' }} ><Text>Bạn đã đánh giá: {voteData.message}</Text></View>
       }
     </View>
   }
@@ -249,9 +256,9 @@ const DetailClass = (props) => {
     console.log(`🔥LOG_IT:: otherVotes`, otherVotes)
     if (!isClassEnd || isEmpty(classData?.teacher) || otherVotes?.length === 0) return null;
     return <View>
-      <View style={{ flexDirection: 'row', alignItems: 'center',justifyContent: 'space-between',  marginTop: 10, marginBottom: 8 }}>
-        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2, marginRight: 10}}>
-          Nhận xét khác 
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, marginBottom: 8 }}>
+        <Text style={{ fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2, marginRight: 10 }}>
+          Nhận xét khác
         </Text>
         <Text style={{ fontSize: ConfigStyle.font16 }} >({otherVotes.length})</Text>
       </View>
@@ -272,68 +279,68 @@ const DetailClass = (props) => {
     const subTitle = classData?.teacher?.metaData?.description || '';
 
     return (
-        <View style={{marginTop: 20}}>
-          <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2}}>
-            Giáo viên nhận lớp
-          </Text>
-          <TouchableOpacity onPress={() => {
-            props?.navigation?.push?.("DetailTutor", {
-              teacher: classData?.teacher,
-            })
-          }} >
-            <BoxShadow style={{...styles.container, flexDirection: 'row'}}>
-              <View style={{flexDirection: 'row', flex:1}}>
-                <Image
-                    source={{
-                      uri: classData?.teacher?.avatar,
-                    }}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 25,
-                      borderWidth: 1,
-                      borderColor: Colors.borderThin,
-                    }}
-                />
+      <View style={{ marginTop: 20 }}>
+        <Text style={{ fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2 }}>
+          Giáo viên nhận lớp
+        </Text>
+        <TouchableOpacity onPress={() => {
+          props?.navigation?.push?.("DetailTutor", {
+            teacher: classData?.teacher,
+          })
+        }} >
+          <BoxShadow style={{ ...styles.container, flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              <Image
+                source={{
+                  uri: classData?.teacher?.avatar,
+                }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  borderWidth: 1,
+                  borderColor: Colors.borderThin,
+                }}
+              />
 
-                <View
-                    style={{
-                      flexDirection: 'column',
-                      marginLeft: 10,
-                      justifyContent: 'center',
-                      flex:1,
-                    }}
-                >
-                  <Text style={{fontSize: ConfigStyle.font16}}>
-                    {nameTeacher}
-                  </Text>
-                  <Text style={{fontSize: ConfigStyle.font12}}>
-                    {classData?.teacher?.phone}
-                  </Text>
-                  <Text style={{fontSize: ConfigStyle.font10}} numberOfLines={2}>
-                    {subTitle}
-                  </Text>
-                </View>
-              </View>
-              {isMyClass ? null : <TouchableOpacity
-                  style={{
-                    ...styles.itemChat,
-                    position: 'absolute',
-                    top: 0,
-                    right: 10,
-                  }}
-                  onPress={() => {
-                    props.navigation.push('InboxChat', {
-                      to: classData?.teacher?.id,
-                      userReceive: classData?.teacher,
-                    });
-                  }}
+              <View
+                style={{
+                  flexDirection: 'column',
+                  marginLeft: 10,
+                  justifyContent: 'center',
+                  flex: 1,
+                }}
               >
-                <IconChatActive width={16} height={16} />
-              </TouchableOpacity>}
-            </BoxShadow>
-          </TouchableOpacity>
-        </View>
+                <Text style={{ fontSize: ConfigStyle.font16 }}>
+                  {nameTeacher}
+                </Text>
+                <Text style={{ fontSize: ConfigStyle.font12 }}>
+                  {classData?.teacher?.phone}
+                </Text>
+                <Text style={{ fontSize: ConfigStyle.font10 }} numberOfLines={2}>
+                  {subTitle}
+                </Text>
+              </View>
+            </View>
+            {isMyClass ? null : <TouchableOpacity
+              style={{
+                ...styles.itemChat,
+                position: 'absolute',
+                top: 0,
+                right: 10,
+              }}
+              onPress={() => {
+                props.navigation.push('InboxChat', {
+                  to: classData?.teacher?.id,
+                  userReceive: classData?.teacher,
+                });
+              }}
+            >
+              <IconChatActive width={16} height={16} />
+            </TouchableOpacity>}
+          </BoxShadow>
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -343,9 +350,9 @@ const DetailClass = (props) => {
     }
     if (isClassEnd) {
       if (voteData?.editable && !isEmpty(classData?.teacher) && user?.role === 'student') {
-        return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={ "Gửi đánh giá" } />
+        return <ButtonCustom {...buttonProps} onPress={handleVoteClass} text={"Gửi đánh giá"} />
       }
-      return <ButtonCustom {...buttonProps} disabled={true} text={ "Lớp học đã hết hạn" } />;
+      return <ButtonCustom {...buttonProps} disabled={true} text={"Lớp học đã hết hạn"} />;
     }
 
     if (isMyRequest) {
@@ -354,37 +361,44 @@ const DetailClass = (props) => {
     }
 
     if (user?.role === 'teacher') {
+      if (!isValidSubject) {
+        return <ButtonCustom
+          style={{ width: '100%' }}
+          text={'Môn học không khả dụng với bạn'}
+          disabled={true}
+        />
+      }
       if (isClassNotApprove) {
         return <ButtonCustom
-            style={{ width: '100%' }}
-            text={'NHẬN LỚP NGAY'}
-            onPress={handleClickJoinClass}
+          style={{ width: '100%' }}
+          text={'NHẬN LỚP NGAY'}
+          onPress={handleClickJoinClass}
         />
       }
       return <ButtonCustom
-          style={{ width: '100%' }}
-          text={'Đã có giáo viên'}
-          disabled={true}
+        style={{ width: '100%' }}
+        text={'Đã có giáo viên'}
+        disabled={true}
       />
     } else {
       if (classFullStudent) {
         return <ButtonCustom
-            style={{ width: '100%' }}
-            text={'LỚP HỌC ĐÃ ĐẦY'}
-            disabled={true}
+          style={{ width: '100%' }}
+          text={'LỚP HỌC ĐÃ ĐẦY'}
+          disabled={true}
         />
       }
       if (isInClass) {
         return <ButtonCustom
-            style={{ width: '100%' }}
-            text={'BẠN ĐANG TRONG LỚP HỌC '}
-            disabled={true}
+          style={{ width: '100%' }}
+          text={'BẠN ĐANG TRONG LỚP HỌC '}
+          disabled={true}
         />
       }
       return <ButtonCustom
-          style={{ width: '100%' }}
-          text={'THAM GIA LỚP HỌC'}
-          onPress={handleClickJoinClass}
+        style={{ width: '100%' }}
+        text={'THAM GIA LỚP HỌC'}
+        onPress={handleClickJoinClass}
       />
     }
   }
@@ -395,7 +409,7 @@ const DetailClass = (props) => {
     <Container
       title={"Chi tiết"}
       arrowBack={true}
-      contentBarStyles={{justifyContent: 'space-between'}}
+      contentBarStyles={{ justifyContent: 'space-between' }}
       navigation={props.navigation}
       headerHeight={ConfigStyle.statusBarHeight}
       hideBackground={false}
@@ -403,24 +417,24 @@ const DetailClass = (props) => {
       imageSource={ImageUtils.bgNotDot}
     >
       <View style={styles.container}>
-        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2}}>
+        <Text style={{ fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2 }}>
           Giới thiệu
         </Text>
         <View>
-          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
-            <Text style={{fontSize: 14, fontWeight: "bold"}} >Tiêu đề: </Text>
+          <View style={{ flexDirection: 'row', alignItems: "flex-end" }} >
+            <Text style={{ fontSize: 14, fontWeight: "bold" }} >Tiêu đề: </Text>
             <Text>{classData?.title || ''}</Text>
           </View>
-          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
-            <Text style={{fontSize: 14, fontWeight: "bold"}} >Mô tả: </Text>
+          <View style={{ flexDirection: 'row', alignItems: "flex-end" }} >
+            <Text style={{ fontSize: 14, fontWeight: "bold" }} >Mô tả: </Text>
             <Text>{classData?.description || ''}</Text>
           </View>
-          <View style={{flexDirection: 'row', alignItems: "flex-end"}} >
-            <Text style={{fontSize: 14, fontWeight: "bold"}} >Môn học: </Text>
+          <View style={{ flexDirection: 'row', alignItems: "flex-end" }} >
+            <Text style={{ fontSize: 14, fontWeight: "bold" }} >Môn học: </Text>
             <Text>{coursesString || ''}</Text>
           </View>
         </View>
-        <Text style={{fontSize: ConfigStyle.font20, fontWeight: "bold",  color: Colors.orange2, marginTop: 10}}>
+        <Text style={{ fontSize: ConfigStyle.font20, fontWeight: "bold", color: Colors.orange2, marginTop: 10 }}>
           Thông tin lớp
         </Text>
         <TutorRequestItem data={classData} />
@@ -429,13 +443,13 @@ const DetailClass = (props) => {
         {renderButton()}
         {renderOtherVotes()}
         <CustomActionSheet
-            title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}
-            arrayActions={['Xác nhận', 'Thoát']}
-            message={classData?.title ? `Lớp : ${classData?.title}` : ''}
-            actionSheetOnPress={handleActionSheetOnPress}
-            shouldShow={showActionSheet}
-            cancelButtonIndex={1}
-            destructiveButtonIndex={0}
+          title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}
+          arrayActions={['Xác nhận', 'Thoát']}
+          message={classData?.title ? `Lớp : ${classData?.title}` : ''}
+          actionSheetOnPress={handleActionSheetOnPress}
+          shouldShow={showActionSheet}
+          cancelButtonIndex={1}
+          destructiveButtonIndex={0}
         />
       </View>
     </Container>
@@ -445,7 +459,7 @@ const DetailClass = (props) => {
 export default DetailClass;
 
 const styles = StyleSheet.create({
-  textRight: {justifyContent: 'flex-end', color: '#EE6423', fontSize: 14},
+  textRight: { justifyContent: 'flex-end', color: '#EE6423', fontSize: 14 },
   textLeft: {
     justifyContent: 'flex-start',
     color: '#00000029',
@@ -561,7 +575,7 @@ const styles = StyleSheet.create({
   textCancel: {
     color: Colors.orange2,
   },
-  iconDelete: {width: 14, height: 18},
+  iconDelete: { width: 14, height: 18 },
   itemChat: {
     marginTop: 10,
     paddingHorizontal: 3,

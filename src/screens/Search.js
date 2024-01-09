@@ -1,11 +1,11 @@
-import {View, Text, FlatList, StyleSheet, TextInput} from "react-native";
+import { View, Text, FlatList, StyleSheet, TextInput } from "react-native";
 import ConfigStyle from "../theme/ConfigStyle";
 import Statusbar from "../components/common/StatusBar";
 import Container from "../components/common/Container";
 import Selection from "../components/common/Selection";
-import React, {useMemo, useState} from "react";
+import React, { useMemo, useState } from "react";
 import { ModalPicker } from "../components/common/CustomPicker";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import Colors from "../theme/Colors";
 import isEqual from "lodash/isEqual";
 
@@ -16,25 +16,10 @@ import TutorRequestItem from "../components/RequestManagement/TutorRequestItem";
 import ColorsCore from "../../constants/Colors";
 import ChoiceSpecificDay from "../components/CreateRequest/ChoiceSpecificDay";
 
-const DEFAULT_DOB = Array.from({ length: 40 } , (_, index) => index + 1975).map(i => ({name:  `Năm: ${i.toString()}`}))
-
-const DEFAULT_ADDRESS = [
-    {
-        name: 'Hội An',
-    },
-    {
-        name: 'Hồ Chí Minh',
-    },
-    {
-        name: 'Đà Nẵng',
-    },
-    {
-        name: 'Hà Nội',
-    }
-]
+const DEFAULT_DOB = Array.from({ length: 40 }, (_, index) => index + 1975).map(i => ({ name: `Năm: ${i.toString()}` }))
 
 const SearchScreen = (props) => {
-    const { route, navigation} = props || {}
+    const { route, navigation } = props || {}
     const subjects = useSelector(state => state.subject.value);
 
     const [showSubject, setShowSubject] = useState(false);
@@ -42,7 +27,7 @@ const SearchScreen = (props) => {
     const [showAddress, setShowAddress] = useState(false);
     const [showStatus, setShowStatus] = useState(false);
 
-    const [currentSubject, setCurrentSubject] = useState(null);
+    const [currentSubject, setCurrentSubject] = useState([]);
     const [currentDOB, setCurrentDOB] = useState(null);
     const [currentAddress, setCurrentAddress] = useState(null);
     const [currentStatus, setCurrentStatus] = useState(null);
@@ -54,6 +39,16 @@ const SearchScreen = (props) => {
     const tutorRequestList = useSelector(state => state.main.tutorRequestList)
     const [searchData, setSearchData] = useState(null);
 
+    const addressData = useMemo(() => {
+        const groupByAddress = Object.groupBy(teacherList, (item) => item?.address);
+        return Object.keys(groupByAddress)?.filter?.(item => !!item)?.map?.(item => ({ name: item }));
+    }, [teacherList])
+
+    const subjectsString = useMemo(() => {
+        if (!currentSubject?.length) return '';
+        return currentSubject?.map?.(item => item?.name)?.join(", ")
+    }, [currentSubject])
+
     const teacherListSearch = useMemo(() => {
         let result = teacherList;
         if (searchData?.address) {
@@ -62,8 +57,12 @@ const SearchScreen = (props) => {
         if (searchData?.dob) {
             result = result?.filter?.(item => item?.dob === searchData?.dob)
         }
-        if (searchData?.subject) {
-            result = result?.filter?.(item => item?.subjects?.some(s => s?.name === searchData?.subject))
+        if (searchData?.subjects?.length > 0) {
+            const subjectsHash = searchData?.subjects?.reduce?.((current, item, index) => {
+                current[item?._id] = item;
+                return current;
+            }, {})
+            result = result?.filter?.(item => item?.subjects?.some(s => subjectsHash[s?._id]))
         }
         return result;
     }, [teacherList, searchData])
@@ -82,10 +81,10 @@ const SearchScreen = (props) => {
         }
 
         if (searchData?.weekDays?.length > 0) {
-            const weekDaysSorted = searchData?.weekDays?.sort?.((a,b) => a-b);
+            const weekDaysSorted = searchData?.weekDays?.sort?.((a, b) => a - b);
             result = result?.filter?.(item => {
-                const weekDaysItemSorted = item?.weekDays?.sort?.((a, b) => a-b);
-                return isEqual(weekDaysSorted,weekDaysItemSorted);
+                const weekDaysItemSorted = item?.weekDays?.sort?.((a, b) => a - b);
+                return isEqual(weekDaysSorted, weekDaysItemSorted);
             })
         }
 
@@ -99,7 +98,7 @@ const SearchScreen = (props) => {
             setSearchData({
                 address: currentAddress?.name,
                 dob: currentDOB?.name?.split(": ")[1],
-                subject: currentSubject?.name,
+                subjects: currentSubject,
             })
         } else {
             setSearchData({
@@ -147,31 +146,31 @@ const SearchScreen = (props) => {
                         <>
                             <Selection textInputProps={{
                                 placeholder: "Môn học",
-                                value: currentSubject?.name || '',
+                                value: subjectsString || '',
                                 style: styles.selection
                             }} onPress={() => setShowSubject(true)}
-                                       style={styles.selectionContainer}
+                                style={styles.selectionContainer}
                             />
                             <Selection textInputProps={{
                                 placeholder: "Năm sinh",
                                 value: currentDOB?.name || '',
                                 style: styles.selection
                             }} onPress={() => setShowDOB(true)}
-                                       style={styles.selectionContainer}
+                                style={styles.selectionContainer}
                             />
                             <Selection textInputProps={{
                                 placeholder: "Địa chỉ",
                                 value: currentAddress?.name || '',
                                 style: styles.selection
                             }} onPress={() => setShowAddress(true)}
-                                       style={styles.selectionContainer}
+                                style={styles.selectionContainer}
                             />
                         </>
                     ) : (
                         <>
-                            <Selection textInputProps={{ placeholder: "Trạng thái", style: styles.selection, value: currentStatus?.name || '' }}  style={styles.selectionContainer} onPress={() => setShowStatus(true)} />
+                            <Selection textInputProps={{ placeholder: "Trạng thái", style: styles.selection, value: currentStatus?.name || '' }} style={styles.selectionContainer} onPress={() => setShowStatus(true)} />
                             <View style={styles.inputContainer}>
-                                <TextInput  placeholder={"Giá tiền tối đa"} keyboardType={"numeric"} value={currentAmount} onChangeText={setCurrentAmount} />
+                                <TextInput placeholder={"Giá tiền tối đa"} keyboardType={"numeric"} value={currentAmount} onChangeText={setCurrentAmount} />
                             </View>
                             <View style={styles.inputContainer}>
                                 <TextInput placeholder={"Số lượng học sinh tối đa"} keyboardType={"numeric"} value={currentNumberOfStudent} onChangeText={setCurrentNumberOfStudent} />
@@ -191,7 +190,7 @@ const SearchScreen = (props) => {
                 }
 
                 <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} >
-                    <ButtonCustom outline={true} text={"Xóa bộ lọc"} onPress={handleClearFilter} style={{ marginRight: 10}} />
+                    <ButtonCustom outline={true} text={"Xóa bộ lọc"} onPress={handleClearFilter} style={{ marginRight: 10 }} />
                     <ButtonCustom text={"Tìm kiếm"} onPress={handleSubmit} />
                 </View>
             </View>
@@ -202,7 +201,7 @@ const SearchScreen = (props) => {
     const renderResult = () => {
         return <FlatList
             style={{ margin: 10 }}
-            data={isSearchTeacher ?  teacherListSearch : tutorRequestListSearch}
+            data={isSearchTeacher ? teacherListSearch : tutorRequestListSearch}
             renderItem={_renderItem}
             ListHeaderComponent={<Text style={{ marginBottom: 10, fontSize: 18 }}>Kết quả tìm kiếm</Text>}
         />
@@ -210,7 +209,7 @@ const SearchScreen = (props) => {
 
     return (
         <Container
-            contentBarStyles={{justifyContent: 'space-between'}}
+            contentBarStyles={{ justifyContent: 'space-between' }}
             navigation={props.navigation}
             headerHeight={ConfigStyle.statusBarHeight}
             hideBackground={true}
@@ -226,23 +225,16 @@ const SearchScreen = (props) => {
         >
             {renderForm()}
             {renderResult()}
-            {/* <ModalPicker
+            {showSubject ? <ModalPicker
                 items={subjects}
                 show={showSubject}
                 hideModal={() => setShowSubject(!showSubject)}
                 onChange={setCurrentSubject}
-                title={"Môn học"}
-            /> */}
-            <ModalPicker
-                items={subjects}
-                show={showSubject}
-                hideModal={() => setShowSubject(!showSubject)}
-                onChange={(data) => {
-                    console.log(`🔥LOG_IT:: data`,data)
-                }}
                 isMultiSelect
+                selectedItems={currentSubject}
                 title={"Môn học"}
-            />
+            /> : null}
+
             <ModalPicker
                 items={DEFAULT_DOB}
                 show={showDOB}
@@ -251,7 +243,7 @@ const SearchScreen = (props) => {
                 title={"Năm sinh"}
             />
             <ModalPicker
-                items={DEFAULT_ADDRESS}
+                items={addressData}
                 show={showAddress}
                 hideModal={() => setShowAddress(!showAddress)}
                 onChange={setCurrentAddress}
@@ -289,7 +281,7 @@ export default SearchScreen
 
 const styles = StyleSheet.create({
     selectionContainer: {
-      marginBottom: 10,
+        marginBottom: 10,
     },
     selection: {
         color: Colors.black,
@@ -297,7 +289,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         paddingHorizontal: 10,
         paddingVertical: 4,
-        borderWidth:1,
+        borderWidth: 1,
         borderColor: ColorsCore.borderColor,
         borderRadius: 8,
         marginBottom: 10,

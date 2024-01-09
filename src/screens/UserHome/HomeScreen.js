@@ -9,15 +9,14 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import {Text} from 'react-native-elements';
-import {useEffect, useReducer, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useIsFocused} from '@react-navigation/native';
+import { Text } from 'react-native-elements';
+import { useEffect, useReducer, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 import Container from '../../components/common/Container';
 import StatusBarHome from '../../components/common/StatusBarHome';
 import ProfileHorizontal from '../../components/Home/ProfileHorizontal';
 import AddButton from '../../components/common/AddButton';
-import ClassListCard from '../../components/Home/ClassListCard';
 import ProfilePlaceholder from '../../components/Home/ProfilePlacceholder';
 import ActionNotification from '../../components/Home/ActionNotification';
 import ConfigStyle from '../../theme/ConfigStyle';
@@ -26,19 +25,11 @@ import {
   getTeacherSuggest,
 } from '../../api/users';
 import IconEmpty from '../../assets/images/svg/empty-list.svg';
-import {
-  getAvailableClasses,
-} from '../../api/class';
-import ItemCourseRequest from "../../components/RequestManagement/ItemCourseRequest";
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
-import Calendar from "../../routes/CalendarStack";
-import {getSubjects} from "../../api/subject";
-import {setSubjectsValue} from "../../lib/slices/subjectSlice";
-import {getNotificationList, syncAll, syncAllAsync} from "../../helper/main";
-
-
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
+import { getSubjects } from "../../api/subject";
+import { setSubjectsValue } from "../../lib/slices/subjectSlice";
+import { getNotificationList, syncAll, syncAllAsync } from "../../helper/main";
+import { hideLoadingModal, showLoadingModal } from '../../lib/slices/modalSlice';
 
 export default function HomeScreen(props) {
   const dispatch = useDispatch();
@@ -50,18 +41,29 @@ export default function HomeScreen(props) {
   const [scrollTop, setScrollTop] = useState(new Date().getTime());
   const [loading, setLoading] = useState(true)
 
-  const { teacherList: teachers,  tutorRequestList: classes} = mainState || {}
+  const { teacherList: teachers, tutorRequestList: classes } = mainState || {}
   useEffect(() => {
     if (user?._id) {
-      syncData();
+      dispatch(showLoadingModal())
+      syncData().then(() => {
+        setTimeout(() => {
+          setLoading(false)
+          dispatch(hideLoadingModal())
+        }, 2000)
+      });
       getListSubject();
     }
   }, [user?._id]);
 
   const syncData = () => {
-    getNotificationList(dispatch, user);
-    syncAllAsync(dispatch, user).then(() => {
-      setLoading(false)
+    return new Promise((resolve) => {
+      getNotificationList(dispatch, user);
+      syncAllAsync(dispatch, user).then(() => {
+        setLoading(false)
+
+      }).finally(() => {
+        resolve()
+      })
     })
   }
 
@@ -78,7 +80,7 @@ export default function HomeScreen(props) {
     setTab(value);
   }
   function onSearch(event) {
-    const {text} = event.nativeEvent;
+    const { text } = event.nativeEvent;
     setTextSearch(text);
   }
   async function onRefresh(showLoading = true) {
@@ -97,20 +99,20 @@ export default function HomeScreen(props) {
     }
   }
 
-  const renderClassItem = ({item, index}) => {
+  const renderClassItem = ({ item, index }) => {
     return (
-        <TutorRequestItem
-            data={item}
-            onPress={() => {
-              props.navigation.navigate('Calendar', {
-                screen: 'DetailRequest',
-                params: {
-                  tutorRequest: item,
-                }
-              })
-            }}
-        />
-        )
+      <TutorRequestItem
+        data={item}
+        onPress={() => {
+          props.navigation.navigate('Calendar', {
+            screen: 'DetailRequest',
+            params: {
+              tutorRequest: item,
+            }
+          })
+        }}
+      />
+    )
 
   }
 
@@ -135,7 +137,7 @@ export default function HomeScreen(props) {
       shouldScrollTop={scrollTop}
     >
       <StatusBar translucent
-backgroundColor="transparent" />
+        backgroundColor="transparent" />
       <ActionNotification navigation={props.navigation} />
       {tab === 0 ? (
         <View style={styles.marginContent}>
@@ -145,7 +147,7 @@ backgroundColor="transparent" />
             </View>
             <View>
               <SafeAreaView
-                style={[styles.wrapList, {flexDirection: 'column'}]}
+                style={[styles.wrapList, { flexDirection: 'column' }]}
               >
                 {!loading ? (
                   teachers.length ? (
@@ -153,7 +155,7 @@ backgroundColor="transparent" />
                       horizontal={false}
                       showsHorizontalScrollIndicator={false}
                       data={teachers}
-                      renderItem={({item}) => (
+                      renderItem={({ item }) => (
                         <ProfileHorizontal
                           data={item}
                           onRefresh={onRefresh}
@@ -165,7 +167,7 @@ backgroundColor="transparent" />
                   ) : (
                     <View style={styles.wrapEmptyImage}>
                       <IconEmpty width={'50%'}
-height={'50%'} />
+                        height={'50%'} />
                       <Text style={Styles.textBlack3}>Không có dữ liệu</Text>
                     </View>
                   )
@@ -174,7 +176,7 @@ height={'50%'} />
                     horizontal={false}
                     showsHorizontalScrollIndicator={false}
                     data={[1, 2, 3]}
-                    renderItem={({item}) => <ProfilePlaceholder />}
+                    renderItem={({ item }) => <ProfilePlaceholder />}
                     keyExtractor={(item) => item?.toString()}
                   />
                 )}

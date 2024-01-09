@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, TextInput} from 'react-native';
-import {Text} from 'react-native-elements';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TextInput } from 'react-native';
+import { Text } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import ConfigStyle from '../../theme/ConfigStyle';
 import Container from '../../components/common/ContainerAnimated';
@@ -11,9 +11,9 @@ import ChoiceSpecificDay from '../../components/CreateRequest/ChoiceSpecificDay'
 import FormInfo from '../../components/BecomeExpert/FormInfo';
 import ButtonCustom from '../../components/common/ButtonFooterCustom';
 import Loading from '../../components/common/Loading';
-import {useDispatch, useSelector} from "react-redux";
-import {updateTeacherInfo} from "../../api/users";
-import {updateProfile} from "../../lib/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTeacherInfo } from "../../api/users";
+import { updateProfile } from "../../lib/slices/authSlice";
 
 const UserCreateRequest = (props) => {
   const user = useSelector(state => state.auth.user)
@@ -29,7 +29,7 @@ const UserCreateRequest = (props) => {
       msgError: '',
     },
     email: {
-      value: user?.metaData?.email ||'',
+      value: user?.metaData?.email || '',
       msgError: '',
     },
     address: {
@@ -54,8 +54,6 @@ const UserCreateRequest = (props) => {
     }
   });
   const [disabled, setDisabled] = useState(false);
-  const [teacherInfo, setTeacherInfo] = useState({});
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
   }, []);
@@ -72,10 +70,10 @@ const UserCreateRequest = (props) => {
   function validateForm() {
     const form = JSON.parse(JSON.stringify(data));
     let valid = true;
-    
+
     if (!form.subjects?.value?.length) {
       form.subjects.msgError = "Chọn ít nhất một môn học"
-      valid =  false
+      valid = false
     }
 
     if (!form.fullName?.value) {
@@ -171,9 +169,9 @@ const UserCreateRequest = (props) => {
   }
   const footer = (
     <BoxShadow style={styles.wrapFooter}>
-      <View style={{width: '50%'}}>
+      <View style={{ width: '50%' }}>
         <ButtonCustom
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
           // isBusy={isBusy}
           disabled={disabled}
           text={'Tiếp'}
@@ -186,14 +184,13 @@ const UserCreateRequest = (props) => {
     <Container
       title={'Hồ sơ'}
       arrowBack={true}
-      contentBarStyles={{justifyContent: 'space-between'}}
+      contentBarStyles={{ justifyContent: 'space-between' }}
       navigation={props.navigation}
       headerHeight={ConfigStyle.statusBarHeight}
       hideBackground={true}
       footer={footer}
       keyboardShouldPersistTaps={true}
     >
-      {loading ? <Loading /> : null}
       <View
         style={{
           ...styles.container,
@@ -204,7 +201,7 @@ const UserCreateRequest = (props) => {
           Yêu cầu
         </Text>
         <FormInfo data={data}
-handleChangeData={handleChangeData} />
+          handleChangeData={handleChangeData} />
       </View>
       <View
         style={{
@@ -244,7 +241,7 @@ handleChangeData={handleChangeData} />
           />
         </BoxShadow>
         {data?.description?.msgError ? (
-          <Text style={{...Styles.textError, marginLeft: 10}}>
+          <Text style={{ ...Styles.textError, marginLeft: 10 }}>
             {data?.description?.msgError}
           </Text>
         ) : null}

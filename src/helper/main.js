@@ -1,5 +1,5 @@
-import {getTeacherSuggest} from "../api/users";
-import {getAvailableClasses, getRequestByTeacherId, userGetListRequest} from "../api/class";
+import { getTeacherSuggest } from "../api/users";
+import { getAvailableClasses, getRequestByTeacherId, userGetListRequest } from "../api/class";
 import {
     setAll,
     setMyRequestList,
@@ -7,7 +7,7 @@ import {
     setTeacherList,
     setTutorRequestList
 } from "../lib/slices/mainSlice";
-import {getNotification} from "../api/chat";
+import { getNotification } from "../api/chat";
 
 export const syncAll = async (dispatch, payload) => {
     try {

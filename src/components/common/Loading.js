@@ -1,33 +1,30 @@
-import React, {useEffect} from 'react';
-import {ActivityIndicator, View, StatusBar, StyleSheet} from 'react-native';
-import {Text} from 'react-native-elements';
-import Modal from 'react-native-modal';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, View, StatusBar, StyleSheet, Dimensions } from 'react-native';
+import { Text } from 'react-native-elements';
 import Colors from '../../theme/Colors';
 
-const Loading = (props) => {
-  // useEffect(() => {
-  //   StatusBar.setBackgroundColor('rgba(0,0,0,0.25)')
-  //   return () => {
-  //     StatusBar.setBackgroundColor('transparent')
-  //   }
-  // })
+const { width, height } = Dimensions.get("window")
 
+const Loading = (props) => {
   return (
-    <Modal style={styles.container}
-isVisible={true}
-backdropOpacity={0.25}>
+    <View style={styles.container} >
       <View style={styles.wrapContent}>
         <ActivityIndicator color={Colors.grey2} />
         <Text style={styles.text}>Loading...</Text>
       </View>
-    </Modal>
+    </View>
   );
 };
 export default Loading;
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    width, height,
+    backgroundColor: 'rgba(0,0,0,0.25)',
   },
   wrapContent: {},
   text: {

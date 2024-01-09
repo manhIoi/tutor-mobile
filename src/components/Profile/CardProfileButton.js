@@ -8,8 +8,8 @@ import {
   TextInput,
   Keyboard,
 } from 'react-native';
-import {Text} from 'react-native-elements';
-import {useDispatch, useSelector} from 'react-redux';
+import { Text } from 'react-native-elements';
+import { useDispatch, useSelector } from 'react-redux';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
 import BackgroundGradient from '../common/BackgroudGradient';
@@ -23,7 +23,8 @@ import IconUserProfile from '../../assets/images/svg/employee.svg';
 import IconRelationship from '../../assets/images/svg/care.svg';
 import BoxShadow from '../common/BoxShadow';
 import ButtonCustom from "../common/ButtonFooterCustom";
-import {logoutAsync} from "../../lib/slices/authSlice";
+import { logoutAsync } from "../../lib/slices/authSlice";
+import { showApprovePopup } from '../../lib/slices/modalSlice';
 
 const width = Dimensions.get('window').width;
 const CardInfo = (props) => {
@@ -33,33 +34,37 @@ const CardInfo = (props) => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    await dispatch(logoutAsync())
+    dispatch(showApprovePopup({
+      title: 'Thông báo', body: "Bạn có chắc chắn muốn đăng xuất ?", onPress: async () => {
+        await dispatch(logoutAsync())
+      }
+    }))
   }
   const renderButton = () => {
     if (isStudent && !isRequestedApprove) return (
-          <View style={{ margin: 10}}>
-            <ButtonCustom
-                text={"Trở thành gia sư"}
-              onPress={() => props.navigation.navigate('BecomeExpertStepOne', {
-                  isRequestTeacher: true
-              })}
-            />
-          </View>
+      <View style={{ margin: 10 }}>
+        <ButtonCustom
+          text={"Trở thành gia sư"}
+          onPress={() => props.navigation.navigate('BecomeExpertStepOne', {
+            isRequestTeacher: true
+          })}
+        />
+      </View>
     )
     if (isStudent && isRequestedApprove) {
-      return <View style={{ margin: 10}}>
-        <ButtonCustom text={"Chờ duyệt thành gia sư"}  disabled={true} />
+      return <View style={{ margin: 10 }}>
+        <ButtonCustom text={"Chờ duyệt thành gia sư"} disabled={true} />
       </View>
     }
     return null;
   }
   return (
-    <View style={{flex:1}}>
-      <BoxShadow style={{marginHorizontal: 14, paddingVertical: 15, flex: 1}}>
+    <View style={{ flex: 1 }}>
+      <BoxShadow style={{ marginHorizontal: 14, paddingVertical: 15, flex: 1 }}>
         {/* <View style={styles.card}> */}
         <InputForm
           src={<IconUserProfile width={13}
-height={19} />}
+            height={19} />}
           rightIcon={true}
           navigate={'BecomeExpertStepOne'}
           {...props}
@@ -67,23 +72,14 @@ height={19} />}
         />
         <InputForm
           src={<IconPassword width={17}
-height={21} />}
+            height={21} />}
           rightIcon={true}
           navigate={'ChangePassword'}
           title={'Mật khẩu'}
           {...props}
         />
-{/*        <InputForm*/}
-{/*          src={<IconNotification width={17}*/}
-{/*height={20} />}*/}
-{/*          switch={true}*/}
-{/*          title="Thông báo"*/}
-{/*          navigate={'Notification'}*/}
-{/*          notification={props?.notification}*/}
-{/*          {...props}*/}
-{/*        />*/}
         {renderButton()}
-        <TouchableOpacity onPress={handleLogout} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, padding:10 }}  >
+        <TouchableOpacity onPress={handleLogout} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, padding: 10 }}  >
           <Text style={{ fontWeight: 'bold' }} >Đăng xuất</Text>
           <IconLogout width={17} height={21} />
         </TouchableOpacity>
@@ -99,7 +95,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     elevation: 5,
     backgroundColor: Colors.whiteColor,
-    shadowOffset: {width: 2, height: 2},
+    shadowOffset: { width: 2, height: 2 },
     textShadowColor: '#00000029',
     shadowOpacity: 0.5,
     shadowColor: '#00000029',
