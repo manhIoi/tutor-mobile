@@ -48,6 +48,8 @@ const App = (props) => {
   }, [])
 
   useEffect(() => {
+    // TODO: handle new notification
+    // TODO: handle new chat
     if (user?._id) {
       console.info(`LOG_IT:: notify_${user?._id}`,);
       SocketIO.on(`notify_${user?._id}`, data => {

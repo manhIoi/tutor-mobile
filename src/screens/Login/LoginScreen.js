@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,11 +6,11 @@ import {
   Keyboard,
   Dimensions,
 } from 'react-native';
-import {Button, Text} from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
 // import Icon from 'react-native-vector-icons/FontAwesome';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import ViString from '../../theme/ViString';
 import ButtonCustomize from '../../components/Tools/ButtonCustomize';
@@ -19,9 +19,9 @@ import InputForm from '../../components/common/InputForm';
 import MainStyles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
-import {getUser, loginUserAsync} from '../../lib/slices/authSlice';
-import {login, resendVerifyCode} from '../../api/users';
-import {USER_TOKEN} from '../../utils/auth.util';
+import { getUser, loginUserAsync } from '../../lib/slices/authSlice';
+import { login, resendVerifyCode } from '../../api/users';
+import { USER_TOKEN } from '../../utils/auth.util';
 import IconLogout from '../../assets/images/svg/logout.svg';
 
 const width = Dimensions.get('window').width;
@@ -37,8 +37,8 @@ const INITIAL_FORM = {
   },
 };
 function LoginScreen(props) {
-  const {navigation, route} = props;
-  const {goBack} = navigation;
+  const { navigation, route } = props;
+  const { goBack } = navigation;
   const dispatch = useDispatch();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isBusy, setBusy] = useState(false);
@@ -87,7 +87,7 @@ function LoginScreen(props) {
 
   function validateForm() {
     let validate = true;
-    const formData = {...form};
+    const formData = { ...form };
 
     if (!formData.phoneNumber.value) {
       formData.phoneNumber.msgError = ViString.errorPhoneNumberNotRegister;
@@ -135,7 +135,7 @@ function LoginScreen(props) {
 
   const actionActiveAccount = (
     <Text style={MainStyles.textBlue}
-onPress={() => handleResendCode()}>
+      onPress={() => handleResendCode()}>
       Xác thực tài khoản
     </Text>
   );
@@ -163,8 +163,7 @@ onPress={() => handleResendCode()}>
             visibilityTime: 1000,
           });
           const propmise = [
-            dispatch(getUser({...user, chatBot}))
-            //TODO: checkNotificationStatus(),
+            dispatch(getUser({ ...user, chatBot }))
           ];
           await Promise.all(propmise);
         } else {
@@ -175,13 +174,13 @@ onPress={() => handleResendCode()}>
           });
         }
       } catch (error) {
-        console.info("LOGGER:: call handle login error",JSON.stringify(error) );
+        console.info("LOGGER:: call handle login error", JSON.stringify(error));
         setBusy(false);
         if (
           error?.response?.data?.errors[0]?.param ===
-            'Tài khoản chưa được xác thực' ||
+          'Tài khoản chưa được xác thực' ||
           error?.response?.data?.errors[0]?.message ===
-            'Tài khoản chưa được xác thực'
+          'Tài khoản chưa được xác thực'
         ) {
           setShowVerify(true);
         }
@@ -209,36 +208,36 @@ onPress={() => handleResendCode()}>
   }
 
   const footer =
-      <View style={styles.footer}>
-        <View style={{...styles.viTextBox, marginBottom: 30}}>
-          <Text style={[MainStyles.textBlue, styles.txNotAccount]}>
-            Tôi chưa có tài khoản?
+    <View style={styles.footer}>
+      <View style={{ ...styles.viTextBox, marginBottom: 30 }}>
+        <Text style={[MainStyles.textBlue, styles.txNotAccount]}>
+          Tôi chưa có tài khoản?
+        </Text>
+        <TouchableOpacity
+          onPress={goToRegister}
+          disabled={isBusy}
+          style={[styles.toRegister]}
+        >
+          <Text style={[styles.textLogin, styles.txNotAccount]}>
+            {' '}
+            Đăng ký!
           </Text>
-          <TouchableOpacity
-              onPress={goToRegister}
-              disabled={isBusy}
-              style={[styles.toRegister]}
-          >
-            <Text style={[styles.textLogin, styles.txNotAccount]}>
-              {' '}
-              Đăng ký!
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>;
+        </TouchableOpacity>
+      </View>
+    </View>;
   return (
     <Container keyboardShouldPersistTaps={true}
-footer={footer}>
+      footer={footer}>
       <View
         style={[
           MainStyles.container,
           MainStyles.marginHeaderBG,
-          height < 550 ? {marginTop: 0.2 * height} : {},
+          height < 550 ? { marginTop: 0.2 * height } : {},
         ]}
       >
         <View style={[styles.content]}>
           <View style={styles.subContent}>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               <Text style={[MainStyles.title1, styles.title]}>Đăng nhập</Text>
             </View>
             <InputForm
@@ -263,7 +262,7 @@ footer={footer}>
             />
             <View style={styles.viewLogin}>
               <TouchableOpacity onPress={goToForgotPassword}
-disabled={isBusy}>
+                disabled={isBusy}>
                 <Text style={MainStyles.textBlue}>Quên mật khẩu?</Text>
               </TouchableOpacity>
               <ButtonCustomize
