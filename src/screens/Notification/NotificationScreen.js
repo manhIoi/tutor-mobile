@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,12 +10,12 @@ import {
   RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import Swipeable from 'react-native-swipeable';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
-import {func} from 'prop-types';
-import {useDispatch, useSelector} from 'react-redux';
+import { func } from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import Container from '../../components/common/ContainerRenderList';
 import MainStyles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
@@ -30,14 +30,15 @@ import {
   readNotificationApi,
 } from '../../api/chat';
 import BoxShadow from '../../components/common/BoxShadow';
-import {formatDDMMYYY} from '../../utils/string.util';
+import { formatDDMMYYY } from '../../utils/string.util';
 import Constants from '../../../constants/Values';
 import Statusbar from '../../components/common/StatusBar';
 import * as RootNavigation from '../../../RootNavigation';
-import {teacherAcceptAndReject} from '../../api/class';
+import { teacherAcceptAndReject } from '../../api/class';
 import EmptyListComponent from "../../components/common/EmptyListComponent";
-import {getNotificationList} from "../../helper/main";
-import {setNotificationList} from "../../lib/slices/mainSlice";
+import { getNotificationList } from "../../helper/main";
+import { setNotificationList } from "../../lib/slices/mainSlice";
+import moment from 'moment'
 
 const width = Dimensions.get('window').width;
 
@@ -67,7 +68,7 @@ const AvailableAction = [
 ];
 
 const NotificationScreen = (props) => {
-  const {navigation} = props;
+  const { navigation } = props;
   // const { goBack } = navigation;
   const [status, setStatus] = useState(false);
   const [isModalVisible, setisModalVisible] = React.useState(false);
@@ -133,26 +134,26 @@ const NotificationScreen = (props) => {
       case 'TEACHER_REMIND_PAYMENT':
         detailData?.data?.isRequest
           ? props.navigation.navigate('Calendar', {
-              screen: 'DetailRequest',
-              params: {
-                _idClass: detailData?.data?.id,
-                _id: detailData?.data?.id,
-                title: detailData?.data?.title,
-                isRequest: detailData?.data?.isRequest,
-                isNotify: true,
-              },
-            })
+            screen: 'DetailRequest',
+            params: {
+              _idClass: detailData?.data?.id,
+              _id: detailData?.data?.id,
+              title: detailData?.data?.title,
+              isRequest: detailData?.data?.isRequest,
+              isNotify: true,
+            },
+          })
           : props.navigation.navigate('Calendar', {
-              screen: 'Detail',
-              params: {
-                _idClass: detailData?.data?.id,
-                isRequest: false,
-                title: detailData?.data?.title,
-                isShowStudent: false,
-                status: 'ongoing',
-                isNotify: true,
-              },
-            });
+            screen: 'Detail',
+            params: {
+              _idClass: detailData?.data?.id,
+              isRequest: false,
+              title: detailData?.data?.title,
+              isShowStudent: false,
+              status: 'ongoing',
+              isNotify: true,
+            },
+          });
         break;
       case 'TEACHER_REQUEST':
       case 'USER_REQUEST':
@@ -231,7 +232,7 @@ const NotificationScreen = (props) => {
       case 'BALANCE_CHANGE':
         props.navigation.reset({
           index: 0,
-          routes: [{name: 'Profile'}],
+          routes: [{ name: 'Profile' }],
         });
         break;
 
@@ -267,11 +268,11 @@ const NotificationScreen = (props) => {
         return;
       }
       const newList = notificationList.map?.(_item => {
-       if (_item?._id === item?._id) return {
-         ..._item,
-         isRead: true,
-       }
-       return _item;
+        if (_item?._id === item?._id) return {
+          ..._item,
+          isRead: true,
+        }
+        return _item;
       })
       readNotificationApi(item?._id);
       dispatch(setNotificationList(newList))
@@ -279,10 +280,10 @@ const NotificationScreen = (props) => {
     }
   }
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <Swipeable rightButtons={rightButtons(item?._id)}
-rightButtonWidth={115}>
+        rightButtonWidth={115}>
         <BoxShadow style={styles.card}>
           <TouchableOpacity
             onPress={() => readNotification(item)}
@@ -304,7 +305,7 @@ rightButtonWidth={115}>
                 !item.isRead ? styles.viewDatetime : styles.viewDatetimeSeen
               }
             >
-              {item?.createdAt}
+              {moment(item?.createdAt).format("DD/MM/yyy - hh:mm:ss")}
             </Text>
           </TouchableOpacity>
         </BoxShadow>
@@ -313,7 +314,7 @@ rightButtonWidth={115}>
   };
 
   const renderFooter = (
-    <View style={{marginBottom: 20}}>
+    <View style={{ marginBottom: 20 }}>
       {/*{notifications.data?.length >= notifications.totalItems ? (*/}
       {/*  <Text style={styles.countResult}>*/}
       {/*    {notifications.totalItems} kết quả*/}
@@ -382,7 +383,7 @@ rightButtonWidth={115}>
   }
   return (
     <Container
-      contentBarStyles={{justifyContent: 'space-between'}}
+      contentBarStyles={{ justifyContent: 'space-between' }}
       navigation={props.navigation}
       headerHeight={ConfigStyle.statusBarHeight}
       hideBackground={true}
@@ -427,13 +428,13 @@ rightButtonWidth={115}>
         >
           <View style={styles.cardModal}>
             <Text numberOfLines={1}
-style={styles.viewTitle}>
+              style={styles.viewTitle}>
               {detailData.title}
             </Text>
             <Text style={styles.viewContent}>{detailData?.body}</Text>
             {AvailableAction.indexOf(detailData?.type) !== -1 ? (
               detailData?.type !== 'USER_REQUEST_CHANGE_TIME' ? (
-                <View style={{flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                   <Text
                     style={styles.textDetail}
                     onPress={switchActionNotification}
@@ -442,7 +443,7 @@ style={styles.viewTitle}>
                   </Text>
                 </View>
               ) : (
-                <View style={{flexDirection: 'row', marginTop: 20}}>
+                <View style={{ flexDirection: 'row', marginTop: 20 }}>
                   <TouchableOpacity
                     disabled={busyLeft || busyRight}
                     onPress={() => {
@@ -483,7 +484,7 @@ style={styles.viewTitle}>
                 onRefresh();
               }}
             >
-              <BackgroundGradient style={{borderRadius: 30}}>
+              <BackgroundGradient style={{ borderRadius: 30 }}>
                 <Text style={styles.btnDetailText}>OK</Text>
               </BackgroundGradient>
             </TouchableOpacity>
@@ -568,7 +569,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingVertical: 15,
     // backgroundColor: Colors.whiteColor,
-    shadowOffset: {width: 3, height: 3},
+    shadowOffset: { width: 3, height: 3 },
     textShadowColor: Colors.black4,
     shadowOpacity: 0.5,
     textShadowRadius: 0.5,
@@ -583,7 +584,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     elevation: 10,
     backgroundColor: Colors.whiteColor,
-    shadowOffset: {width: 3, height: 3},
+    shadowOffset: { width: 3, height: 3 },
     textShadowColor: Colors.black4,
     shadowOpacity: 0.5,
     textShadowRadius: 0.5,

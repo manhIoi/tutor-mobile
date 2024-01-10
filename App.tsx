@@ -19,6 +19,7 @@ import ModalApprove from './src/components/common/ModalMatch';
 import SocketIO from "./src/utils/SocketIO";
 import ConfigStyle from "./src/theme/ConfigStyle";
 import Loading from './src/components/common/Loading';
+import { getListRoom } from './src/helper/main';
 
 const width = Dimensions.get('window').width;
 
@@ -38,6 +39,7 @@ const App = (props) => {
   const isDarkMode = useSelector(selectThemeMode);
   const user = useSelector(state => state.auth.user);
   const modal = useSelector(state => state.modal);
+  const dispatch = useDispatch();
   const { isShowApprovePopup, isShowLoading, } = modal || {}
 
 
@@ -74,6 +76,17 @@ const App = (props) => {
           ...ConfigStyle.toastDefault,
           type: 'success',
           text1: data?.message,
+        });
+      })
+      SocketIO.on(`messageSendTo_${user?._id}`, data => {
+        console.info(`LOG_IT::  messageSendTo_`, data);
+        setTimeout(() => {
+          getListRoom(dispatch, user);
+        }, 100)
+        Toast.show({
+          ...ConfigStyle.toastDefault,
+          type: 'success',
+          text1: "Bạn có 1 tin nhắn mới",
         });
       })
     }

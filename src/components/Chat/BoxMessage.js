@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,10 +7,10 @@ import {
   Keyboard,
 } from 'react-native';
 import PropsTypes from 'prop-types';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import Message from './Message';
 import Avatar from '../common/Avatar';
-import {formatDateTime, formatHHMM} from '../../utils/string.util';
+import { formatDateTime, formatHHMM } from '../../utils/string.util';
 import Styles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
 import MessageSending from './MessageSending';
@@ -35,7 +35,7 @@ const BoxMessage = (props) => {
   };
 
   function showScrollToEnd() {
-    scrollBar?.current?.scrollToOffset({offset: 0, animated: true});
+    scrollBar?.current?.scrollToOffset({ offset: 0, animated: true });
   }
 
   return (
@@ -48,7 +48,7 @@ const BoxMessage = (props) => {
         data={props.messages}
         onEndReachedThreshold={0.4}
         onEndReached={props.handleLoadMore}
-        renderItem={({item, index}) => (
+        renderItem={({ item, index }) => (
           <View>
             {props.messages?.length && !props.messages?.[index + 1]?._id ? (
               <Text style={styles.textTimeDuration}>
@@ -58,7 +58,7 @@ const BoxMessage = (props) => {
 
             {new Date(item.createdAt).getTime() -
               new Date(props.messages?.[index + 1]?.createdAt).getTime() >
-            3 * 60 * 1000 ? (
+              3 * 60 * 1000 ? (
               <Text
                 style={{
                   ...styles.textTimeDuration,
@@ -75,16 +75,16 @@ const BoxMessage = (props) => {
               ]}
             >
               {item.receive &&
-              (!props.messages[index + 1]?.receive ||
-                (props.messages?.[index - 1]?._id &&
-                  (new Date(item?.createdAt).getTime() -
-                    new Date(
-                      props.messages?.[index - 1]?.createdAt,
-                    ).getTime()) /
+                (!props.messages[index + 1]?.receive ||
+                  (props.messages?.[index - 1]?._id &&
+                    (new Date(item?.createdAt).getTime() -
+                      new Date(
+                        props.messages?.[index - 1]?.createdAt,
+                      ).getTime()) /
                     (60 * 1000) >
                     10)) ? (
                 <Avatar
-                  source={{uri: item?.from?.avatar}}
+                  source={{ uri: item?.from?.avatar }}
                   size={34}
                   hideLoad={true}
                 />
@@ -102,8 +102,8 @@ const BoxMessage = (props) => {
                         new Date(
                           props.messages?.[index - 1]?.createdAt,
                         ).getTime()) /
-                        (60 * 1000) >
-                        10))
+                      (60 * 1000) >
+                      10))
                 }
                 handleDeleteMessage={props.handleDeleteMessage}
               />

@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   Animated,
 } from 'react-native';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import FastImageCustom from '../../components/common/FastImage';
@@ -31,14 +31,14 @@ import {
   getRequestById,
   userEditRequest,
 } from '../../api/class';
-import {getTeacherInfo} from '../../api/teacherInformation';
-import {gettopics} from '../../api/topic';
+import { getTeacherInfo } from '../../api/teacherInformation';
+import { gettopics } from '../../api/topic';
 import ConstantValue from '../../constants';
 import Colors from '../../theme/Colors';
 import IconAddImage from '../../assets/images/svg/iconAddImage.svg';
-import {handleUploadImage} from '../../api/uploadImage';
+import { handleUploadImage } from '../../api/uploadImage';
 import CustomActionSheet from '../../components/common/CustomActionSheet';
-import {getListTeacher, getSubjectWithTopic} from '../../api/users';
+import { getListTeacher, getSubjectWithTopic } from '../../api/users';
 import config from '../../../config/config';
 
 
@@ -48,6 +48,7 @@ const UserCreateRequest = (props) => {
   const inputDesc = React.useRef();
   const subjects = useSelector(state => state.subject.value);
   const isHasTeacher = !!props.route?.params?.teacher?._id
+  const subjectsOfTeacher = isHasTeacher && props.route?.params?.teacher?.subjects || []
 
   const animationRotate = new Animated.Value(-90);
   const [data, setData] = useState({
@@ -165,7 +166,7 @@ const UserCreateRequest = (props) => {
     }
   }
   const user = useSelector((state) => state.auth.user);
-  const type = user.role === 'teacher' ? 1: 0; // 0: user create request , 1: teacher create class
+  const type = user.role === 'teacher' ? 1 : 0; // 0: user create request , 1: teacher create class
   useEffect(() => {
     componentWillMount();
   }, []);
@@ -260,7 +261,7 @@ const UserCreateRequest = (props) => {
   }
 
   function handleChangeData(name, value) {
-    console.info("LOGGER:: name,value", name,value);
+    console.info("LOGGER:: name,value", name, value);
     setData({
       ...data,
       [name]: {
@@ -418,7 +419,7 @@ const UserCreateRequest = (props) => {
         });
         props.navigation.reset({
           index: 0,
-          routes: [{name: 'Home'}],
+          routes: [{ name: 'Home' }],
         });
       }
     } catch (error) {
@@ -577,7 +578,7 @@ const UserCreateRequest = (props) => {
       weekDays: data.dayStudy?.value,
       numberLesson: data.numberLesson.value,
       price: Number(data.price?.value),
-      subjects: [{_id: data.subject?.value}],
+      subjects: [{ _id: data.subject?.value }],
       typeClass: data.class?.value,
       trainingForm: [data.teachingType?.value],
       isOnline: !data.teachingType?.value,
@@ -616,9 +617,9 @@ const UserCreateRequest = (props) => {
       disabled={isBusy}
       style={styles.wrapIconAdd}
     >
-      <View style={{alignItems: 'center'}}>
+      <View style={{ alignItems: 'center' }}>
         {showIcon ? <IconAddImage width={44}
-height={31} /> : null}
+          height={31} /> : null}
       </View>
     </TouchableOpacity>
   );
@@ -627,7 +628,7 @@ height={31} /> : null}
     <Container
       title={"Tạo yêu cầu"}
       arrowBack={true}
-      contentBarStyles={{justifyContent: 'space-between'}}
+      contentBarStyles={{ justifyContent: 'space-between' }}
       navigation={props.navigation}
       headerHeight={ConfigStyle.statusBarHeight}
       hideBackground={false}
@@ -639,18 +640,18 @@ height={31} /> : null}
       <View style={styles.container}>
         <BoxShadow>
           <Text style={[Styles.title2RS, styles.title]}>Tiêu đề</Text>
-            <TextInput
-                style={styles.input}
-                placeholderStyle={Styles.textLight}
-                placeholder={'VD : Tìm lớp Photoshop cơ bản'}
-                editable={!isBusy}
-                value={data?.title?.value || ''}
-                onChangeText={(value) => handleChangeData('title', value)}
-            />
+          <TextInput
+            style={styles.input}
+            placeholderStyle={Styles.textLight}
+            placeholder={'VD : Tìm lớp Photoshop cơ bản'}
+            editable={!isBusy}
+            value={data?.title?.value || ''}
+            onChangeText={(value) => handleChangeData('title', value)}
+          />
         </BoxShadow>
 
         {data?.title?.msgError ? (
-          <Text style={{...Styles.textError, marginLeft: 10}}>
+          <Text style={{ ...Styles.textError, marginLeft: 10 }}>
             {data?.title?.msgError}
           </Text>
         ) : null}
@@ -668,7 +669,7 @@ height={31} /> : null}
           isHasTeacher={isHasTeacher}
           dataSelect={{
             teachingType: ConstantValue.teachingType,
-            subjects,
+            subjects: isHasTeacher ? subjectsOfTeacher : subjects,
             classData,
             topics,
             typeTeacher,
@@ -716,7 +717,7 @@ height={31} /> : null}
           </View>
         </TouchableWithoutFeedback>
         {data?.description?.msgError ? (
-          <Text style={{...Styles.textError, marginLeft: 10}}>
+          <Text style={{ ...Styles.textError, marginLeft: 10 }}>
             {data?.description?.msgError}
           </Text>
         ) : null}
@@ -746,7 +747,7 @@ height={31} /> : null}
           handleChange={(value) => handleChangeData('numberLesson', value)}
         />
         {data?.numberLesson?.msgError ? (
-          <Text style={{...Styles.textError, marginLeft: 10}}>
+          <Text style={{ ...Styles.textError, marginLeft: 10 }}>
             {data?.numberLesson?.msgError}
           </Text>
         ) : null}
@@ -778,7 +779,7 @@ height={31} /> : null}
           handleChange={(value) => handleChangeData('dayStudy', value)}
         />
         {data?.dayStudy?.msgError ? (
-          <Text style={{...Styles.textError, marginLeft: 10}}>
+          <Text style={{ ...Styles.textError, marginLeft: 10 }}>
             {data?.dayStudy?.msgError}
           </Text>
         ) : null}
@@ -808,7 +809,7 @@ const styles = StyleSheet.create({
     height: 43,
     marginHorizontal: 20,
     fontSize: 14,
-    borderTopWidth:1,
+    borderTopWidth: 1,
     borderTopColor: Colors.grey,
   },
   wrapInputTitle: {

@@ -7,7 +7,8 @@ import {
     setTeacherList,
     setTutorRequestList
 } from "../lib/slices/mainSlice";
-import { getNotification } from "../api/chat";
+import { getListBoxChat, getNotification } from "../api/chat";
+import { setListRoom } from "../lib/slices/chatSlice";
 
 export const syncAll = async (dispatch, payload) => {
     try {
@@ -73,6 +74,16 @@ export const getNotificationList = async (dispatch, payload) => {
         dispatch(setNotificationList(notificationList));
     } catch (e) {
         console.info(`LOG_IT:: e getNotificationList helper`, e);
+    }
+}
+
+export const getListRoom = async (dispatch, payload) => {
+    const { _id } = payload || {}
+    try {
+        const listRoom = await getListBoxChat(_id);
+        dispatch(setListRoom(listRoom));
+    } catch (e) {
+        console.info(`LOG_IT:: e getListRoom helper`, e);
     }
 }
 

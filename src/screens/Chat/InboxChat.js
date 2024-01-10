@@ -68,6 +68,9 @@ const InboxChat = (props) => {
     return messages.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   }, [messages.data])
 
+
+  console.log(`🔥LOG_IT:: messagesDataSorted`, messagesDataSorted)
+
   useEffect(() => {
     dispatch(showLoadingModal())
     executeTaskChat();

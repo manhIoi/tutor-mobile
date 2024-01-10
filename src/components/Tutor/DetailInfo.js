@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {Text} from 'react-native-elements';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native-elements';
 import PropsTypes from 'prop-types';
 import Toast from 'react-native-toast-message';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Avatar from '../common/Avatar';
 import BoxShadow from '../common/BoxShadow';
 import Styles from '../../theme/MainStyles';
@@ -25,13 +25,15 @@ import ConfigStyle from '../../theme/ConfigStyle';
 const DetailInfo = (props) => {
   const user = useSelector((state) => state.auth.user);
 
+  const subjectsString = props?.data?.subjects?.map?.(item => item?.name).join(" ,")
+
   return (
     <View style={styles.container}>
       <View style={[Styles.flexRowSB, Styles.flexRowCenterVertical]}>
         <BoxShadow style={styles.wrapAvatar}>
           <Avatar
             size={90}
-            source={{uri: props.data?.avatar}}
+            source={{ uri: props.data?.avatar }}
             zoomView={true}
           />
         </BoxShadow>
@@ -39,20 +41,20 @@ const DetailInfo = (props) => {
           <View style={styles.titleInfo}>
             {props.type !== 'class' ? (
               <Text numberOfLines={2}
-style={Styles.title2RS}>
+                style={Styles.title2RS}>
                 {props?.data?.fullName}
               </Text>
             ) : null}
 
             <View style={Styles.flexRowCenterVertical}>
-              <RateStar size={10}  activeValue={Math.round(props?.data?.voteValue) } numberOfVotes={props?.data?.votes?.length} />
+              <RateStar size={10} activeValue={Math.round(props?.data?.voteValue)} numberOfVotes={props?.data?.votes?.length} />
               {props?.data?.totalRate ? (
-                <Text style={{marginLeft: 5}}>({props?.data?.totalRate})</Text>
+                <Text style={{ marginLeft: 5 }}>({props?.data?.totalRate})</Text>
               ) : null}
             </View>
             {props.type !== 'class' ? (
               <Text numberOfLines={2}
-style={{fontSize: 14}}>
+                style={{ fontSize: 14 }}>
                 {props?.data?.anotherCertificate}
               </Text>
             ) : (
@@ -91,13 +93,13 @@ style={{fontSize: 14}}>
                           marginRight: 5,
                           color:
                             Constants.STATUS_CLASS_COLOR[
-                              props.data?.status || 'pending'
+                            props.data?.status || 'pending'
                             ],
                         }}
                       >
                         {
                           Constants.STATUS_CLASS[
-                            props.data?.status || 'pending'
+                          props.data?.status || 'pending'
                           ]
                         }
                       </Text>
@@ -144,7 +146,7 @@ style={{fontSize: 14}}>
                     </Text>
                   </>
                 ) : (
-                  <Text style={{fontSize: ConfigStyle.RF.font14}}>
+                  <Text style={{ fontSize: ConfigStyle.RF.font14 }}>
                     Bắt đầu {new Date(props?.data?.startAt)?.getDate()} th{' '}
                     {new Date(props?.data?.startAt)?.getMonth() + 1},{' '}
                     {new Date(props?.data?.startAt)?.getFullYear()}
@@ -156,7 +158,7 @@ style={{fontSize: 14}}>
         </View>
       </View>
       {props.type !== 'class' ? (
-        <View style={{marginVertical: 5}}>
+        <View style={{ marginVertical: 5 }}>
           <View
             style={[
               Styles.flexRow,
@@ -164,31 +166,31 @@ style={{fontSize: 14}}>
               Styles.flexRowCenterVertical,
             ]}
           >
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               <IconCake width={12.2}
-height={16.8} />
+                height={16.8} />
             </View>
             <Text numberOfLines={2}
-style={styles.textDetail}>
+              style={styles.textDetail}>
               {new Date(props.data?.dob).getFullYear()}
             </Text>
           </View>
           <View
-              style={[
-                Styles.flexRow,
-                Styles.marginVertical2,
-                Styles.flexRowCenterVertical,
-                {
-                  marginRight: 20,
-                },
-              ]}
+            style={[
+              Styles.flexRow,
+              Styles.marginVertical2,
+              Styles.flexRowCenterVertical,
+              {
+                marginRight: 20,
+              },
+            ]}
           >
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               <IconPerson width={16.4} height={16} />
             </View>
             <Text
-                numberOfLines={2}
-                style={{...styles.textDetail, marginRight: 15}}
+              numberOfLines={2}
+              style={{ ...styles.textDetail, marginRight: 15 }}
             >
               {props?.data?.phone}
             </Text>
@@ -203,13 +205,13 @@ style={styles.textDetail}>
               },
             ]}
           >
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               <IconLocation width={16.4}
-height={16} />
+                height={16} />
             </View>
             <Text
               numberOfLines={2}
-              style={{...styles.textDetail, marginRight: 15}}
+              style={{ ...styles.textDetail, marginRight: 15 }}
             >
               {props?.data?.address}
             </Text>
@@ -224,77 +226,77 @@ height={16} />
               },
             ]}
           >
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               <IconMortarboard width={20.5}
-height={13.5} />
+                height={13.5} />
             </View>
 
-            <Text numberOfLines={2}
-style={styles.textDetail}>
-              {props?.data?.position}
+            <Text numberOfLines={5}
+              style={styles.textDetail}>
+              {subjectsString}
             </Text>
           </View>
         </View>
       ) : (
-        <View style={{marginVertical: 5}}>
+        <View style={{ marginVertical: 5 }}>
           {props?.isHomepage ? (
             <View style={Styles.flexRow}>
-              <View style={[Styles.flexRowCenter, {width: 30}]}>
+              <View style={[Styles.flexRowCenter, { width: 30 }]}>
                 <IconMortarboard width={20.5}
-height={13.5} />
+                  height={13.5} />
               </View>
-              <Text style={{...styles.textDetail, ...Styles.textBold}}>
+              <Text style={{ ...styles.textDetail, ...Styles.textBold }}>
                 {props?.data?.teacherId?.fullName ||
                   props?.data?.teacher?.fullName}
               </Text>
             </View>
           ) : null}
           <View style={[Styles.flexRow, Styles.marginVertical2]}>
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               {props?.isHomepage ? (
                 <IconGender width={16.4}
-height={16} />
+                  height={16} />
               ) : (
                 <IconLocation width={16.4}
-height={16} />
+                  height={16} />
               )}
             </View>
             {props?.isHomepage ? (
               <Text numberOfLines={2}
-style={styles.textDetail}>
+                style={styles.textDetail}>
                 {props?.data?.teacherId?.gender === '1'
                   ? 'Nam'
                   : props?.data?.teacherId?.gender === '2'
-                  ? 'Nữ'
-                  : 'Khác'}
+                    ? 'Nữ'
+                    : 'Khác'}
               </Text>
             ) : (
               <Text
                 numberOfLines={2}
-                style={{...styles.textDetail, marginRight: 15}}
+                style={{ ...styles.textDetail, marginRight: 15 }}
               >
                 {props?.data?.address}
               </Text>
             )}
           </View>
           <View style={[Styles.flexRow, Styles.marginVertical2]}>
-            <View style={[Styles.flexRowCenter, {width: 30}]}>
+            <View style={[Styles.flexRowCenter, { width: 30 }]}>
               {props?.isHomepage ? (
                 <IconCalendar width={16.4}
-height={16} />
+                  height={16} />
               ) : (
                 <IconClock width={15.5}
-height={15.5} />
+                  height={15.5} />
               )}
             </View>
             {props?.isHomepage ? (
               <Text numberOfLines={2}
-style={styles.textDetail}>
+                style={styles.textDetail}>
                 1999
               </Text>
             ) : (
               <Text numberOfLines={2}
-style={styles.textDetail}>
+                style={styles.textDetail}>
                 {props?.data?.timeStartAt?.hour}h
                 {props?.data?.timeStartAt?.minute < 10
                   ? `0${props?.data?.timeStartAt?.minute}`
@@ -306,30 +308,30 @@ style={styles.textDetail}>
             style={[
               Styles.flexRow,
               Styles.marginVertical2,
-              {justifyContent: 'space-between'},
+              { justifyContent: 'space-between' },
             ]}
           >
             <View style={Styles.flexRow}>
-              <View style={[Styles.flexRowCenter, {width: 30}]}>
+              <View style={[Styles.flexRowCenter, { width: 30 }]}>
                 {props?.isHomepage ? (
                   <IconLocation width={16.4}
-height={16} />
+                    height={16} />
                 ) : (
                   <IconMortarboard width={20.5}
-height={13.5} />
+                    height={13.5} />
                 )}
               </View>
               {props?.isHomepage ? (
                 <Text
                   numberOfLines={2}
-                  style={{...styles.textDetail, width: '70%'}}
+                  style={{ ...styles.textDetail, width: '70%' }}
                 >
                   {props?.data?.address}
                 </Text>
               ) : (
                 <View style={Styles.flexRow}>
                   <Text style={styles.textDetail}>Teacher :</Text>
-                  <Text style={{...styles.textDetail, ...Styles.textBold}}>
+                  <Text style={{ ...styles.textDetail, ...Styles.textBold }}>
                     {props?.data?.teacherId?.fullName ||
                       props?.data?.teacher?.fullName}
                   </Text>
@@ -373,8 +375,8 @@ height={13.5} />
           marginBottom: 5,
           marginLeft: 5,
           marginTop: 10,
-            color: Colors.orange2,
-            fontWeight: "bold",
+          color: Colors.orange2,
+          fontWeight: "bold",
         }}
       >
         Thông tin

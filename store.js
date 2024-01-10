@@ -12,6 +12,7 @@ import callingSlice from './src/lib/slices/callSlice';
 import subjectSlice from "./src/lib/slices/subjectSlice";
 import mainSlice from "./src/lib/slices/mainSlice";
 import modalSlice from './src/lib/slices/modalSlice';
+import chatSlice from './src/lib/slices/chatSlice';
 
 export default configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export default configureStore({
     calling: callingSlice,
     subject: subjectSlice,
     main: mainSlice,
-    modal: modalSlice
+    modal: modalSlice,
+    chat: chatSlice
   },
 });

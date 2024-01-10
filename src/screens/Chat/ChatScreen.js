@@ -21,16 +21,14 @@ import IconContact from '../../assets/images/svg/contact (1).svg';
 import { getListBoxChat, deleteGroupChat } from '../../api/chat';
 import Styles from '../../theme/MainStyles';
 import IconEmpty from '../../assets/images/svg/empty-list.svg';
-import Constants from '../../../constants/Values';
-import useDebouncedEffect from '../../hooks/useDebounce';
-import AddButton from "../../components/common/AddButton";
 import AddChat from "../../components/common/AddChat";
 import { hideLoadingModal, showLoadingModal } from '../../lib/slices/modalSlice';
-const LIMIT = Constants.LIMIT * 2;
+import { getListRoom } from '../../helper/main';
+
 const ChatScreen = (props) => {
-  const [listGroupChat, setListGroupChat] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  const listGroupChat = useSelector((state) => state.chat.rooms)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,16 +39,11 @@ const ChatScreen = (props) => {
   function selectInbox(id) {
     props.navigation.push('InboxChat');
   }
-  async function getListChat() {
-    try {
-      const response = await getListBoxChat(user?._id);
-      setListGroupChat(response);
-    } catch (error) {
-      console.info(`LOGGER:: error`, error);
-    } finally {
+  function getListChat() {
+    getListRoom(dispatch, user).finally(() => {
       dispatch(hideLoadingModal())
       setRefreshing(false)
-    }
+    });
   }
   async function onRefresh() {
     setRefreshing(true)

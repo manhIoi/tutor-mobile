@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import {Text} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import moment from 'moment';
 import MonthPicker from 'react-native-month-year-picker';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Container from '../../components/common/Container';
 import Statusbar from '../../components/common/StatusBar';
 import ConfigStyle from '../../theme/ConfigStyle';
@@ -28,31 +28,54 @@ import {
 } from '../../api/class';
 import BoxShadow from '../../components/common/BoxShadow';
 import TutorRequestItem from "../../components/RequestManagement/TutorRequestItem";
-import {syncMyRequestList} from "../../helper/main";
+import { syncMyRequestList } from "../../helper/main";
 import EmptyListComponent from "../../components/common/EmptyListComponent";
+import Selection from '../../components/common/Selection';
+import { ModalPicker } from '../../components/common/CustomPicker';
 
-const INIT_DATA = {
-  data: [],
-  totalItems: 0,
-  totalPages: 0,
-  currentPage: 0,
-};
+const DATA_FILTER = [
+  {
+    name: "Tất cả",
+    value: null
+  },
+  {
+    name: "Đang mở",
+    value: 0
+  },
+  {
+    name: "Đợi giáo viên xác nhận",
+    value: 1
+  },
+  {
+    name: "Có giáo viên nhận lớp",
+    value: 2
+  },
+  {
+    name: "Lớp học kết thúc",
+    value: 3
+  }
+]
+
 const CalendarScreen = (props) => {
   const user = useSelector((state) => state.auth.user);
   const { myRequestList: classes } = useSelector(state => state.main)
+  const [showFilter, setShowFilter] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState(DATA_FILTER[0]);
+
   const dispatch = useDispatch()
 
   const onRefresh = () => {
     syncMyRequestList(dispatch, user);
   }
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
+    if (item?.status !== currentFilter?.value && currentFilter?.value !== null) return null
     return (
-        <TutorRequestItem data={item} onPress={() => {
-          props.navigation.navigate('DetailRequest', {
-            tutorRequest: item,
-          })
-        }} />
+      <TutorRequestItem data={item} onPress={() => {
+        props.navigation.navigate('DetailRequest', {
+          tutorRequest: item,
+        })
+      }} />
     )
   }
 
@@ -61,7 +84,7 @@ const CalendarScreen = (props) => {
       header={
         <Statusbar
           title={'Quản lý'}
-          contentBarStyles={{justifyContent: 'center'}}
+          contentBarStyles={{ justifyContent: 'center' }}
           headerHeight={ConfigStyle.statusBarHeight}
         />
       }
@@ -70,7 +93,24 @@ const CalendarScreen = (props) => {
       onRefresh={onRefresh}
       refreshing={false}
     >
-      <FlatList data={classes} renderItem={renderItem} keyExtractor={(item) => item?._id} ListEmptyComponent={ <EmptyListComponent /> } />
+      <View style={{ paddingHorizontal: 10 }} >
+        <Selection style={{ marginHorizontal: 4, marginVertical: 14 }} textInputProps={{
+          placeholder: "Trạng thái",
+          value: currentFilter?.name,
+          style: {
+            fontWeight: "bold",
+            color: Colors.black4
+          }
+        }} onPress={() => setShowFilter(true)} />
+        <FlatList data={classes} renderItem={renderItem} keyExtractor={(item) => item?._id} ListEmptyComponent={<EmptyListComponent />} />
+      </View>
+      <ModalPicker
+        items={DATA_FILTER}
+        show={showFilter}
+        hideModal={() => setShowFilter(false)}
+        onChange={setCurrentFilter}
+        title={"Trạng thái lớp học"}
+      />
     </Container>
   );
 };
