@@ -86,18 +86,6 @@ export default function HomeScreen(props) {
   async function onRefresh(showLoading = true) {
     syncAllAsync(dispatch, user);
   }
-  async function getTeachers() {
-    try {
-      const data = await getTeacherSuggest();
-      if (data) {
-        setState({ teachers: data });
-      }
-    } catch (error) {
-      console.log('get teacherSuggestDistance ==>', error);
-    } finally {
-      setState({ loading: false });
-    }
-  }
 
   const renderClassItem = ({ item, index }) => {
     return (

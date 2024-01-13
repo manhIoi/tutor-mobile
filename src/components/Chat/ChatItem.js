@@ -58,7 +58,7 @@ rightButtonWidth={60}>
               <Avatar
                 size={64}
                 source={{
-                  uri: userReceive?.avatar,
+                  uri: userReceive?.avatar || `https://ui-avatars.com/api/?background=random&name=${userReceive?.fullName}`,
                 }}
                 icon={
                   props.data?.blockInfo?.user === user?._id ? (

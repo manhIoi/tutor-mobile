@@ -284,28 +284,27 @@ const Message = (props) => {
         {justifyContent: receive ? 'flex-start' : 'flex-end'},
       ]}
     >
-      <TouchableOpacity onLongPress={showModalDelete}>
-        <View
+      <View
           style={[
             styles.container,
             text || props.message.files?.length ? styles.containerText : {},
             receive && !nextReceive ? styles.firstMessage : {},
             text || props.message.files?.length
-              ? receive
-                ? styles.messageReceive
-                : styles.messageSend
-              : {},
+                ? receive
+                    ? styles.messageReceive
+                    : styles.messageSend
+                : {},
             receive && (preReceive || !props.isSlice)
-              ? styles.customBorderBottomLeft
-              : {}, // topleft
+                ? styles.customBorderBottomLeft
+                : {}, // topleft
             receive && nextReceive ? styles.customBorderTopLeft : {}, // bottomLeft
             !receive && !nextReceive ? styles.customBorderTopRight : {}, // topright
             !receive && nextReceive === false
-              ? styles.customBorderTopRight
-              : {}, // bottomright
+                ? styles.customBorderTopRight
+                : {}, // bottomright
             !receive && !preReceive && props?.preMessage?._id
-              ? styles.customBorderBottomRight
-              : {}, // bottomright
+                ? styles.customBorderBottomRight
+                : {}, // bottomright
             {
               flexWrap: 'wrap',
               justifyContent: !receive ? 'flex-end' : 'flex-start',
@@ -315,13 +314,13 @@ const Message = (props) => {
               borderColor: 'transparent',
             },
           ]}
-        >
-          {text ? (
+      >
+        {text ? (
             <View style={{flexDirection: 'row'}}>
               <Text style={{...Styles.textLight, fontSize: 13}}>{text}</Text>
             </View>
-          ) : null}
-          {props.message.images ? (
+        ) : null}
+        {props.message.images ? (
             <View style={styles.wrapImage}>
               {props.message.images?.map((image, index) => {
                 let imageStyles = styles.image1;
@@ -340,14 +339,14 @@ const Message = (props) => {
                     const isOdd = images.length % 2;
                     if (isOdd) {
                       if (
-                        index % 2 === 0 &&
-                        index < images.length - 1 &&
-                        (index === 0 || index === 1)
+                          index % 2 === 0 &&
+                          index < images.length - 1 &&
+                          (index === 0 || index === 1)
                       ) {
                         imageStyles = {...imageStyles, ...styles.imageLeftTop};
                       } else if (
-                        index % 2 === 0 &&
-                        index === images.length - 1
+                          index % 2 === 0 &&
+                          index === images.length - 1
                       ) {
                         imageStyles = {...imageStyles, ...styles.image1};
                         imageStyles = {
@@ -355,8 +354,8 @@ const Message = (props) => {
                           ...styles.imageOneBottom,
                         };
                       } else if (
-                        index % 2 === 1 &&
-                        (index === 0 || index === 1)
+                          index % 2 === 1 &&
+                          (index === 0 || index === 1)
                       ) {
                         imageStyles = {...imageStyles, ...styles.imageRightTop};
                       } else {
@@ -364,28 +363,28 @@ const Message = (props) => {
                       }
                     } else {
                       if (
-                        index % 2 === 0 &&
-                        index < images.length - 2 &&
-                        (index === 0 || index === 1)
+                          index % 2 === 0 &&
+                          index < images.length - 2 &&
+                          (index === 0 || index === 1)
                       ) {
                         imageStyles = {...imageStyles, ...styles.imageLeftTop};
                       } else if (
-                        index % 2 === 0 &&
-                        index === images.length - 2
+                          index % 2 === 0 &&
+                          index === images.length - 2
                       ) {
                         imageStyles = {
                           ...imageStyles,
                           ...styles.imageLeftBottom,
                         };
                       } else if (
-                        index % 2 === 1 &&
-                        index < images.length - 1 &&
-                        (index === 0 || index === 1)
+                          index % 2 === 1 &&
+                          index < images.length - 1 &&
+                          (index === 0 || index === 1)
                       ) {
                         imageStyles = {...imageStyles, ...styles.imageRightTop};
                       } else if (
-                        index % 2 === 1 &&
-                        index === images.length - 1
+                          index % 2 === 1 &&
+                          index === images.length - 1
                       ) {
                         imageStyles = {
                           ...imageStyles,
@@ -398,93 +397,92 @@ const Message = (props) => {
                   }
                 }
                 return (
-                  <TouchableWithoutFeedback
-                    key={index}
-                    style={{backgroundColor: '#f000'}}
-                  >
-                    <View
-                      style={{
-                        ...imageStyles,
-                        overflow: 'hidden',
-                        borderWidth: 0.8,
-                        borderColor: Colors.borderThin,
-                      }}
+                    <TouchableWithoutFeedback
+                        key={index}
+                        style={{backgroundColor: '#f000'}}
                     >
-                      <CustomFastImage
-                        sourceTemp={{uri: image.medium}}
-                        source={{uri: image.large}}
-                        zoomView={true}
-                        arraySource={listImages || []}
-                        index={index}
-                        hideLoad={true}
-                      />
-                    </View>
-                  </TouchableWithoutFeedback>
+                      <View
+                          style={{
+                            ...imageStyles,
+                            overflow: 'hidden',
+                            borderWidth: 0.8,
+                            borderColor: Colors.borderThin,
+                          }}
+                      >
+                        <CustomFastImage
+                            sourceTemp={{uri: image.medium}}
+                            source={{uri: image.large}}
+                            zoomView={true}
+                            arraySource={listImages || []}
+                            index={index}
+                            hideLoad={true}
+                        />
+                      </View>
+                    </TouchableWithoutFeedback>
                 );
               })}
             </View>
-          ) : null}
+        ) : null}
 
-          {props.message.files?.length ? (
+        {props.message.files?.length ? (
             <View>
               {props.message.files.map((file, index) => (
-                <TouchableOpacity
-                  style={{
-                    ...styles.wrapFile,
-                    justifyContent: receive ? 'flex-start' : 'flex-end',
-                  }}
-                  key={index}
-                  onPress={() => clickFile(file)}
-                >
-                  <Icon
-                    type="font-awesome"
-                    name={getTypeFile(file?.name)}
-                    size={15}
-                  />
-                  <Text
-                    style={{...styles.textFile, paddingLeft: 5}}
-                    numberOfLines={1}
+                  <TouchableOpacity
+                      style={{
+                        ...styles.wrapFile,
+                        justifyContent: receive ? 'flex-start' : 'flex-end',
+                      }}
+                      key={index}
+                      onPress={() => clickFile(file)}
                   >
-                    {getFileName(file.name)}
-                    {/* {file.name} */}
-                  </Text>
-                  <Text style={styles.textFile}>
-                    .{getFileTypeText(file.name)}
-                  </Text>
-                </TouchableOpacity>
+                    <Icon
+                        type="font-awesome"
+                        name={getTypeFile(file?.name)}
+                        size={15}
+                    />
+                    <Text
+                        style={{...styles.textFile, paddingLeft: 5}}
+                        numberOfLines={1}
+                    >
+                      {getFileName(file.name)}
+                      {/* {file.name} */}
+                    </Text>
+                    <Text style={styles.textFile}>
+                      .{getFileTypeText(file.name)}
+                    </Text>
+                  </TouchableOpacity>
               ))}
             </View>
-          ) : null}
-        </View>
-      </TouchableOpacity>
+        ) : null}
+      </View>
 
-      <CustomActionSheet
-        title={'Tải tập tin về máy ?'}
-        message={`${getFileName(fileSelected?.name, 10)}.${getFileTypeText(
-          fileSelected?.name,
-        )}`}
-        arrayActions={['Tải xuống', 'Hủy']}
-        actionSheetOnPress={handleActionSheetOnPress}
-        shouldShow={showPickFile}
-        cancelButtonIndex={1}
-        destructiveButtonIndex={0}
-      />
-      <CustomActionSheet
-        title={'Xóa tin nhắn'}
-        arrayActions={['Xóa', 'Xóa ở phía bạn', 'Hủy']}
-        actionSheetOnPress={handleDeleteOnPress}
-        shouldShow={showDelete2}
-        cancelButtonIndex={receive ? 1 : 2}
-        destructiveButtonIndex={1}
-      />
-      <CustomActionSheet
-        title={'Xóa tin nhắn'}
-        arrayActions={['Xóa', 'Hủy']}
-        actionSheetOnPress={handleDeleteOnPress}
-        shouldShow={showDelete1}
-        cancelButtonIndex={receive ? 1 : 2}
-        destructiveButtonIndex={1}
-      />
+      {/*<CustomActionSheet*/}
+      {/*  title={'Tải tập tin về máy ?'}*/}
+      {/*  message={`${getFileName(fileSelected?.name, 10)}.${getFileTypeText(*/}
+      {/*    fileSelected?.name,*/}
+      {/*  )}`}*/}
+      {/*  arrayActions={['Tải xuống', 'Hủy']}*/}
+      {/*  actionSheetOnPress={handleActionSheetOnPress}*/}
+      {/*  shouldShow={showPickFile}*/}
+      {/*  cancelButtonIndex={1}*/}
+      {/*  destructiveButtonIndex={0}*/}
+      {/*/>*/}
+      {/*<CustomActionSheet*/}
+      {/*  title={'Xóa tin nhắn'}*/}
+      {/*  arrayActions={['Xóa', 'Xóa ở phía bạn', 'Hủy']}*/}
+      {/*  actionSheetOnPress={handleDeleteOnPress}*/}
+      {/*  shouldShow={showDelete2}*/}
+      {/*  cancelButtonIndex={receive ? 1 : 2}*/}
+      {/*  destructiveButtonIndex={1}*/}
+      {/*/>*/}
+      {/*<CustomActionSheet*/}
+      {/*  title={'Xóa tin nhắn'}*/}
+      {/*  arrayActions={['Xóa', 'Hủy']}*/}
+      {/*  actionSheetOnPress={handleDeleteOnPress}*/}
+      {/*  shouldShow={showDelete1}*/}
+      {/*  cancelButtonIndex={receive ? 1 : 2}*/}
+      {/*  destructiveButtonIndex={1}*/}
+      {/*/>*/}
     </View>
   );
 };

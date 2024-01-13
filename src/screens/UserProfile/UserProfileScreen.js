@@ -78,7 +78,7 @@ export default function ProfileScreen(props) {
                 fullName={userProfile?.fullName}
                 src={sourceImage}
                 phone={userProfile?.phone}
-                srcLg={userProfile?.avatar}
+                srcLg={userProfile?.avatar || `https://ui-avatars.com/api/?background=random&name=${userProfile?.fullName}`}
             />
             <CardProfile {...props} notification={notification} />
           </View>

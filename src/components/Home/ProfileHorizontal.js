@@ -48,7 +48,7 @@ const ProfileHorizontal = (props) => {
             <View style={styles.boxImage}>
               <FastImage
                 source={{
-                  uri: props.data?.avatar,
+                  uri: props.data?.avatar || `https://ui-avatars.com/api/?background=random&name=${props?.data?.fullName}`,
                 }}
                 style={styles.image}
               />

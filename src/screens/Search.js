@@ -8,7 +8,7 @@ import { ModalPicker } from "../components/common/CustomPicker";
 import { useSelector } from "react-redux";
 import Colors from "../theme/Colors";
 import isEqual from "lodash/isEqual";
-
+import groupBy from "lodash/groupBy";
 
 import ButtonCustom from "../components/common/ButtonFooterCustom";
 import ProfileHorizontal from "../components/Home/ProfileHorizontal";
@@ -40,7 +40,8 @@ const SearchScreen = (props) => {
     const [searchData, setSearchData] = useState(null);
 
     const addressData = useMemo(() => {
-        const groupByAddress = Object.groupBy(teacherList, (item) => item?.address);
+
+        const groupByAddress = groupBy(teacherList, "address");
         return Object.keys(groupByAddress)?.filter?.(item => !!item)?.map?.(item => ({ name: item }));
     }, [teacherList])
 

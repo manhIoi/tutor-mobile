@@ -253,7 +253,6 @@ const DetailClass = (props) => {
   }
 
   const renderOtherVotes = () => {
-    console.log(`🔥LOG_IT:: otherVotes`, otherVotes)
     if (!isClassEnd || isEmpty(classData?.teacher) || otherVotes?.length === 0) return null;
     return <View>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, marginBottom: 8 }}>
