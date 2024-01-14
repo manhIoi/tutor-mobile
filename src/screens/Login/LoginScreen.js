@@ -28,7 +28,7 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const INITIAL_FORM = {
   phoneNumber: {
-    value: '0926423657',
+    value: '0036192540',
     msgError: '',
   },
   password: {

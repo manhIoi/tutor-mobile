@@ -9,7 +9,6 @@ const subjectSlice = createSlice({
     initialState: initialState,
     reducers: {
         setSubjectsValue: (state, action) => {
-            console.info(`🔥🔥🔥LOGGER::  action`, action.payload);
             state.value = action.payload;
         },
 

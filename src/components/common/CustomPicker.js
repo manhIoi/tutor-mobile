@@ -148,7 +148,7 @@ const ModalPicker = (props) => {
   }
 
   const _renderItem = ({item, index}) => {
-    const isSelected = selectedIds.some(_item => isEqual(item, _item));
+    const isSelected = selectedIds?.some?.(_item => isEqual(item, _item));
     if (!isSelected) {
       return (
         <View style={styles.wrapItem}>
@@ -182,14 +182,14 @@ const ModalPicker = (props) => {
           </TouchableOpacity>
       </View>
     )
-    
+
   }
 
   const renderBodyModal = () => {
     return (
-      <FlatList 
-        data={props.items}  
-        renderItem={_renderItem}  
+      <FlatList
+        data={props.items}
+        renderItem={_renderItem}
         ListEmptyComponent={() => (
           <Text
               numberOfLines={1}

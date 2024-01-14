@@ -51,7 +51,6 @@ const DetailTutor = (props) => {
   const { teacher } = props.route.params;
   const user = useSelector(state => state?.auth?.user);
   const [voteList, setVoteList] = useState([]);
-  console.info(`LOG_IT:: voteList`, voteList);
 
   useEffect(() => {
     getVoteList()

@@ -44,7 +44,6 @@ import config from '../../../config/config';
 
 
 const UserCreateRequest = (props) => {
-  console.info(`LOG_IT:: props`, props);
   const inputDesc = React.useRef();
   const subjects = useSelector(state => state.subject.value);
   const isHasTeacher = !!props.route?.params?.teacher?._id
@@ -138,7 +137,6 @@ const UserCreateRequest = (props) => {
   const [showPickImage, setShowPickerImage] = useState(false);
   const [scrollEnd, setScrollEnd] = useState('');
   const [loading, setLoading] = useState(false);
-  console.info(`LOG_IT:: data`, data);
 
   function handleActionSheetOnPress(index) {
     switch (index) {

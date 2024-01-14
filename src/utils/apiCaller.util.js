@@ -14,14 +14,14 @@ message.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      console.info(`LOG_IT:: [req]`, config.url);
+      // console.info(`LOG_IT:: [req]`, config.url);
       return config;
     },
 )
 
 message.interceptors.response.use(
     async function (config) {
-      console.info(`LOG_IT:: [res]`, config.config.url, config.status, config.data);
+      // console.info(`LOG_IT:: [res]`, config.config.url, config.status, config.data);
       return config;
     },
 )
@@ -39,7 +39,7 @@ export async function callApi(endpoint, method = 'get', body) {
     }
     return Promise.reject(Error('Call api failed'));
   } catch (error) {
-    console.info("LOGGER:: [call-api-error]", error);
+    // console.info("LOGGER:: [call-api-error]", error);
     throw error;
   }
 }
@@ -164,7 +164,6 @@ export async function uploadFile(
   configure,
   callback = () => {},
 ) {
-  console.info(`LOG_IT:: endpoint`, endpoint, formData, configure);
   // if (!(configure instanceof Object)) {
   //   configure = {};
   // }

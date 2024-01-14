@@ -33,7 +33,6 @@ const CardInfo = (props) => {
   const {action} = props;
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
-  console.info(`LOG_IT:: user`, user);
   const [form, setForm] = React.useState({
     fullName: {
       value: user?.fullName,

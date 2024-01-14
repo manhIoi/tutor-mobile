@@ -32,6 +32,9 @@ const theme = {
     }
   }
 };
+console.disableYellowBox = true;
+console.warn = () => null
+console.error = () => null
 const App = (props) => {
   LogBox.ignoreAllLogs() // hide warning
   const routeNameRef = React.useRef();

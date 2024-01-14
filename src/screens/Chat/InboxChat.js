@@ -68,9 +68,6 @@ const InboxChat = (props) => {
     return messages.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   }, [messages.data])
 
-
-  console.log(`🔥LOG_IT:: messagesDataSorted`, messagesDataSorted)
-
   useEffect(() => {
     dispatch(showLoadingModal())
     executeTaskChat();
@@ -139,7 +136,6 @@ const InboxChat = (props) => {
         idSend: user._id,
         isChatBot: isChatAssistant
       })
-      console.info(`LOGGER:: messages`, messages);
       const _messagesFormatted = messages?.map?.(m => {
         const isReceive = user?._id === m.userReceive || (isChatAssistant && m?.isBotMessage)
         return {
@@ -152,14 +148,12 @@ const InboxChat = (props) => {
         ...messages,
         data: _messagesFormatted,
       })
-      console.info(`🔥🔥🔥LOGGER::  messages`, messages);
     } catch (e) {
       console.info(`🔥🔥🔥LOGGER::  e`, e);
     }
   }
 
   const joinRoomEvent = async () => {
-    console.info(`🔥🔥LOGGER::  messageSendTo_${userReceive._id}`);
     if (!roomChat) {
       const response = await joinRoomApi([user?._id, userReceive?._id]);
 

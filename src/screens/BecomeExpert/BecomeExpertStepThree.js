@@ -20,7 +20,7 @@ import {updateProfile} from "../../lib/slices/authSlice";
 
 const BecomeExpertStepTwo = (props) => {
   const user = useSelector(state => state.auth.user)
-  console.info(`LOG_IT:: user`, user);
+
   const [data, setData] = useState({
     signal: {
       value: user?.metaData?.signature || '',
@@ -46,22 +46,11 @@ const BecomeExpertStepTwo = (props) => {
 
   function handleActionSheetOnPress(index) {
     switch (index) {
-      case 0:
-        ImagePicker.openCamera({
-          width: 300,
-          height: 400,
-          // cropping: true,
-        }).then((images) => {
-          // props.sendMessage({images});
-          handleChangeData(images);
-        });
-        break;
-      case 1: {
+      case 0: {
         ImagePicker.openPicker({
           multiple: false,
           cropping: false,
         }).then((images) => {
-          console.info(`LOG_IT:: images`, images);
           handleChangeData(images);
         }).catch(e => {
           console.info(`LOG_IT:: e`, e);
@@ -146,16 +135,13 @@ const BecomeExpertStepTwo = (props) => {
   async function handleUploadImage(image) {
     try {
       if (!image) return;
-      console.info(`LOG_IT:: image`, image);
       const formData = new FormData();
       formData.append('tutor_image', {
         name: `${user?._id}_${new Date().getTime()}.jpg`,
         type: image.mime,
         uri: image.path,
       });
-      console.info(`LOG_IT:: formData`, formData);
       const url = await uploadImage(formData);
-      console.info(`LOG_IT:: upload response`, url);
       return url;
     } catch (error) {
       console.log(error);
@@ -173,7 +159,6 @@ const BecomeExpertStepTwo = (props) => {
       }
 
       setBusy(true);
-      console.info(`LOG_IT:: data`, data);
       const promise = [
         !data.signal?.value?.path
             ? data.signal?.value
@@ -190,11 +175,8 @@ const BecomeExpertStepTwo = (props) => {
       );
       const dataResult = await Promise.all(promise);
       const dataResult2 = await Promise.all(promise2);
-      console.info(`LOG_IT:: dataResult`, dataResult);
-      console.info(`LOG_IT:: dataResult2`, dataResult2);
       if (dataResult && dataResult2) {
         const dataForm = props.route?.params?.infoUser;
-        console.info(`LOG_IT:: dataForm`, dataForm);
         const dataPost = {
           ...dataForm,
           metaData: {
@@ -206,7 +188,6 @@ const BecomeExpertStepTwo = (props) => {
           requestBecomeTutor: true,
         };
         // handle call api request teacher or update info
-        console.info(`LOG_IT:: dataPost`, dataPost);
         const response = await updateTeacherInfo(dataForm?._id, dataPost);
         dispatch(updateProfile(response))
         Toast.show({
@@ -415,7 +396,7 @@ height={31} /> : null}
         ) : null}
         <CustomActionSheet
           title={'Chọn hình ảnh từ ?'}
-          arrayActions={['Máy ảnh', 'Thư viện hình ảnh', 'Hủy']}
+          arrayActions={['Thư viện hình ảnh','','Hủy']}
           actionSheetOnPress={handleActionSheetOnPress}
           shouldShow={showPickImage}
           cancelButtonIndex={2}

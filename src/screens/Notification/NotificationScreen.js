@@ -256,10 +256,8 @@ const NotificationScreen = (props) => {
   const readNotification = async (item) => {
     try {
       const { data } = item || {}
-      console.info(`LOG_IT:: data`, data);
       if (data?.type === 'tutor_request' && data?.id) {
         const tutorRequest = myRequestList?.find?.(item => item?._id === data?.id)
-        console.info(`LOG_IT:: tutorRequest`, tutorRequest);
         navigation.push('DetailTutor', {
           teacher: tutorRequest?.teacher
         })

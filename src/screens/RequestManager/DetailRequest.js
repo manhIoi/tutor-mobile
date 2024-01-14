@@ -80,7 +80,6 @@ const DetailClass = (props) => {
   const getVoteData = async () => {
     try {
       const response = await getVoteByClass(classData?._id, user?._id) || {};
-      console.log(`🔥LOG_IT:: response`, response)
 
       setVoteData({
         ...voteData,
@@ -95,7 +94,6 @@ const DetailClass = (props) => {
   const getOtherVote = async () => {
     try {
       const response = await getOtherVoteByClass(classData?._id, user?._id) || {};
-      console.log(`🔥LOG_IT:: response`, response)
       setOtherVotes(response);
     } catch (error) {
       console.log(`🔥LOG_IT:: getVoteData e`, error)
@@ -160,7 +158,6 @@ const DetailClass = (props) => {
   const cancelMyRequest = async () => {
     try {
       const response = await cancelDetailRequest(classData?._id)
-      console.info(`LOG_IT:: response`, response);
       if (response) {
         Toast.show({
           ...ConfigStyle.toastDefault,
@@ -355,7 +352,6 @@ const DetailClass = (props) => {
     }
 
     if (isMyRequest) {
-      console.info(`LOG_IT:: `, classData?.teacher, classData?.students > 1);
       return <ButtonCustom {...buttonProps} disabled={classData?.teacher || classData?.students > 1} text={'HỦY ĐĂNG KÝ'} onPress={handleClickCancel} />
     }
 
@@ -401,8 +397,6 @@ const DetailClass = (props) => {
       />
     }
   }
-
-  console.info(`LOG_IT:: classData?.teacher?.avatar`, classData?.teacher?.avatar);
 
   return (
     <Container

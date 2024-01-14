@@ -113,8 +113,6 @@ const UserCreateRequest = (props) => {
       form.description.msgError = 'Trường này là bắt buộc';
       valid = false;
     }
-
-    console.info(`LOG_IT:: form`, form);
     setData(form);
     return valid;
   }
@@ -143,7 +141,6 @@ const UserCreateRequest = (props) => {
           description: data.description?.value,
         }
       };
-      console.info(`LOG_IT:: infoUser`, infoUser);
       // TODO: handle submit
       if (props?.route?.params?.isRequestTeacher || user?.role === 'teacher') {
         props.navigation.navigate('BecomeExpertStepThree', {
