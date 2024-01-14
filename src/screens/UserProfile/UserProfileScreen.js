@@ -20,21 +20,7 @@ export default function ProfileScreen(props) {
   const notification = useSelector((state) => state?.notification?.notiUpdate);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const [userProfile, setUserProfile] = React.useState({});
-  const [sourceImage, setSourceImage] = React.useState('');
-  async function getProfile() {
-    try {
-      dispatch(updateRefresh());
-      const profile = await getprofile();
-      setSourceImage(profile?.avatar);
-      setUserProfile(profile);
-      if (profile?.access === 'teacher') {
-        await teacherGetBalance();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const userProfile = user;
 
   async function teacherGetBalance() {
     try {
@@ -44,28 +30,8 @@ export default function ProfileScreen(props) {
       console.log('teacherGetBalance ==>', error);
     }
   }
-
-  React.useEffect(() => {
-    setUserProfile(user);
-  }, []);
-  React.useEffect(() => {
-    getProfile();
-    if (user?.access === 'teacher') {
-      teacherGetBalance();
-    }
-  }, [isFocused]);
   return (
         <Container
-            // header={
-            //   <StatusBar
-            //     contentBarStyles={{justifyContent: 'center'}}
-            //     navigation={props.navigation}
-            //     headerHeight={ConfigStyle.statusBarHeight}
-            //     hideBackground={false}
-            //     title="Hồ sơ cá nhân"
-            //   />
-            // }
-            // headerHeight={ConfigStyle.statusBarHeight}
             title="Hồ sơ cá nhân"
             arrowBack={false}
             contentBarStyles={{justifyContent: 'center'}}
@@ -76,7 +42,7 @@ export default function ProfileScreen(props) {
           <View style={{flex: 1}}>
             <AvartarLeft
                 fullName={userProfile?.fullName}
-                src={sourceImage}
+                src={userProfile?.avatar || `https://ui-avatars.com/api/?background=random&name=${userProfile?.fullName}`}
                 phone={userProfile?.phone}
                 srcLg={userProfile?.avatar || `https://ui-avatars.com/api/?background=random&name=${userProfile?.fullName}`}
             />

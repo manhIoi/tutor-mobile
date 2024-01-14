@@ -50,6 +50,10 @@ export const getprofile = async () => {
   return await callApi('/users/profile', 'get');
 };
 
+export const getDetailUser = async (id) => {
+  return await callApi(`/user/detail/${id}`, 'get');
+};
+
 export const resetPassword = async (data) => {
   return await callApi('/users/reset-password', 'post', data);
 };

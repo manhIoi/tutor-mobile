@@ -14,16 +14,12 @@ import MainStyles from '../../theme/MainStyles';
 import Colors from '../../theme/Colors';
 import ConfigStyle from '../../theme/ConfigStyle';
 import {logoutAsync} from '../../lib/slices/authSlice';
-import config from '../../../config/config';
-import FastImage from '../common/FastImage';
-import IconLogout from '../../assets/images/svg/logout.svg';
-import {removeDeviceToken} from '../../api/notification';
 import {checkIsTeacher} from "../../utils/profile.util";
 
 const Avatar = (props) => {
   const dispatch = useDispatch();
-  const balance = useSelector((state) => state.auth.balance);
   const user = useSelector((state) => state.auth.user);
+  const avatar = user?.avatar || `https://ui-avatars.com/api/?background=random&name=${user?.fullName}`
   async function handleLogout() {
     //TODO: imeplemnt removeDeviceToken
     // await removeDeviceToken();
@@ -34,10 +30,12 @@ const Avatar = (props) => {
       <View style={{marginBottom: 30, marginTop: 40}}>
         <View style={{flexDirection: 'row'}}>
           <View style={styles.viewImage}>
-            <FastImage
-              zoomView={false}
+            <Image
+              resizeMode={"contain"}
               style={styles.image}
-              source={{uri: user.avatar}}
+              source={{
+                uri: avatar
+              }}
             />
           </View>
           <View
@@ -169,13 +167,10 @@ const styles = StyleSheet.create({
   viewImage: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    // justifyContent: 'flex-start',
-    // alignSelf :"center",
     width: 110,
     height: 110,
     borderRadius: 60,
     elevation: 6,
-    backgroundColor: Colors.whiteColor,
     shadowOffset: {width: 1, height: 1},
     textShadowColor: Colors.black4,
     shadowOpacity: 0.5,
@@ -184,10 +179,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderThin,
   },
   image: {
-    marginHorizontal: 4,
-    marginVertical: 4,
-    width: 100,
-    height: 100,
+    flex:1,
+    margin: 4,
     borderRadius: 80,
     backgroundColor: '#C0C0C0',
   },

@@ -164,9 +164,10 @@ backgroundColor="transparent" />
               </TouchableOpacity>
               <View>
                 <View style={{ marginLeft:10, backgroundColor: Colors.whiteColor,height: "100%", aspectRatio:1, borderRadius: 50, justifyContent: "center", alignItems: "center"}}>
-                  <View style={{ position: 'absolute', right: 0, top:0, width: 20, justifyContent: 'center', alignItems: 'center', height: 20, borderRadius: 20, backgroundColor: Colors.orange }}>
+                  {notificationUnReadList?.length > 0 ? <View style={{ position: 'absolute', right: 0, top:0, width: 20, justifyContent: 'center', alignItems: 'center', height: 20, borderRadius: 20, backgroundColor: Colors.orange }}>
                     <Text style={{fontSize: 10, fontWeight: 'bold',color: Colors.whiteColor }} >{notificationUnReadList?.length}</Text>
-                  </View>
+                  </View> : null}
+
                   <IconNotification
                       onPress={() =>
                           props.navigation.navigate('Profile', {screen: 'Notification'})

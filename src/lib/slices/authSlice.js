@@ -24,7 +24,10 @@ const authSlice = createSlice({
       state.balance = action.payload;
     },
     updateProfile: (state, action) => {
-      state.user = action.payload;
+      state.user = {
+        ...state.user,
+        ...action.payload
+      }
     }
   },
 });

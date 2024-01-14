@@ -19,7 +19,7 @@ import ModalApprove from './src/components/common/ModalMatch';
 import SocketIO from "./src/utils/SocketIO";
 import ConfigStyle from "./src/theme/ConfigStyle";
 import Loading from './src/components/common/Loading';
-import { getListRoom } from './src/helper/main';
+import {getDetailProfile, getListRoom, getNotificationList} from './src/helper/main';
 
 const width = Dimensions.get('window').width;
 
@@ -42,8 +42,13 @@ const App = (props) => {
   const dispatch = useDispatch();
   const { isShowApprovePopup, isShowLoading, } = modal || {}
 
-
-  console.log(`🔥LOG_IT:: isShowApprovePopup`, isShowApprovePopup)
+  const notify = (message) => {
+    Toast.show({
+      ...ConfigStyle.toastDefault,
+      type: 'success',
+      text1: message,
+    });
+  }
 
   useEffect(() => {
     SocketIO.connect();
@@ -56,38 +61,29 @@ const App = (props) => {
       console.info(`LOG_IT:: notify_${user?._id}`,);
       SocketIO.on(`notify_${user?._id}`, data => {
         console.info(`LOG_IT::  notify_ data`, data);
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: data?.message,
-        });
+        notify(data?.message);
+        setTimeout(() => {
+          getNotificationList(dispatch, user)
+        }, 100)
       })
       SocketIO.on(`become_teacher_${user?._id}`, data => {
         console.info(`LOG_IT::  notify_ data`, data);
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: data?.message,
-        });
+        notify(data?.message)
+        setTimeout(() => {
+          getDetailProfile(dispatch, user);
+          getNotificationList(dispatch, user)
+        }, 100)
       })
       SocketIO.on(`vote_teacher_${user?._id}`, data => {
         console.info(`LOG_IT::  notify_ data`, data);
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: data?.message,
-        });
+        notify(data?.message)
       })
       SocketIO.on(`messageSendTo_${user?._id}`, data => {
         console.info(`LOG_IT::  messageSendTo_`, data);
         setTimeout(() => {
           getListRoom(dispatch, user);
         }, 100)
-        Toast.show({
-          ...ConfigStyle.toastDefault,
-          type: 'success',
-          text1: "Bạn có 1 tin nhắn mới",
-        });
+        notify("Bạn có 1 tin nhắn mới")
       })
     }
   }, [user]);

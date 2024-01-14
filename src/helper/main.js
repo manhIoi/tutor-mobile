@@ -1,4 +1,4 @@
-import { getTeacherSuggest } from "../api/users";
+import {getDetailUser, getTeacherSuggest} from "../api/users";
 import { getAvailableClasses, getRequestByTeacherId, userGetListRequest } from "../api/class";
 import {
     setAll,
@@ -9,6 +9,7 @@ import {
 } from "../lib/slices/mainSlice";
 import { getListBoxChat, getNotification } from "../api/chat";
 import { setListRoom } from "../lib/slices/chatSlice";
+import {updateProfile} from "../lib/slices/authSlice";
 
 export const syncAll = async (dispatch, payload) => {
     try {
@@ -82,6 +83,16 @@ export const getListRoom = async (dispatch, payload) => {
     try {
         const listRoom = await getListBoxChat(_id);
         dispatch(setListRoom(listRoom));
+    } catch (e) {
+        console.info(`LOG_IT:: e getListRoom helper`, e);
+    }
+}
+
+export const getDetailProfile = async (dispatch, payload) => {
+    const { _id } = payload || {}
+    try {
+        const user = await getDetailUser(_id);
+        dispatch(updateProfile(user));
     } catch (e) {
         console.info(`LOG_IT:: e getListRoom helper`, e);
     }
