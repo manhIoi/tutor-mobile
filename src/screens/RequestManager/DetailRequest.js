@@ -111,6 +111,12 @@ const DetailClass = (props) => {
     setShowActionSheet(true);
   }
 
+  const handleChatGroup = () => {
+    props.navigation.push('InboxChatGroup', {
+      listUserReceive: props.route?.params?.tutorRequest?.students
+    });
+  }
+
   const handleJoinClass = async () => {
     try {
       if (user.role === 'teacher') {
@@ -342,7 +348,7 @@ const DetailClass = (props) => {
 
   const renderButton = () => {
     const buttonProps = {
-      style: { width: '100%' },
+      style: { width: "100%" },
     }
     if (isClassEnd) {
       if (voteData?.editable && !isEmpty(classData?.teacher) && user?.role === 'student') {
@@ -398,6 +404,15 @@ const DetailClass = (props) => {
     }
   }
 
+  const renderChatButton = () => {
+    const buttonProps = { width: "100%" }
+    return (
+        <View style={{ marginTop: 2 }} >
+          <ButtonCustom {...buttonProps} onPress={handleChatGroup} text={"Trò chuyện"} />
+        </View>
+    )
+  }
+
   return (
     <Container
       title={"Chi tiết"}
@@ -434,6 +449,7 @@ const DetailClass = (props) => {
         {renderInboxTeacher()}
         {renderVoteStar()}
         {renderButton()}
+        {renderChatButton()}
         {renderOtherVotes()}
         <CustomActionSheet
           title={isMyRequest ? 'Xác nhận hủy đăng ký' : 'Xác nhận nhận lớp'}

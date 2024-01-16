@@ -12,6 +12,7 @@ import Calling from '../screens/Call/CallVideo';
 import WebViewPayment from '../screens/Payment/WebViewPayment';
 import StudentClass from '../screens/ClassManager/StudentClass';
 import DetailClassScreen from '../screens/ClassManager/ListClassManagement';
+import InboxChatGroup from "../screens/Chat/InboxChatGroup";
 
 const Chat = createStackNavigator();
 
@@ -53,6 +54,13 @@ const ChatStack = ({navigation, route}) => {
           headerShown: false,
         }}
       />
+        <Chat.Screen
+            name={'InboxChatGroup'}
+            component={InboxChatGroup}
+            options={{
+                headerShown: false,
+            }}
+        />
       <Chat.Screen
         name={'Contacts'}
         component={Contacts}

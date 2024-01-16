@@ -108,7 +108,7 @@ style={Styles.title2RS}>
             </View>
             <View style={styles.wrapInfoRight}>
               <Text style={Styles.textGrey}>
-                {formatHHMM(props.data?.lastAt)}
+                {formatHHMM(props?.data?.lastMessage?.createdAt)}
               </Text>
             </View>
           </View>

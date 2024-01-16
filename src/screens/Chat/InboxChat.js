@@ -167,6 +167,7 @@ const InboxChat = (props) => {
         setMessages(messages => {
           const newData = [...messages.data, {
             ...data,
+            createdAt: new Date().getTime(),
             from: user,
           }]
           return {

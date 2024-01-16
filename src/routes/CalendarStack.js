@@ -29,6 +29,7 @@ import ListTeacher from '../screens/RequestManager/TeacherRequest';
 import StudentClass from '../screens/ClassManager/StudentClass';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
 import DetailTutor from "../screens/Tutor/DetailTutor";
+import InboxChatGroup from "../screens/Chat/InboxChatGroup";
 
 const Calendar = createStackNavigator();
 
@@ -182,6 +183,13 @@ const CalendarStack = ({navigation, route}) => {
           headerShown: false,
         }}
       />
+        <Calendar.Screen
+            name={'InboxChatGroup'}
+            component={InboxChatGroup}
+            options={{
+                headerShown: false,
+            }}
+        />
       <Calendar.Screen
         name={'DetailRequest'}
         component={DetailRequestScreen}
