@@ -113,7 +113,7 @@ const DetailClass = (props) => {
 
   const handleChatGroup = () => {
     props.navigation.push('InboxChatGroup', {
-      listUserReceive: props.route?.params?.tutorRequest?.students
+      tutorRequest: props.route?.params?.tutorRequest,
     });
   }
 

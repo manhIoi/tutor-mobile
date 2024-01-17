@@ -17,6 +17,7 @@ import ButtonDelete from '../../assets/images/svg/download-image.svg';
 import IconDelete from '../../assets/images/svg/trash.svg';
 import IconBlock from '../../assets/images/svg/icon-block.svg';
 import Colors from '../../theme/Colors';
+import isEmpty from 'lodash/isEmpty'
 
 const width = Dimensions.get('window').width;
 const ChatItem = (props) => {
@@ -24,10 +25,28 @@ const ChatItem = (props) => {
   const userReceive = props?.data?.persons?.find?.(u => u?._id !== user?._id);
   const firstName = userReceive?.fullName.split(" ").pop();
   const isLastMessage = props?.data?.lastMessage?.userSend === user?._id;
+  const isChatGroup = !isEmpty(props?.data?.idClass);
+
+  const getAvatarChat = () => {
+    if (isChatGroup) return "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Symbol_book_class.svg/800px-Symbol_book_class.svg.png";
+    return userReceive?.avatar || `https://ui-avatars.com/api/?background=random&name=${userReceive?.fullName}`;
+  }
+
+  const getTitleChat = () => {
+    if (isChatGroup) return props?.data?.idClass?._id;
+    return userReceive?.fullName;
+  }
+
   function onClickContent() {
-    props.navigation.navigate('InboxChat', {
-      userReceive: userReceive,
-    });
+    if (isChatGroup) {
+      props.navigation.navigate('InboxChatGroup', {
+        tutorRequest: props?.data?.idClass
+      });
+    } else {
+      props.navigation.navigate('InboxChat', {
+        userReceive: userReceive,
+      });
+    }
   }
 
   const rightButtons = [
@@ -58,7 +77,7 @@ rightButtonWidth={60}>
               <Avatar
                 size={64}
                 source={{
-                  uri: userReceive?.avatar || `https://ui-avatars.com/api/?background=random&name=${userReceive?.fullName}`,
+                  uri: getAvatarChat(),
                 }}
                 icon={
                   props.data?.blockInfo?.user === user?._id ? (
@@ -71,7 +90,7 @@ fill={Colors.orange} />
               <View style={styles.content}>
                 <Text numberOfLines={1}
 style={Styles.title2RS}>
-                  {userReceive?.fullName}
+                  {getTitleChat()}
                 </Text>
                 <View>
                   <View style={Styles.flexRowCenterVertical}>

@@ -26,6 +26,7 @@ const Message = (props) => {
   const receive = props?.message?.receive || false;
   const nextReceive = props?.nextMessage?.receive || false;
   const text = props?.message?.content || '';
+  const fullName = props?.message?.from?.fullName;
   const [showPickFile, setShowPickFile] = useState(false);
   const [showDelete1, setDelete1] = useState(false);
   const [showDelete2, setDelete2] = useState(false);
@@ -284,177 +285,181 @@ const Message = (props) => {
         {justifyContent: receive ? 'flex-start' : 'flex-end'},
       ]}
     >
-      <View
-          style={[
-            styles.container,
-            text || props.message.files?.length ? styles.containerText : {},
-            receive && !nextReceive ? styles.firstMessage : {},
-            text || props.message.files?.length
-                ? receive
-                    ? styles.messageReceive
-                    : styles.messageSend
-                : {},
-            receive && (preReceive || !props.isSlice)
-                ? styles.customBorderBottomLeft
-                : {}, // topleft
-            receive && nextReceive ? styles.customBorderTopLeft : {}, // bottomLeft
-            !receive && !nextReceive ? styles.customBorderTopRight : {}, // topright
-            !receive && nextReceive === false
-                ? styles.customBorderTopRight
-                : {}, // bottomright
-            !receive && !preReceive && props?.preMessage?._id
-                ? styles.customBorderBottomRight
-                : {}, // bottomright
-            {
-              flexWrap: 'wrap',
-              justifyContent: !receive ? 'flex-end' : 'flex-start',
-            },
-            {
-              borderWidth: 0,
-              borderColor: 'transparent',
-            },
-          ]}
-      >
-        {text ? (
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{...Styles.textLight, fontSize: 13}}>{text}</Text>
-            </View>
-        ) : null}
-        {props.message.images ? (
-            <View style={styles.wrapImage}>
-              {props.message.images?.map((image, index) => {
-                let imageStyles = styles.image1;
-                const {images} = props.message;
-                if (images.length > 1) {
-                  if (images.length === 2) {
-                    imageStyles = styles.image2;
-                    if (index === 0) {
-                      imageStyles = {...imageStyles, ...styles.imageTwoLeft};
-                    } else {
-                      imageStyles = {...imageStyles, ...styles.imageTwoRight};
-                    }
-                  }
-                  if (images.length >= 3) {
-                    imageStyles = {...imageStyles, ...styles.image2};
-                    const isOdd = images.length % 2;
-                    if (isOdd) {
-                      if (
-                          index % 2 === 0 &&
-                          index < images.length - 1 &&
-                          (index === 0 || index === 1)
-                      ) {
-                        imageStyles = {...imageStyles, ...styles.imageLeftTop};
-                      } else if (
-                          index % 2 === 0 &&
-                          index === images.length - 1
-                      ) {
-                        imageStyles = {...imageStyles, ...styles.image1};
-                        imageStyles = {
-                          ...imageStyles,
-                          ...styles.imageOneBottom,
-                        };
-                      } else if (
-                          index % 2 === 1 &&
-                          (index === 0 || index === 1)
-                      ) {
-                        imageStyles = {...imageStyles, ...styles.imageRightTop};
+      <View style={{ marginLeft:12 }} >
+        <Text>{fullName}</Text>
+        <View
+            style={[
+              styles.container,
+              text || props.message.files?.length ? styles.containerText : {},
+              receive && !nextReceive ? styles.firstMessage : {},
+              text || props.message.files?.length
+                  ? receive
+                      ? styles.messageReceive
+                      : styles.messageSend
+                  : {},
+              receive && (preReceive || !props.isSlice)
+                  ? styles.customBorderBottomLeft
+                  : {}, // topleft
+              receive && nextReceive ? styles.customBorderTopLeft : {}, // bottomLeft
+              !receive && !nextReceive ? styles.customBorderTopRight : {}, // topright
+              !receive && nextReceive === false
+                  ? styles.customBorderTopRight
+                  : {}, // bottomright
+              !receive && !preReceive && props?.preMessage?._id
+                  ? styles.customBorderBottomRight
+                  : {}, // bottomright
+              {
+                flexWrap: 'wrap',
+                justifyContent: !receive ? 'flex-end' : 'flex-start',
+              },
+              {
+                borderWidth: 0,
+                borderColor: 'transparent',
+              },
+            ]}
+        >
+          {text ? (
+              <View style={{flexDirection: 'row'}}>
+                <Text style={{...Styles.textLight, fontSize: 13}}>{text}</Text>
+              </View>
+          ) : null}
+          {props.message.images ? (
+              <View style={styles.wrapImage}>
+                {props.message.images?.map((image, index) => {
+                  let imageStyles = styles.image1;
+                  const {images} = props.message;
+                  if (images.length > 1) {
+                    if (images.length === 2) {
+                      imageStyles = styles.image2;
+                      if (index === 0) {
+                        imageStyles = {...imageStyles, ...styles.imageTwoLeft};
                       } else {
-                        imageStyles = {...imageStyles, ...styles.imageMiddle};
-                      }
-                    } else {
-                      if (
-                          index % 2 === 0 &&
-                          index < images.length - 2 &&
-                          (index === 0 || index === 1)
-                      ) {
-                        imageStyles = {...imageStyles, ...styles.imageLeftTop};
-                      } else if (
-                          index % 2 === 0 &&
-                          index === images.length - 2
-                      ) {
-                        imageStyles = {
-                          ...imageStyles,
-                          ...styles.imageLeftBottom,
-                        };
-                      } else if (
-                          index % 2 === 1 &&
-                          index < images.length - 1 &&
-                          (index === 0 || index === 1)
-                      ) {
-                        imageStyles = {...imageStyles, ...styles.imageRightTop};
-                      } else if (
-                          index % 2 === 1 &&
-                          index === images.length - 1
-                      ) {
-                        imageStyles = {
-                          ...imageStyles,
-                          ...styles.imageRightBottom,
-                        };
-                      } else {
-                        imageStyles = {...imageStyles, ...styles.imageMiddle};
+                        imageStyles = {...imageStyles, ...styles.imageTwoRight};
                       }
                     }
-                  }
-                }
-                return (
-                    <TouchableWithoutFeedback
-                        key={index}
-                        style={{backgroundColor: '#f000'}}
-                    >
-                      <View
-                          style={{
+                    if (images.length >= 3) {
+                      imageStyles = {...imageStyles, ...styles.image2};
+                      const isOdd = images.length % 2;
+                      if (isOdd) {
+                        if (
+                            index % 2 === 0 &&
+                            index < images.length - 1 &&
+                            (index === 0 || index === 1)
+                        ) {
+                          imageStyles = {...imageStyles, ...styles.imageLeftTop};
+                        } else if (
+                            index % 2 === 0 &&
+                            index === images.length - 1
+                        ) {
+                          imageStyles = {...imageStyles, ...styles.image1};
+                          imageStyles = {
                             ...imageStyles,
-                            overflow: 'hidden',
-                            borderWidth: 0.8,
-                            borderColor: Colors.borderThin,
-                          }}
+                            ...styles.imageOneBottom,
+                          };
+                        } else if (
+                            index % 2 === 1 &&
+                            (index === 0 || index === 1)
+                        ) {
+                          imageStyles = {...imageStyles, ...styles.imageRightTop};
+                        } else {
+                          imageStyles = {...imageStyles, ...styles.imageMiddle};
+                        }
+                      } else {
+                        if (
+                            index % 2 === 0 &&
+                            index < images.length - 2 &&
+                            (index === 0 || index === 1)
+                        ) {
+                          imageStyles = {...imageStyles, ...styles.imageLeftTop};
+                        } else if (
+                            index % 2 === 0 &&
+                            index === images.length - 2
+                        ) {
+                          imageStyles = {
+                            ...imageStyles,
+                            ...styles.imageLeftBottom,
+                          };
+                        } else if (
+                            index % 2 === 1 &&
+                            index < images.length - 1 &&
+                            (index === 0 || index === 1)
+                        ) {
+                          imageStyles = {...imageStyles, ...styles.imageRightTop};
+                        } else if (
+                            index % 2 === 1 &&
+                            index === images.length - 1
+                        ) {
+                          imageStyles = {
+                            ...imageStyles,
+                            ...styles.imageRightBottom,
+                          };
+                        } else {
+                          imageStyles = {...imageStyles, ...styles.imageMiddle};
+                        }
+                      }
+                    }
+                  }
+                  return (
+                      <TouchableWithoutFeedback
+                          key={index}
+                          style={{backgroundColor: '#f000'}}
                       >
-                        <CustomFastImage
-                            sourceTemp={{uri: image.medium}}
-                            source={{uri: image.large}}
-                            zoomView={true}
-                            arraySource={listImages || []}
-                            index={index}
-                            hideLoad={true}
-                        />
-                      </View>
-                    </TouchableWithoutFeedback>
-                );
-              })}
-            </View>
-        ) : null}
+                        <View
+                            style={{
+                              ...imageStyles,
+                              overflow: 'hidden',
+                              borderWidth: 0.8,
+                              borderColor: Colors.borderThin,
+                            }}
+                        >
+                          <CustomFastImage
+                              sourceTemp={{uri: image.medium}}
+                              source={{uri: image.large}}
+                              zoomView={true}
+                              arraySource={listImages || []}
+                              index={index}
+                              hideLoad={true}
+                          />
+                        </View>
+                      </TouchableWithoutFeedback>
+                  );
+                })}
+              </View>
+          ) : null}
 
-        {props.message.files?.length ? (
-            <View>
-              {props.message.files.map((file, index) => (
-                  <TouchableOpacity
-                      style={{
-                        ...styles.wrapFile,
-                        justifyContent: receive ? 'flex-start' : 'flex-end',
-                      }}
-                      key={index}
-                      onPress={() => clickFile(file)}
-                  >
-                    <Icon
-                        type="font-awesome"
-                        name={getTypeFile(file?.name)}
-                        size={15}
-                    />
-                    <Text
-                        style={{...styles.textFile, paddingLeft: 5}}
-                        numberOfLines={1}
+          {props.message.files?.length ? (
+              <View>
+                {props.message.files.map((file, index) => (
+                    <TouchableOpacity
+                        style={{
+                          ...styles.wrapFile,
+                          justifyContent: receive ? 'flex-start' : 'flex-end',
+                        }}
+                        key={index}
+                        onPress={() => clickFile(file)}
                     >
-                      {getFileName(file.name)}
-                      {/* {file.name} */}
-                    </Text>
-                    <Text style={styles.textFile}>
-                      .{getFileTypeText(file.name)}
-                    </Text>
-                  </TouchableOpacity>
-              ))}
-            </View>
-        ) : null}
+                      <Icon
+                          type="font-awesome"
+                          name={getTypeFile(file?.name)}
+                          size={15}
+                      />
+                      <Text
+                          style={{...styles.textFile, paddingLeft: 5}}
+                          numberOfLines={1}
+                      >
+                        {getFileName(file.name)}
+                        {/* {file.name} */}
+                      </Text>
+                      <Text style={styles.textFile}>
+                        .{getFileTypeText(file.name)}
+                      </Text>
+                    </TouchableOpacity>
+                ))}
+              </View>
+          ) : null}
+        </View>
       </View>
+
 
       {/*<CustomActionSheet*/}
       {/*  title={'Tải tập tin về máy ?'}*/}
@@ -501,11 +506,10 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
     marginBottom: 2,
-    marginLeft: 12,
     // flexDirection: 'row',
   },
   customMarginContainer: {
-    marginLeft: 34,
+    // marginLeft: 34,
   },
   containerText: {
     paddingHorizontal: 13,

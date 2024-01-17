@@ -251,7 +251,8 @@ const InboxChat = (props) => {
       if (!roomChatRef.current?._id) {
         console.log(`🔥LOG_IT:: roomChatRef`, roomChatRef.current)
       } else {
-        SocketIO.emit("message", { content, idReceive: userReceive?._id, idSend: user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id })
+        const data = { content, idReceive: userReceive?._id, idSend: user?._id, isChatBot: isChatAssistant, isBotMessage: false, roomId: roomChatRef.current?._id }
+        SocketIO.emit("message", data)
       }
     } catch (error) {
       if (error?.response?.data?.errors) {

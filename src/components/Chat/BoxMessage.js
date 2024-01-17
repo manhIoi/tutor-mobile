@@ -57,55 +57,45 @@ const BoxMessage = (props) => {
             ) : null}
 
             {new Date(item.createdAt).getTime() -
-              new Date(props.messages?.[index + 1]?.createdAt).getTime() >
-              3 * 60 * 1000 ? (
+          new Date(props.messages?.[index + 1]?.createdAt).getTime() >
+          3 * 60 * 1000 ? (
               <Text
-                style={{
-                  ...styles.textTimeDuration,
-                  ...styles.textDurationMinute,
-                }}
+                  style={{
+                    ...styles.textTimeDuration,
+                    ...styles.textDurationMinute,
+                  }}
               >
                 {formatHHMM(item.createdAt)}
               </Text>
             ) : null}
             <View
-              style={[
-                styles.wrapMessage,
-                item.receive ? styles.messageReceive : styles.messageSend,
-              ]}
+                style={[
+                  styles.wrapMessage,
+                  item.receive ? styles.messageReceive : styles.messageSend,
+                ]}
             >
-              {item.receive &&
-                (!props.messages[index + 1]?.receive ||
-                  (props.messages?.[index - 1]?._id &&
-                    (new Date(item?.createdAt).getTime() -
-                      new Date(
-                        props.messages?.[index - 1]?.createdAt,
-                      ).getTime()) /
-                    (60 * 1000) >
-                    10)) ? (
-                <Avatar
-                  source={{ uri: item?.from?.avatar }}
-                  size={34}
-                  hideLoad={true}
-                />
-              ) : null}
-
+              {item.receive ?
+                  <Avatar
+                      source={{ uri: item?.from?.avatar }}
+                      size={34}
+                      hideLoad={true}
+                  /> : null}
               <Message
-                preMessage={props.messages[index - 1] || {}}
-                message={item}
-                nextMessage={props.messages[index + 1] || {}}
-                isSlice={
-                  item.receive &&
-                  (!props.messages[index - 1]?.receive ||
-                    (props.messages?.[index - 1]?._id &&
-                      (new Date(item?.createdAt).getTime() -
-                        new Date(
-                          props.messages?.[index - 1]?.createdAt,
-                        ).getTime()) /
-                      (60 * 1000) >
-                      10))
-                }
-                handleDeleteMessage={props.handleDeleteMessage}
+                  preMessage={props.messages[index - 1] || {}}
+                  message={item}
+                  nextMessage={props.messages[index + 1] || {}}
+                  isSlice={
+                      item.receive &&
+                      (!props.messages[index - 1]?.receive ||
+                          (props.messages?.[index - 1]?._id &&
+                              (new Date(item?.createdAt).getTime() -
+                                  new Date(
+                                      props.messages?.[index - 1]?.createdAt,
+                                  ).getTime()) /
+                              (60 * 1000) >
+                              10))
+                  }
+                  handleDeleteMessage={props.handleDeleteMessage}
               />
             </View>
           </View>

@@ -20,7 +20,7 @@ import ConfigStyle from '../../theme/ConfigStyle';
 import CustomInputToolBar from '../../components/Chat/CustomInputToolBar';
 import {
   createChatSingle,
-  getMessageByRoom, joinRoomApi,
+  getMessageByClass, joinRoomGroupApi,
 } from '../../api/chat';
 import { uploadImage, handleUploadFile } from '../../api/uploadImage';
 import Constants from '../../../constants/Values';
@@ -42,7 +42,8 @@ const LIMIT = 3 * Constants.LIMIT;
 const InboxChatGroup = (props) => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const { roomChat = null, listUserReceive  } = props.route?.params || {};
+  const { tutorRequest } = props.route?.params || {};
+  const { roomChat = null, students: listUserReceive, _id: classId, title  } = tutorRequest || {};
   const roomChatRef = useRef(roomChat);
 
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -56,6 +57,7 @@ const InboxChatGroup = (props) => {
   }, [messages.data])
 
   useEffect(() => {
+    executeTaskChat();
   }, []);
 
   const executeTaskChat = () => {
@@ -69,6 +71,24 @@ const InboxChatGroup = (props) => {
   async function getListMessage() {
     try {
       // TODO: implement
+      const messages = await getMessageByClass(classId);
+      const listUserHash = listUserReceive?.reduce((current, item) => {
+        current[item?._id] = item;
+        return current;
+      }, {})
+      const _messagesFormatted = messages?.map?.(m => {
+        const isReceive = m.userSend !== user?._id;
+        const userReceive = isReceive ? listUserHash[m.userSend] : user;
+        return {
+          ...m,
+          receive: isReceive,
+          from: userReceive
+        }
+      })
+      setMessages({
+        ...messages,
+        data: _messagesFormatted,
+      })
     } catch (e) {
       console.info(`🔥🔥🔥LOGGER::  e`, e);
     }
@@ -76,11 +96,8 @@ const InboxChatGroup = (props) => {
 
   const joinRoomEvent = async () => {
     if (!roomChat) {
-      const response = await joinRoomApi([user?._id, userReceive?._id]);
-
+      const response = await joinRoomGroupApi(classId);
       roomChatRef.current = response;
-
-      console.info(`LOGGER:: response`, response);
     }
     SocketIO.on(`messageResponse_${user._id}`, data => {
       console.info(`🔥🔥🔥LOGGER messageResponse_`);
@@ -99,16 +116,14 @@ const InboxChatGroup = (props) => {
       }
     })
     SocketIO.on(`messageSendTo_${user._id}`, data => {
-      const newData = [...messages.data, {
-        ...data,
-        from: userReceive,
-      }]
+      const { idSend } = data || {}
+      const userSend = listUserReceive?.find?.(item => item?._id === idSend);
       setMessages(messages => {
         const newData = [...messages.data, {
           receive: true,
           createdAt: new Date().getTime(),
           content: data?.content,
-          from: userReceive,
+          from: userSend,
         }]
         return {
           ...messages,
@@ -119,9 +134,24 @@ const InboxChatGroup = (props) => {
   }
 
   async function handleSend(content = '', images = [], files = []) {
-    console.info(`🔥🔥🔥LOGGER:: id `, userReceive?._id, user?._id);
+    console.info(`🔥🔥🔥LOGGER:: id `, user?._id);
     try {
-      // TODO: implement
+      if (!roomChatRef.current?._id) {
+        console.log(`🔥LOG_IT:: roomChatRef`, roomChatRef.current)
+      } else {
+        const data = {
+          content,
+          isChatGroup: true,
+          listIdReceive: listUserReceive?.map?.(item => item?._id),
+          idSend: user?._id,
+          isChatBot: false,
+          isBotMessage: false,
+          roomId: roomChatRef.current?._id,
+          idClass: classId
+        }
+        // console.info(`LOG_IT:: data`, JSON.stringify(data));
+        SocketIO.emit("message", data)
+      }
     } catch (error) {
       if (error?.response?.data?.errors) {
         Toast.show({
@@ -155,12 +185,36 @@ const InboxChatGroup = (props) => {
     }
   }
 
+  const contentHeader = (
+      <View style={styles.wrapContentHeader}>
+        <TouchableWithoutFeedback>
+          <View style={Styles.flexRowCenterVertical}>
+            <Avatar
+                source={{
+                  uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Symbol_book_class.svg/800px-Symbol_book_class.svg.png"
+                }}
+                size={35}
+            />
+            <View style={styles.infoContentHeader}>
+              <Text
+                  style={[Styles.title2RS, Styles.textWhite]}
+                  numberOfLines={1}
+              >
+                {classId}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+  );
+
   return (
     <Container
       header={
         <Statusbar
           arrowBack={true}
           navigation={props.navigation}
+          content={contentHeader}
           headerHeight={ConfigStyle.statusBarIb}
         />
       }
@@ -189,6 +243,7 @@ const InboxChatGroup = (props) => {
         item={messages.item}
         notMessageMore={notMessageMore}
         handleDeleteMessage={() => {}}
+        isChatGroup={true}
       />
     </Container>
   );

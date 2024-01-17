@@ -14,14 +14,14 @@ message.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      // console.info(`LOG_IT:: [req]`, config.url);
+      console.info(`LOG_IT:: [req]`, config.url);
       return config;
     },
 )
 
 message.interceptors.response.use(
     async function (config) {
-      // console.info(`LOG_IT:: [res]`, config.config.url, config.status, config.data);
+      console.info(`LOG_IT:: [res]`, config.config.url, config.status, config.data);
       return config;
     },
 )

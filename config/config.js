@@ -7,7 +7,8 @@ const URL_DEV = Platform.select({
 
 const URL_PRODUCTION = "https://tutor-api.onrender.com"
 
-const CURRENT_BASE_URL = __DEV__ ?  URL_DEV : URL_PRODUCTION;
+// const CURRENT_BASE_URL = __DEV__ ?  URL_DEV : URL_PRODUCTION;
+const CURRENT_BASE_URL = "http://localhost:3000";
 
 export default {
   API_BASE_URL: CURRENT_BASE_URL, // API_BASE_URL: 'http://10.0.2.2:3000' for local android, http://localhost:3000 for ios

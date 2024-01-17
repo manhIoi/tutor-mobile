@@ -64,3 +64,11 @@ export function getMessageByRoom(data) {
 export function joinRoomApi(data) {
   return callApi(`/room/join`, 'post', data)
 }
+
+export function joinRoomGroupApi(id, data) {
+  return callApi(`/room/join-group/${id}`, 'post', data)
+}
+
+export function getMessageByClass(id) {
+  return callApi(`/chat/room-class/${id}`,'post');
+}
