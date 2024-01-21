@@ -51,6 +51,7 @@ const DetailClass = (props) => {
   const [isBusyButon, setBusyButton] = useState(false);
   const coursesString = classData?.subjects?.map?.(s => s?.name).join(', ')
   const isMyRequest = classData?.user?._id === user?._id;
+  const isMyAssignee = classData?.teacher?._id === user?._id;
   const isClassEnd = classData?.status === 3;
   const isClassNotApprove = classData?.status === 0 || classData?.status === 1;
   const classFullStudent = classData?.students?.length === classData?.numOfStudents
@@ -405,12 +406,15 @@ const DetailClass = (props) => {
   }
 
   const renderChatButton = () => {
-    const buttonProps = { width: "100%" }
-    return (
-        <View style={{ marginTop: 2 }} >
-          <ButtonCustom {...buttonProps} onPress={handleChatGroup} text={"Trò chuyện"} />
-        </View>
-    )
+    if (isInClass || isMyRequest || isMyAssignee) {
+      const buttonProps = { width: "100%" }
+      return (
+          <View style={{ marginTop: 2 }} >
+            <ButtonCustom {...buttonProps} onPress={handleChatGroup} text={"Trò chuyện"} />
+          </View>
+      )
+    }
+    return null;
   }
 
   return (
