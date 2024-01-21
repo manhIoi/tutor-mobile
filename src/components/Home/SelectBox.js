@@ -73,6 +73,8 @@ const SelectBox = (props) => {
 
       {!props.noPicker ? (
         <CustomPicker
+            searchable={props?.searchable}
+            searchKey={props?.searchKey}
           items={props.data}
           value={props.value}
           title={props.placeholder}

@@ -227,6 +227,8 @@ const SearchScreen = (props) => {
             {renderForm()}
             {renderResult()}
             {showSubject ? <ModalPicker
+                searchable={true}
+                searchKey={"name"}
                 items={subjects}
                 show={showSubject}
                 hideModal={() => setShowSubject(!showSubject)}

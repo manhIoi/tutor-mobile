@@ -145,6 +145,8 @@ height={18.27} />}
         <Text style={Styles.textError}>{props.data.teachingType.msgError}</Text>
       ) : null}
       <SelectBox
+          searchable={true}
+          searchKey={"name"}
         placeholder={'Môn học'}
         svg={<IconBook width={18.45}
 height={15.1} />}
@@ -192,7 +194,7 @@ height={16.8} />}
             </Text>
         ) : null}
       <SelectBox
-        placeholder={'Học phí mỗi buổi học'}
+        placeholder={'Học phí khóa học'}
         noPicker={true}
         isInput={true}
         keyboardType={'numeric'}

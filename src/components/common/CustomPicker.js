@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   Platform,
   TouchableOpacity,
@@ -7,7 +7,7 @@ import {
   ScrollView,
   Modal, Pressable,
   Dimensions,
-  FlatList
+  FlatList, TextInput
 } from 'react-native';
 import {Text} from 'react-native-elements';
 import PropsTypes from 'prop-types';
@@ -16,6 +16,7 @@ import ArrowGrey from '../../assets/images/svg/arrow-grey.svg';
 import Styles from '../../theme/MainStyles';
 import isEqual from 'lodash/isEqual'
 import ButtonCustom from './ButtonFooterCustom';
+import {searchStringCaseInsensitive} from "../../utils/string.util";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -69,6 +70,7 @@ const CustomPicker = (props) => {
     setSelected(item);
     props.onChange(item._id !== undefined ? item._id : item.value);
   }
+
   return (
     <View style={{...props.wrapStyle}}>
       <TouchableOpacity
@@ -95,7 +97,9 @@ const CustomPicker = (props) => {
         <ArrowGrey />
       </TouchableOpacity>
       <ModalPicker
-          items={props.items}
+          searchable={props?.searchable}
+          searchKey={props?.searchKey}
+          items={props?.items}
           show={show}
           hideModal={handleHideModal}
           onChange={onChange}
@@ -119,8 +123,14 @@ CustomPicker.prototype = {
 export default CustomPicker;
 
 const ModalPicker = (props) => {
-  const { isMultiSelect = false, selectedItems = [] } = props || {}
+  const { isMultiSelect = false, selectedItems = [], searchable, searchKey, items = [] } = props || {}
+  const [searchValue, setSearchValue] = useState('');
   const [selectedIds, setSelectedIds] = useState(selectedItems);
+
+  const _data = useMemo(() => {
+    if (!searchable || !searchKey) return items;
+    return items?.filter?.(item => searchStringCaseInsensitive(item?.[searchKey], searchValue))
+  }, [items, searchable, searchKey, searchValue])
 
   const _onPress = (item) => {
     if (!isMultiSelect) {
@@ -144,6 +154,18 @@ const ModalPicker = (props) => {
       <View>
         <Text style={styles.modalText}>{props?.title}</Text>
       </View>
+    )
+  }
+
+  const renderSearch = () => {
+    if (!props?.searchable || !props?.searchKey) return null;
+    return (
+        <TextInput
+            placeholder={"Tìm kiếm"}
+            value={searchValue}
+            onChangeText={setSearchValue}
+            style={{ borderWidth:2, borderColor: Colors.orange2, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4, }}
+        />
     )
   }
 
@@ -188,7 +210,7 @@ const ModalPicker = (props) => {
   const renderBodyModal = () => {
     return (
       <FlatList
-        data={props.items}
+        data={_data}
         renderItem={_renderItem}
         ListEmptyComponent={() => (
           <Text
@@ -214,51 +236,6 @@ const ModalPicker = (props) => {
     )
   }
   return (
-        // <Modal
-        //     visible={props.show}
-        //     animationType="slide"
-        //     transparent={true}
-        //     onRequestClose={() => {
-        //       alert('Modal has been closed.');
-        //       props.hideModal()
-        //     }}
-        // >
-        //   <View style={styles.containerModal}>
-        //     {props.title ? (
-        //         <Text style={{...Styles.textBold, ...styles.titleModal}}>
-        //           {props.title}
-        //         </Text>
-        //     ) : null}
-        //     <ScrollView >
-        //       {props.items?.length > 0 ? (
-        //           props.items?.map((item, index) => (
-        //               <View style={styles.wrapItem}
-        //                     key={index}>
-        //                 <TouchableOpacity
-        //                     style={styles.wrapText}
-        //                     onPress={() => {
-        //                       props.hideModal();
-        //                       props.onChange(item);
-        //                     }}
-        //                 >
-        //                   <Text numberOfLines={1}
-        //                         style={styles.text}>
-        //                     {item.dial_code || item.name}
-        //                   </Text>
-        //                 </TouchableOpacity>
-        //               </View>
-        //           ))
-        //       ) : (
-        //           <Text
-        //               numberOfLines={1}
-        //               style={{textAlign: 'center', marginVertical: 20}}
-        //           >
-        //             Không có dữ liệu
-        //           </Text>
-        //       )}
-        //     </ScrollView>
-        //   </View>
-        // </Modal>
       <View style={styles.centeredView}>
         <Modal
             animationType="slide"
@@ -268,6 +245,7 @@ const ModalPicker = (props) => {
           <Pressable style={{ flex:1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00000080' }} onPress={props.hideModal} >
             <View style={styles.modalView}>
               {renderHeader()}
+              {renderSearch()}
               {renderBodyModal()}
               {renderFooterModal()}
             </View>

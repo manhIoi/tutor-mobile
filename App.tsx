@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message'
 import { useSelector, useDispatch } from 'react-redux';
 import { ThemeProvider, Text } from 'react-native-elements';
 import AuthStack from './src/routes/AuthStack';
-import { selectIsUserlogged } from './src/lib/slices/authSlice';
+import {logoutAsync, selectIsUserlogged} from './src/lib/slices/authSlice';
 import { selectThemeMode } from './src/lib/slices/settingSlice';
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import { navigationRef, isReadyRef } from './RootNavigation';
@@ -20,6 +20,7 @@ import SocketIO from "./src/utils/SocketIO";
 import ConfigStyle from "./src/theme/ConfigStyle";
 import Loading from './src/components/common/Loading';
 import {getDetailProfile, getListRoom, getNotificationList} from './src/helper/main';
+import {showApprovePopup} from "./src/lib/slices/modalSlice";
 
 const width = Dimensions.get('window').width;
 
@@ -73,8 +74,10 @@ const App = (props) => {
         console.info(`LOG_IT::  notify_ data`, data);
         notify(data?.message)
         setTimeout(() => {
-          getDetailProfile(dispatch, user);
-          getNotificationList(dispatch, user)
+          dispatch(logoutAsync())
+          dispatch(showApprovePopup({
+            title: 'Thông báo', body: "Mời bạn đăng nhập lại", onPress: () => null
+          }))
         }, 100)
       })
       SocketIO.on(`vote_teacher_${user?._id}`, data => {

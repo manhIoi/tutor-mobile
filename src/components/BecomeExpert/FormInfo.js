@@ -196,6 +196,8 @@ const FormInfo = (props) => {
         <Text style={Styles.textError}>{props.data.subjects?.msgError}</Text>
       ) : null}
       {showSubject ? <ModalPicker
+          searchable={true}
+          searchKey={'name'}
         items={subjects}
         show={showSubject}
         hideModal={() => setShowSubject(!showSubject)}

@@ -41,3 +41,15 @@ export function addTime(dateString, time) {
 export function formatMMDDYYYY(dateString) {
   return moment(dateString).format('MM-DD-YYYY');
 }
+
+export function searchStringCaseInsensitive(inputString, searchPattern) {
+  // Loại bỏ dấu và chuyển đổi cả chuỗi và mẫu tìm kiếm thành chữ thường
+  const removeDiacritics = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const inputStringLower = removeDiacritics(inputString.toLowerCase());
+  const searchPatternLower = removeDiacritics(searchPattern.toLowerCase());
+
+  // Sử dụng hàm tìm kiếm không phân biệt chữ hoa/chữ thường
+  const match = inputStringLower.includes(searchPatternLower);
+
+  return match;
+}
